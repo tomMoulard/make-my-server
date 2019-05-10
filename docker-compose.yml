@@ -6,7 +6,6 @@ networks:
 services:
   traefik:
     image: traefik:1.5.4
-    container_name: traefik
     restart: always
     ports:
       - '80:80'
@@ -25,7 +24,6 @@ services:
 
   gitlab:
     image: 'gitlab/gitlab-ce:latest'
-    container_name: gitlab
     restart: always
     hostname: 'gitlab.${SITE}'
     environment:
@@ -49,7 +47,6 @@ services:
   runner:
     image: gitlab/gitlab-runner:latest
     restart: always
-    container_name: gitlab_runner
     volumes:
       - '$HOME/srv/gitlab/runner:/etc/gitlab-runner'
       - '/var/run/docker.sock:/var/run/docker.sock'
@@ -65,19 +62,18 @@ services:
 
   nginx:
     image: nginx:stable-alpine
-    container_name: nginx
     volumes:
       - '$HOME/srv/nginx:/etc/nginx/conf.d'
     networks:
       - srv
     labels:
       - 'traefik.enable=true'
+      - 'traefik.backend=nginx'
       - 'traefik.frontend.rule=Host:${SITE}'
       - 'traefik.port=80'
 
   cyprine:
     image: nginx:stable-alpine
-    container_name: cyprine
     volumes:
       - '$HOME/srv/cyprine:/etc/nginx/conf.d'
     networks:
@@ -89,7 +85,6 @@ services:
 
   transmission:
     image: linuxserver/transmission:2.94-r1-ls12
-    container_name: transmission
     restart: always
     environment:
       - 'PGID=1000'
@@ -112,7 +107,6 @@ services:
   vpn:
     image: hwdsl2/ipsec-vpn-server:latest
     restart: always
-    container_name: vpn
     privileged: true
     environment:
       - 'VPN_IPSEC_PSK='
@@ -128,7 +122,6 @@ services:
 
   jupyter:
     image: jupyter/base-notebook:2662627f26e0
-    container_name: jupyter
     restart: always
     environment:
       - 'JUPYTER_ENABLE_LAB=yes'
@@ -144,7 +137,6 @@ services:
 
   pastebin:
     image: mkodockx/docker-pastebin:latest
-    container_name: pastebin
     restart: always
     networks:
       - srv
@@ -156,7 +148,6 @@ services:
   # doc:
   #   image: jekyll/jekyll:latest
   #   command: jekyll serve --force_polling --livereload
-  #   container_name: doc
   #   # restart: always
   #   environment:
   #     - 'JEKYLL_ENV=docker'
@@ -172,7 +163,6 @@ services:
 
   # db:
   #   image: mariadb:10.1
-  #   container_name: mariadb
   #   command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
   #   restart: always
   #   volumes:
@@ -187,7 +177,6 @@ services:
 
   # nextcloud:
   #   image: nextcloud:16.0-fpm-alpine
-  #   container_name: nextcloud
   #   restart: always
   #   links:
   #     - db
@@ -207,7 +196,6 @@ services:
 
   # weechat:
   #   image: craighurley/docker-weechat:latest
-  #   container_name: weechat
   #   restart: always
   #   volumes:
   #     - '$HOME/srv/weechat:/home/user/.weechat'
