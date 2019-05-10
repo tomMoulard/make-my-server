@@ -22,20 +22,17 @@ Now you have my own server configuration
  - [X] jupyter
  - [ ] readthedoc / [DokuWiki](https://hub.docker.com/r/mprasil/dokuwiki)
  - [X] pastebin
- - [ ] image hosting
+ - [ ] image / screenshot hosting
  - [ ] [hackmd](https://github.com/hackmdio/docker-hackmd) [main repo](https://github.com/hackmdio/codimd)
- - [ ] jekyll
- - [ ] [monitoring](https://www.brianchristner.io/how-to-monitor-traefik-reverse-proxy-with-prometheus/)
+ - [ ] [prometheus](https://www.brianchristner.io/how-to-monitor-traefik-reverse-proxy-with-prometheus/) / [EFK](https://docs.fluentd.org/v0.12/articles/docker-logging-efk-compose)
  - [ ] proxy
  - [ ] [RSS agregator server](https://www.freshrss.org/)
- - [ ] calendar
  - [ ] url shortener
- - [ ] File host [jirafeau](https://jirafeau.net/)
- - [ ] DNS updater
  - [ ] factorio server
  - [ ] news group server
  - [ ] vlc server
  - [ ] blog
+ - [ ] MOOC
 [more](https://github.com/Kickball/awesome-selfhosted)
 
 ### List
@@ -50,7 +47,7 @@ Now you have my own server configuration
  - [ ] Testing
     - [X] traefik
     - [X] gitlab
-    - [ ] nextcloud
+    - [X] nextcloud
     - [X] nginx
     - [ ] weechat
     - [X] transmission
@@ -98,56 +95,5 @@ docker-compose scale nginx=2
 |:--:|--|--|
 | [X] | ${SITE2} | 80, 443 (redirect 80 to 443) |
 
-
-## Installation
-### Traefik
-```
-defaultEntryPoints = ["http", "https"]
-
-[entryPoints]
-  [entryPoints.http]
-    address = ":80"
-      [entryPoints.http.redirect]
-        entryPoint = "https"
-  [entryPoints.https]
-    address = ":443"
-      [entryPoints.https.tls]
-
-# API definition
-[api]
-entryPoint = "traefik"
-dashboard = true
-  [api.statistics]
-    recentErrors = 42
-
-[[acme.domains]]
-main = "${SITE}"
-sans = ["paste.${SITE}", "traefik.${SITE}", "gitlab.${SITE}"]
-
-[acme]
-email = "${EMAIL}"
-storage = "acme.json"
-entryPoint = "https"
-onHostRule = true
-  [acme.httpChallenge]
-  entryPoint = "http"
-
-[docker]
-watch = true
-exposedByDefault = false
-```
-### Nginx
-Configuration file to put in `$HOME/srv/nginx/nginx.conf`
-```
-server {
-    root /etc/nginx/conf.d/www;
-    index index.html;
-
-    location /{
-        try_files $uri $uri/ =404;
-        autoindex on;
-    }
-}
-```
-
-And put your files in the folder `$HOME/srv/nginx/www`.
+### Gitlab runner
+Find your runner registration token ($REGISTRATION_TOKEN) at `http://GITLAB_HOST/$PROJECT_GROUP/$PROJECT_NAME/settings/ci_cd`.
