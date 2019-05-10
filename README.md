@@ -24,7 +24,7 @@ Now you have my own server configuration
  - [X] pastebin
  - [ ] image / screenshot hosting
  - [ ] [hackmd](https://github.com/hackmdio/docker-hackmd) [main repo](https://github.com/hackmdio/codimd)
- - [ ] [prometheus](https://www.brianchristner.io/how-to-monitor-traefik-reverse-proxy-with-prometheus/) / [EFK](https://docs.fluentd.org/v0.12/articles/docker-logging-efk-compose)
+ - [ ] [prometheus](https://www.brianchristner.io/how-to-monitor-traefik-reverse-proxy-with-prometheus/) / [EFK](https://docs.fluentd.org/v0.12/articles/docker-logging-efk-compose) / [filebeat](https://medium.com/the-sysadmin/visualize-traefik-logs-in-kibana-c53fb2aac070)
  - [ ] proxy
  - [ ] [RSS agregator server](https://www.freshrss.org/)
  - [ ] url shortener
