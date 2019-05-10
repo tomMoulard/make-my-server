@@ -1,8 +1,17 @@
 logLevel = "DEBUG"
 defaultEntryPoints = ["http", "https"]
 
-[accessLog]
 [traefikLog]
+  filePath = "/logs/traefik.log"
+  format   = "json"
+[accessLog]
+  filePath = "/logs/access.log"
+  format = "json"
+  bufferingSize = 100
+  [accessLog.fields]
+    defaultMode = "keep"
+    [accessLog.fields.headers]
+      defaultMode = "keep"
 
 [entryPoints]
   [entryPoints.http]
