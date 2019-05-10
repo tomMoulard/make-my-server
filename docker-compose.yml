@@ -1,4 +1,4 @@
-version: "2"
+version: '2'
 networks:
   srv:
   gitlab:
@@ -6,6 +6,7 @@ networks:
 services:
   traefik:
     image: traefik:1.5.4
+    command: --api --api.statistics --docker
     restart: always
     ports:
       - '80:80'
@@ -21,24 +22,23 @@ services:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - '$HOME/srv/traefik/traefik.toml:/traefik.toml'
       - '$HOME/srv/traefik/acme.json:/acme.json'
+      - '$HOME/srv/traefik/logs:/logs'
 
   gitlab:
     image: 'gitlab/gitlab-ce:latest'
     restart: always
     hostname: 'gitlab.${SITE}'
-    environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://gitlab.${SITE}:80'
-        gitlab_rails['gitlab_shell_ssh_port'] = 22
+        gitlab_rails['gitlab_shell_ssh_port'] = 2224
     ports:
-      - '22:22'
+      - '2224:22'
     volumes:
       - '$HOME/srv/gitlab/config:/etc/gitlab'
       - '$HOME/srv/gitlab/logs:/var/log/gitlab'
       - '$HOME/srv/gitlab/data:/var/opt/gitlab'
     networks:
       - srv
-      # - gitlab
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:gitlab.${SITE}'
@@ -58,7 +58,7 @@ services:
       - 'traefik.enable=false'
     environment:
       - 'GITLAB_URL=https://gitlab${SITE}/'
-      - 'GITLAB_TOKEN='
+      - 'GITLAB_TOKEN=_p9fW2gr4GiqAP6zrsaT'
 
   nginx:
     image: nginx:stable-alpine
@@ -145,6 +145,44 @@ services:
       - 'traefik.frontend.rule=Host:paste.${SITE}'
       - 'traefik.port=80'
 
+  nextcloud-db:
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    volumes:
+      - '$HOME/srv/nextcloud/db:/var/lib/mysql'
+    environment:
+      - 'MYSQL_ROOT_PASSWORD=pass'
+      - 'MYSQL_PASSWORD='
+      - 'MYSQL_DATABASE=nextcloud'
+      - 'MYSQL_USER=nextcloud'
+    labels:
+      - 'traefik.enable=false'
+
+  nextcloud:
+    image: nextcloud
+    restart: always
+    links:
+      - nextcloud-db
+    volumes:
+      - '$HOME/srv/nextcloud/data:/var/www/html'
+    networks:
+      - srv
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:cloud.${SITE}'
+      - 'traefik.port=80'
+
+  # weechat:
+  #   image: craighurley/docker-weechat:latest
+  #   restart: always
+  #   volumes:
+  #     - '$HOME/srv/weechat:/home/user/.weechat'
+  #   labels:
+  #     - 'traefik.enable=true'
+  #     - 'traefik.frontend.rule=Host:irc.${SITE}'
+  #     - 'traefik.port=80'
+
   # doc:
   #   image: jekyll/jekyll:latest
   #   command: jekyll serve --force_polling --livereload
@@ -160,46 +198,3 @@ services:
   #     - 'traefik.enable=true'
   #     - 'traefik.frontend.rule=Host:wiki.${SITE}'
   #     - 'traefik.port=4000'
-
-  # db:
-  #   image: mariadb:10.1
-  #   command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-  #   restart: always
-  #   volumes:
-  #     - '$HOME/srv/nextcloud/db:/var/lib/mysql'
-  #   environment:
-  #     - 'MYSQL_DATABASE=nextcloud'
-  #     - 'MYSQL_USER=nextcloud'
-  #     - 'MYSQL_PASSWORD='
-  #     - 'MYSQL_ROOT_PASSWORD='
-  #   labels:
-  #     - 'traefik.enable=false'
-
-  # nextcloud:
-  #   image: nextcloud:16.0-fpm-alpine
-  #   restart: always
-  #   links:
-  #     - db
-  #   volumes:
-  #     - '$HOME/srv/nextcloud/data:/var/www/html'
-  #     - '$HOME/srv/nextcloud/db:/var/lib/mysql '
-  #     - '$HOME/srv/nextcloud/apps:/var/www/html/custom_apps'
-  #     - '$HOME/srv/nextcloud/config:/var/www/html/config'
-  #     - '$HOME/srv/nextcloud/data:/var/www/html/data'
-  #     - '$HOME/srv/nextcloud/theme:/var/www/html/themes/<YOUR_CUSTOM_THEME>'
-  #   networks:
-  #     - srv
-  #   labels:
-  #     - 'traefik.enable=true'
-  #     - 'traefik.frontend.rule=Host:cloud.${SITE}'
-  #     - 'traefik.port=80'
-
-  # weechat:
-  #   image: craighurley/docker-weechat:latest
-  #   restart: always
-  #   volumes:
-  #     - '$HOME/srv/weechat:/home/user/.weechat'
-  #   labels:
-  #     - 'traefik.enable=true'
-  #     - 'traefik.frontend.rule=Host:irc.${SITE}'
-  #     - 'traefik.port=80'
