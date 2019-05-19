@@ -19,12 +19,12 @@ services:
       - 'traefik.enable=true'
       - 'traefik.port=8080'
       - 'traefik.frontend.rule=Host:traefik.${SITE}'
+      - 'traefik.frontend.auth.basic.users=${USER}:${HASHED_PASSWORD}'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './traefik/traefik.toml:/traefik.toml'
       - './traefik/acme.json:/acme.json'
       - './traefik/logs:/logs'
-      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
 
   fluentd:
     build: ./fluentd
