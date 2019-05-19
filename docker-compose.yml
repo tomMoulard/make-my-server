@@ -11,6 +11,7 @@ services:
     ports:
       - '80:80'
       - '443:443'
+    expose:
       - '8080:8080'
     networks:
       - srv
@@ -20,23 +21,68 @@ services:
       - 'traefik.frontend.rule=Host:traefik.${SITE}'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
-      - '$HOME/srv/traefik/traefik.toml:/traefik.toml'
-      - '$HOME/srv/traefik/acme.json:/acme.json'
-      - '$HOME/srv/traefik/logs:/logs'
+      - './traefik/traefik.toml:/traefik.toml'
+      - './traefik/acme.json:/acme.json'
+      - './traefik/logs:/logs'
+
+  fluentd:
+    build: ./fluentd
+    volumes:
+      - ./fluentd/conf:/fluentd/etc
+    links:
+      - 'elasticsearch'
+    ports:
+      - '24224:24224'
+      - '24224:24224/udp'
+    logging:
+        driver: 'json-file'
+        options:
+            max-size: 100m
+            max-file: '5'
+    labels:
+      - 'traefik.enable=false'
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.1
+    environment:
+      - 'cluster.name=docker-cluster'
+      - 'bootstrap.memory_lock=true'
+      - 'discovery.type=single-node'
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - '9200:9200'
+    labels:
+      - 'traefik.enable=false'
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.0.1
+    links:
+      - 'elasticsearch'
+    ports:
+      - '5601:5601'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:kibana.${SITE}'
+      - 'traefik.port=5601'
 
   gitlab:
     image: 'gitlab/gitlab-ce:latest'
     restart: always
     hostname: 'gitlab.${SITE}'
+    environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://gitlab.${SITE}:80'
         gitlab_rails['gitlab_shell_ssh_port'] = 2224
     ports:
       - '2224:22'
     volumes:
-      - '$HOME/srv/gitlab/config:/etc/gitlab'
-      - '$HOME/srv/gitlab/logs:/var/log/gitlab'
-      - '$HOME/srv/gitlab/data:/var/opt/gitlab'
+      - './gitlab/config:/etc/gitlab'
+      - './gitlab/logs:/var/log/gitlab'
+      - './gitlab/data:/var/opt/gitlab'
     networks:
       - srv
     labels:
@@ -48,7 +94,7 @@ services:
     image: gitlab/gitlab-runner:latest
     restart: always
     volumes:
-      - '$HOME/srv/gitlab/runner:/etc/gitlab-runner'
+      - './gitlab/runner:/etc/gitlab-runner'
       - '/var/run/docker.sock:/var/run/docker.sock'
     networks:
       - gitlab
@@ -63,7 +109,7 @@ services:
   nginx:
     image: nginx:stable-alpine
     volumes:
-      - '$HOME/srv/nginx:/etc/nginx/conf.d'
+      - './nginx:/etc/nginx/conf.d'
     networks:
       - srv
     labels:
@@ -75,7 +121,7 @@ services:
   cyprine:
     image: nginx:stable-alpine
     volumes:
-      - '$HOME/srv/cyprine:/etc/nginx/conf.d'
+      - './cyprine:/etc/nginx/conf.d'
     networks:
       - srv
     labels:
@@ -94,9 +140,9 @@ services:
       - '51413:51413'
       - '51413:51413/udp'
     volumes:
-      - '$HOME/srv/transmission/config:/config'
-      - '$HOME/srv/transmission/downloads:/downloads'
-      - '$HOME/srv/transmission/watch:/watch'
+      - './transmission/config:/config'
+      - './transmission/downloads:/downloads'
+      - './transmission/watch:/watch'
     networks:
       - srv
     labels:
@@ -126,8 +172,8 @@ services:
     environment:
       - 'JUPYTER_ENABLE_LAB=yes'
     volumes:
-      - '$HOME/srv/jupyter/jupyter_notebook_config.py:/root/.jupyter/jupyter_notebook_config.py'
-      - '$HOME/srv/jupyter/notbooks:/notebooks'
+      - './jupyter/jupyter_notebook_config.py:/root/.jupyter/jupyter_notebook_config.py'
+      - './jupyter/notbooks:/notebooks'
     networks:
       - srv
     labels:
@@ -150,7 +196,7 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
     volumes:
-      - '$HOME/srv/nextcloud/db:/var/lib/mysql'
+      - './nextcloud/db:/var/lib/mysql'
     environment:
       - 'MYSQL_ROOT_PASSWORD=pass'
       - 'MYSQL_PASSWORD='
@@ -165,7 +211,7 @@ services:
     links:
       - nextcloud-db
     volumes:
-      - '$HOME/srv/nextcloud/data:/var/www/html'
+      - './nextcloud/data:/var/www/html'
     networks:
       - srv
     labels:
@@ -177,7 +223,7 @@ services:
   #   image: craighurley/docker-weechat:latest
   #   restart: always
   #   volumes:
-  #     - '$HOME/srv/weechat:/home/user/.weechat'
+  #     - './weechat:/home/user/.weechat'
   #   labels:
   #     - 'traefik.enable=true'
   #     - 'traefik.frontend.rule=Host:irc.${SITE}'
@@ -190,8 +236,8 @@ services:
   #   environment:
   #     - 'JEKYLL_ENV=docker'
   #   volumes:
-  #     - '$HOME/srv/documentation/site:/srv/jekyll'
-  #     - '$HOME/srv/documentation/bundle:/usr/local/bundle'
+  #     - './documentation/site:/srv/jekyll'
+  #     - './documentation/bundle:/usr/local/bundle'
   #   networks:
   #     - srv
   #   labels:
