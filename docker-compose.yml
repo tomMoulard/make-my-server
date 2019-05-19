@@ -24,6 +24,7 @@ services:
       - './traefik/traefik.toml:/traefik.toml'
       - './traefik/acme.json:/acme.json'
       - './traefik/logs:/logs'
+      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
 
   fluentd:
     build: ./fluentd
@@ -68,6 +69,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:kibana.${SITE}'
       - 'traefik.port=5601'
+      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
 
   gitlab:
     image: 'gitlab/gitlab-ce:latest'
@@ -151,6 +153,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:torrent.${SITE}'
       - 'traefik.port=9091'
+      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
 
   vpn:
     image: hwdsl2/ipsec-vpn-server:latest

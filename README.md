@@ -70,6 +70,11 @@ Don't forget to change db passwords. (migth not be needed since they are beyond
 the reverse proxy).
 Fill vpn secrets(if none provided, they are generated directly).
 Configuration files are: `docker-compose.yml`, `nginx.conf`
+```bash
+export USERNAME=
+export PASSWORD=
+export HASHED_PASSWORD=$(openssl passwd -apr1 $PASSWORD)
+```
 
 ### Scalling up
 ```bash
