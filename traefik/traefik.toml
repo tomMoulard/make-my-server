@@ -1,3 +1,4 @@
+logLevel = "DEBUG"
 defaultEntryPoints = ["http", "https"]
 
 [traefikLog]
@@ -15,12 +16,10 @@ defaultEntryPoints = ["http", "https"]
 [entryPoints]
   [entryPoints.http]
     address = ":80"
-    compress = true
       [entryPoints.http.redirect]
         entryPoint = "https"
   [entryPoints.https]
     address = ":443"
-    compress = true
       [entryPoints.https.tls]
 
 # API definition
@@ -29,3 +28,17 @@ entryPoint = "traefik"
 dashboard = true
   [api.statistics]
     recentErrors = 42
+
+[acme]
+email = "tom@moulard.org"
+storage = "acme.json"
+entryPoint = "https"
+onHostRule = true
+acmelogging = true
+  [acme.httpChallenge]
+  entryPoint = "http"
+
+[docker]
+watch = true
+exposedByDefault = false
+network=srv

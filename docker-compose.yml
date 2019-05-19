@@ -9,18 +9,6 @@ services:
     command: >
      --api
      --api.statistics
-     --docker
-     --docker.watch
-     --docker.exposedbydefault=false
-     --docker.network=srv
-     --acme
-     --acme.email=${EMAIL}
-     --acme.storage="acme.json"
-     --acme.entryPoint:https
-     --acme.httpChallenge.entryPoint=http
-     --acme.onhostrule=true
-     --acme.acmelogging=true
-     --loglevel=INFO
     restart: always
     ports:
       - '80:80'
