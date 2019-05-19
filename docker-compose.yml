@@ -117,6 +117,7 @@ services:
       - 'traefik.backend=nginx'
       - 'traefik.frontend.rule=Host:${SITE}'
       - 'traefik.port=80'
+      - 'traefik.docker.network=srv'
 
   cyprine:
     image: nginx:stable-alpine
@@ -128,6 +129,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:${SITE2}'
       - 'traefik.port=80'
+      - 'traefik.docker.network=srv'
 
   transmission:
     image: linuxserver/transmission:2.94-r1-ls12
