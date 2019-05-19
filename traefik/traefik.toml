@@ -41,4 +41,4 @@ acmelogging = true
 [docker]
 watch = true
 exposedByDefault = false
-network=srv
+network = "srv"
