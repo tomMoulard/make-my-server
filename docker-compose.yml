@@ -155,6 +155,19 @@ services:
       - 'traefik.port=9091'
       - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
 
+  video:
+    image: nginx:stable-alpine
+    volumes:
+      - './transmission:/etc/nginx/conf.d'
+    networks:
+      - srv
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.backend=video'
+      - 'traefik.frontend.rule=Host:video.${SITE}'
+      - 'traefik.port=80'
+      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
+
   vpn:
     image: hwdsl2/ipsec-vpn-server:latest
     restart: always
