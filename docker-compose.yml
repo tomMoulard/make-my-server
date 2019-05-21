@@ -188,7 +188,7 @@ services:
     image: jupyter/base-notebook:2662627f26e0
     restart: always
     command: >
-     --ip='*'
+     jupyter notebook
      --NotebookApp.token=''
      --NotebookApp.password=''
     environment:
