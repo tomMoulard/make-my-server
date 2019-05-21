@@ -237,6 +237,72 @@ services:
       - 'traefik.frontend.rule=Host:cloud.${SITE}'
       - 'traefik.port=80'
 
+  sharelatex:
+    restart: always
+    image: sharelatex/sharelatex
+    depends_on:
+      - sharelatex-mongo
+      - sharelatex-redis
+    privileged: true
+    links:
+      - sharelatex-mongo
+      - sharelatex-redis
+    volumes:
+      - './sharelatex/data:/var/lib/sharelatex'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+      - srv
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:latex.${SITE}'
+      - 'traefik.port=80'
+    environment:
+      SHARELATEX_MONGO_URL: mongodb://mongo/sharelatex
+      SHARELATEX_REDIS_HOST: redis
+      SHARELATEX_APP_NAME: Our ShareLaTeX
+
+      # SHARELATEX_SITE_URL: http://sharelatex.mydomain.com
+      # SHARELATEX_NAV_TITLE: Our ShareLaTeX Instance
+      # SHARELATEX_HEADER_IMAGE_URL: http://somewhere.com/mylogo.png
+      # SHARELATEX_ADMIN_EMAIL: support@it.com
+
+      # SHARELATEX_LEFT_FOOTER: '[{"text": "Powered by <a href=\"https://www.sharelatex.com\">ShareLaTeX</a> 2016"},{"text": "Another page I want to link to can be found <a href=\"here\">here</a>"} ]'
+      # SHARELATEX_RIGHT_FOOTER: '[{"text": "Hello I am on the Right"} ]'
+
+      # SHARELATEX_EMAIL_FROM_ADDRESS: "team@sharelatex.com"
+
+      # SHARELATEX_EMAIL_AWS_SES_ACCESS_KEY_ID:
+      # SHARELATEX_EMAIL_AWS_SES_SECRET_KEY:
+
+      # SHARELATEX_EMAIL_SMTP_HOST: smtp.mydomain.com
+      # SHARELATEX_EMAIL_SMTP_PORT: 587
+      # SHARELATEX_EMAIL_SMTP_SECURE: false
+      # SHARELATEX_EMAIL_SMTP_USER:
+      # SHARELATEX_EMAIL_SMTP_PASS:
+      # SHARELATEX_EMAIL_SMTP_TLS_REJECT_UNAUTH: true
+      # SHARELATEX_EMAIL_SMTP_IGNORE_TLS: false
+      # SHARELATEX_CUSTOM_EMAIL_FOOTER: "<div>This system is run by department x </div>"
+
+  sharelatex-mongo:
+    restart: always
+    image: mongo
+    expose:
+      - 27017
+    volumes:
+      - ./sharelatex/mongo:/data/db
+    labels:
+      - 'traefik.enable=false'
+
+  sharelatex-redis:
+    restart: always
+    image: redis
+    expose:
+      - 6379
+    volumes:
+      - ./sharelatex/redis/data:/data
+    labels:
+      - 'traefik.enable=false'
+
   # weechat:
   #   image: craighurley/docker-weechat:latest
   #   restart: always

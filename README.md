@@ -33,6 +33,7 @@ Now you have my own server configuration
  - [ ] vlc server
  - [ ] blog
  - [ ] MOOC
+ - [ ] Latex online editor
 [more](https://github.com/Kickball/awesome-selfhosted)
 
 ### List
@@ -54,6 +55,7 @@ Now you have my own server configuration
     - [X] vpn
     - [X] jupyter
     - [X] pastebin
+    - [X] sharelatex / Overleaf
 
 ### Configuration files
  - [ ] have default configuration files
