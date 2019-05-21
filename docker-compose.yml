@@ -187,6 +187,10 @@ services:
   jupyter:
     image: jupyter/base-notebook:2662627f26e0
     restart: always
+    command: >
+     --ip='*'
+     --NotebookApp.token=''
+     --NotebookApp.password=''
     environment:
       - 'JUPYTER_ENABLE_LAB=yes'
     volumes:
@@ -259,7 +263,7 @@ services:
     environment:
       SHARELATEX_MONGO_URL: mongodb://sharelatex-mongo/sharelatex
       SHARELATEX_REDIS_HOST: sharelatex-redis
-      SHARELATEX_APP_NAME: ${USER}'s ShareLaTeX
+      SHARELATEX_APP_NAME: ${USERNAME}'s ShareLaTeX
       SHARELATEX_NAV_TITLE: ${SITE} - ShareLaTeX
       SHARELATEX_SITE_URL: https://latex.${SITE}
       SHARELATEX_HEADER_IMAGE_URL: http://somewhere.com/mylogo.png
