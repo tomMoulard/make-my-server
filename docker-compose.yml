@@ -194,7 +194,7 @@ services:
     environment:
       - 'JUPYTER_ENABLE_LAB=yes'
     volumes:
-      - './jupyter/jupyter_notebook_config.py:/root/.jupyter/jupyter_notebook_config.py'
+      - './jupyter/jupyter/config:/root/.jupyter/'
       - './jupyter/notbooks:/notebooks'
     networks:
       - srv
