@@ -202,6 +202,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:jupyter.${SITE}'
       - 'traefik.port=8888'
+      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
 
   pastebin:
     image: mkodockx/docker-pastebin:latest
