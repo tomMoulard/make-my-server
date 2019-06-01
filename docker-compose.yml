@@ -2,6 +2,7 @@ version: '2'
 networks:
   srv:
   gitlab:
+  ELK:
 
 services:
   traefik:
@@ -14,39 +15,30 @@ services:
       - '80:80'
       - '443:443'
     expose:
-      - '8080:8080'
+      - '8080'
     networks:
       - srv
     labels:
       - 'traefik.enable=true'
       - 'traefik.port=8080'
       - 'traefik.frontend.rule=Host:traefik.${SITE}'
-      - 'traefik.frontend.auth.basic.users=${USER}:${HASHED_PASSWORD}'
+      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './traefik/traefik.toml:/traefik.toml'
       - './traefik/acme.json:/acme.json'
       - './traefik/logs:/logs'
 
-  fluentd:
-    build: ./fluentd
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.1.0
     volumes:
-      - ./fluentd/conf:/fluentd/etc
-    links:
-      - 'elasticsearch'
-    ports:
-      - '24224:24224'
-      - '24224:24224/udp'
-    logging:
-        driver: 'json-file'
-        options:
-            max-size: 100m
-            max-file: '5'
-    labels:
-      - 'traefik.enable=false'
+      - './logstash/:/usr/share/logstash/pipeline/'
+      - './traefik/logs:/var/log/traefik'
+    networks:
+      - 'ELK'
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.1.0
     environment:
       - 'cluster.name=docker-cluster'
       - 'bootstrap.memory_lock=true'
@@ -56,15 +48,13 @@ services:
       memlock:
         soft: -1
         hard: -1
-    ports:
-      - '9200:9200'
-    labels:
-      - 'traefik.enable=false'
+    networks:
+      - 'ELK'
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.0.1
-    links:
-      - 'elasticsearch'
+    image: docker.elastic.co/kibana/kibana:7.1.0
+    networks:
+      - 'ELK'
     ports:
       - '5601:5601'
     labels:
