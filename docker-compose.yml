@@ -34,6 +34,7 @@ services:
     volumes:
       - './logstash/:/usr/share/logstash/pipeline/'
       - './traefik/logs:/var/log/traefik'
+      - './nginx/logs:/var/log/nginx'
     networks:
       - 'ELK'
 
@@ -103,24 +104,14 @@ services:
   nginx:
     image: nginx:stable-alpine
     volumes:
-      - './nginx:/etc/nginx/conf.d'
+      - './nginx/conf:/etc/nginx/conf.d'
+      - './nginx/logs:/var/log/nginx/'
     networks:
       - srv
     labels:
       - 'traefik.enable=true'
       - 'traefik.backend=nginx'
       - 'traefik.frontend.rule=Host:${SITE}'
-      - 'traefik.port=80'
-
-  cyprine:
-    image: nginx:stable-alpine
-    volumes:
-      - './cyprine:/etc/nginx/conf.d'
-    networks:
-      - srv
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:${SITE2}'
       - 'traefik.port=80'
 
   transmission:
