@@ -1,1 +1,3 @@
 *.log
+blog/blog*
+blog/nginx/conf/www
