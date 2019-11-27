@@ -1,0 +1,13 @@
+concurrent = 10
+check_interval = 1
+log_format = "json"
+log_level = "warning"
+
+[[runners]]
+    url = "http://gitlab/"
+    name = "runner #1"
+    limit = 0
+    executor = "docker"
+    environment = ["ENV=value", "LC_ALL=en_US.UTF-8"]
+    [runners.docker]
+        image = "ubuntu:19.04"
