@@ -97,7 +97,7 @@ services:
     labels:
       - 'traefik.enable=false'
     environment:
-      - 'GITLAB_URL=https://gitlab${SITE}/'
+      - 'GITLAB_URL=https://gitlab.${SITE}/'
       - 'GITLAB_TOKEN=_p9fW2gr4GiqAP6zrsaT'
 
   nginx:
