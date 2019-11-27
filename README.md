@@ -13,8 +13,8 @@ Now you have my own server configuration
 ### New ideas
  - [X] traefik
  - [X] gitlab
- - [X] nextcloud
     - [ ] CI/CD worker(s)
+ - [X] nextcloud
  - [X] nginx
  - [X] weechat
  - [X] transmission
@@ -34,6 +34,7 @@ Now you have my own server configuration
  - [ ] blog
  - [ ] MOOC
  - [ ] Latex online editor
+ - [ ] [Bazarr](https://hub.docker.com/r/linuxserver/bazarr) (subs), [lidarr](https://hub.docker.com/r/linuxserver/lidarr) (music), [sonarr](https://hub.docker.com/r/linuxserver/sonarr) (shows), [jackett](https://hub.docker.com/r/linuxserver/jackett) (interface)
 [more](https://github.com/Kickball/awesome-selfhosted)
 
 ### List
