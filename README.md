@@ -35,7 +35,7 @@ docker-compose down
  - [ ] factorio server
  - [ ] news group server
  - [ ] vlc server
- - [X] blog using [hugo](gohugo.io)
+ - [X] blog using [hugo](http://gohugo.io)
  - [ ] MOOC
  - [ ] Latex online editor
  - [ ] [Bazarr](https://hub.docker.com/r/linuxserver/bazarr) (subs), [lidarr](https://hub.docker.com/r/linuxserver/lidarr) (music), [sonarr](https://hub.docker.com/r/linuxserver/sonarr) (shows), [jackett](https://hub.docker.com/r/linuxserver/jackett) (interface)
@@ -120,7 +120,7 @@ curl -X POST 'http://gitlab.${SITE}/api/v4/runners' --form 'token=$REGISTRATION_
 ```
 
 ###### Change runner configuration
-Now change the token in the [configuration file](https://github.com/tomMoulard/make-my-server/blob/master/gitlab/runner/config.toml).
+Now change the token in the [configuration file](gitlab/runner/config.toml).
 ```toml
 [[runners]]
     token = "XXXXXXXXXXXXXXXXXXXX"
@@ -150,7 +150,7 @@ docker-compose exec runner gitlab-runner register \
 
 # Authors
 Main author:
- - [Tom](tom.moulard.org)
+ - [Tom](http://tom.moulard.org)
 
 Gitlab helper:
  - [michel_k](mailto:thomas.michelot@epita.fr)
