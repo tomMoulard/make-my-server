@@ -2,11 +2,16 @@
 
 ## Goal
 ```bash
-$ export SITE=tom.moulard.org
-$ docker-compose up -d
+export SITE=tom.moulard.org
+docker-compose up -d
 ```
 
 Now you have my own server configuration
+
+### Tear down
+```bash
+docker-compose down
+```
 
 ## TODO
 ### New ideas
@@ -30,10 +35,11 @@ Now you have my own server configuration
  - [ ] factorio server
  - [ ] news group server
  - [ ] vlc server
- - [ ] blog
+ - [X] blog using [hugo](gohugo.io)
  - [ ] MOOC
  - [ ] Latex online editor
  - [ ] [Bazarr](https://hub.docker.com/r/linuxserver/bazarr) (subs), [lidarr](https://hub.docker.com/r/linuxserver/lidarr) (music), [sonarr](https://hub.docker.com/r/linuxserver/sonarr) (shows), [jackett](https://hub.docker.com/r/linuxserver/jackett) (interface)
+
 [more](https://github.com/Kickball/awesome-selfhosted)
 
 ### List
@@ -57,13 +63,14 @@ Now you have my own server configuration
     - [X] pastebin
     - [X] ELK
     - [ ] sharelatex / Overleaf
+    - [X] blog
 
 ### Configuration files
  - [ ] have default configuration files
     - [X] traefik
     - [X] gitlab
     - [X] gitlab runner
-    - [ ] transmission
+    - [X] transmission
     - [ ] pastebin
     - [ ] nextcloud
     - [X] nginx
@@ -90,19 +97,15 @@ docker-compose scale nginx=2
 |:--:|--|--|
 | [X] | traefik.${SITE} | 80, 443 (redirect 80 to 443) |
 | [X] | gitlab.${SITE} | 22, 80, 443 |
-| [ ] | cloud.${SITE} | 80, 443 |
+| [X] | cloud.${SITE} | 80, 443 |
 | [X] | ${SITE} | 80, 443 |
 | [ ] | mail.${SITE} | 25(recv mail), 465(ssl), 587(TLS), 143(IMAP), 993(IMAP), 110(POP3), 995(POP3) |
 | [X] | torrent.${SITE} | 80, 443 (redirect 80 to 443) |
 | [X] | vpn.${SITE} | 500, 4500 |
 | [X] | jupiter.${SITE} | 80, 443 (redirect 80 to 443) |
 | [X] | paste.${SITE} | 80, 443 (redirect 80 to 443) |
+| [X] | video.${SITE} | 80, 443 (redirect 80 to 443) |
 | [ ] | irc.${SITE} | ?? |
-
-### Miscellaneous
-| Status | Address | port(s)|
-|:--:|--|--|
-| [X] | ${SITE2} | 80, 443 (redirect 80 to 443) |
 
 ### Gitlab runner
 #### Get the Registration Token
