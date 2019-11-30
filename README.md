@@ -8,12 +8,11 @@ $ docker-compose up -d
 
 Now you have my own server configuration
 
-
 ## TODO
 ### New ideas
  - [X] traefik
  - [X] gitlab
-    - [ ] CI/CD worker(s)
+    - [X] CI/CD worker(s)
  - [X] nextcloud
  - [X] nginx
  - [X] weechat
@@ -62,8 +61,8 @@ Now you have my own server configuration
 ### Configuration files
  - [ ] have default configuration files
     - [X] traefik
-    - [ ] gitlab
-    - [ ] gitlab runner
+    - [X] gitlab
+    - [X] gitlab runner
     - [ ] transmission
     - [ ] pastebin
     - [ ] nextcloud
@@ -106,4 +105,49 @@ docker-compose scale nginx=2
 | [X] | ${SITE2} | 80, 443 (redirect 80 to 443) |
 
 ### Gitlab runner
+#### Get the Registration Token
 Find your runner registration token ($REGISTRATION_TOKEN) at `http://GITLAB_HOST/$PROJECT_GROUP/$PROJECT_NAME/settings/ci_cd`.
+
+There is **two** way to register the runner:
+
+##### Register via config file
+Register the Registration Token to have a Runner Token
+```bash
+curl -X POST 'http://gitlab.${SITE}/api/v4/runners' --form 'token=$REGISTRATION_TOKEN' --form 'description=The Best Runner'
+```
+
+###### Change runner configuration
+Now change the token in the [configuration file](https://github.com/tomMoulard/make-my-server/blob/master/gitlab/runner/config.toml).
+```toml
+[[runners]]
+    token = "XXXXXXXXXXXXXXXXXXXX"
+```
+and run the runner
+```bash
+docker-compose up -d runner
+```
+
+##### Register via CLI
+Steps:
+ - up the runner `docker-compose up -d runner`
+ - register the runner
+```bash
+docker-compose exec runner gitlab-runner register \
+    --non-interactive \
+    --executor "docker" \
+    --docker-image alpine:latest \
+    --url "http://gitlab/" \
+    --registration-token "$REGISTRATION_TOKEN" \
+    --description "The Best Runner" \
+    --tag-list "docker,aws" \
+    --run-untagged="true" \
+    --locked="false" \
+    --access-level="not_protected"
+```
+
+# Authors
+Main author:
+ - [Tom](tom.moulard.org)
+
+Gitlab helper:
+ - [michel_k](mailto:thomas.michelot@epita.fr)
