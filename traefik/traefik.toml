@@ -1,4 +1,4 @@
-logLevel = "DEBUG"
+logLevel = "INFO"
 defaultEntryPoints = ["http", "https"]
 
 [traefikLog]
@@ -42,3 +42,4 @@ acmelogging = true
 watch = true
 exposedByDefault = false
 network = "srv"
+
