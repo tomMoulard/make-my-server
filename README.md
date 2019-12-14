@@ -74,7 +74,7 @@ docker-compose down
     - [ ] pastebin
     - [ ] nextcloud
     - [X] nginx
-    - [ ] ELK (WIP)
+    - [X] ELK (WIP)
 
 ## Configuration
 Don't forget to change db passwords. (migth not be needed since they are beyond
