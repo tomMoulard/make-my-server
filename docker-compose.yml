@@ -2,7 +2,6 @@ version: '2'
 networks:
   srv:
   gitlab:
-  ELK:
 
 services:
   traefik:
@@ -17,7 +16,7 @@ services:
     expose:
       - '8080'
     networks:
-      - srv
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.port=8080'
@@ -31,12 +30,12 @@ services:
 
   logstash:
     image: docker.elastic.co/logstash/logstash:7.1.0
+    links:
+      - elasticsearch
     volumes:
       - './logstash/:/usr/share/logstash/pipeline/'
       - './traefik/logs:/var/log/traefik'
       - './nginx/logs:/var/log/nginx'
-    networks:
-      - 'ELK'
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.1.0
@@ -49,14 +48,13 @@ services:
       memlock:
         soft: -1
         hard: -1
-    networks:
-      - 'ELK'
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.1.0
+    links:
+      - elasticsearch
     networks:
-      - 'ELK'
-      - srv
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:kibana.${SITE}'
@@ -78,7 +76,7 @@ services:
       - './gitlab/logs:/var/log/gitlab'
       - './gitlab/data:/var/opt/gitlab'
     networks:
-      - srv
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:gitlab.${SITE}'
@@ -103,7 +101,7 @@ services:
       - './nginx/conf:/etc/nginx/conf.d'
       - './nginx/logs:/var/log/nginx/'
     networks:
-      - srv
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:${SITE}'
@@ -124,7 +122,7 @@ services:
       - './transmission/downloads:/downloads'
       - './transmission/watch:/watch'
     networks:
-      - srv
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:torrent.${SITE}'
@@ -136,7 +134,7 @@ services:
     volumes:
       - './transmission/downloads:/data'
     networks:
-      - srv
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:video.${SITE}'
@@ -170,8 +168,9 @@ services:
     volumes:
       - './jupyter/jupyter/config:/root/.jupyter/'
       - './jupyter/work:/work'
+      - './jupyter/work:/home/jovyan/work'
     networks:
-      - srv
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:jupyter.${SITE}'
@@ -182,7 +181,7 @@ services:
     image: mkodockx/docker-pastebin:latest
     restart: always
     networks:
-      - srv
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:paste.${SITE}'
@@ -210,7 +209,7 @@ services:
     volumes:
       - './nextcloud/data:/var/www/html'
     networks:
-      - srv
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:cloud.${SITE}'
@@ -230,7 +229,7 @@ services:
       - './sharelatex/data:/var/lib/sharelatex'
       - '/var/run/docker.sock:/var/run/docker.sock'
     networks:
-      - srv
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:latex.${SITE}'
@@ -276,7 +275,7 @@ services:
       - ./jackett/config:/config
       - ./jackett/downloads:/downloads
     networks:
-      - srv
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:jackett.${SITE}'
@@ -301,7 +300,7 @@ services:
       - './blog/nginx/conf:/etc/nginx/conf.d'
       - './blog/nginx/logs:/var/log/nginx/'
     networks:
-      - srv
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:blog.${SITE}'
