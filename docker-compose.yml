@@ -317,3 +317,12 @@ services:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:portainer.${SITE}'
       - 'traefik.port=9000'
+
+  arachni:
+    image: arachni/arachni
+    networks:
+      - 'srv'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:arachni.${SITE}'
+      - 'traefik.port=9292'
