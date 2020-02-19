@@ -1,12 +1,18 @@
 # Server configuration
 
-## Goal
+## Setup
 ```bash
-export SITE=tom.moulard.org
-docker-compose up -d
+SITE=tom.moulard.org docker-compose up -d
 ```
 
-Now you have my own server configuration
+Now you have my own server configuration.
+
+To be a little more consistent with the management, you can use a `.env` file and do:
+```bash
+cp .env.default .env
+```
+
+and edit the file to use the correct site url.
 
 ### Tear down
 ```bash
@@ -84,7 +90,12 @@ Configuration files are: `docker-compose.yml`, `nginx.conf`
 
 To set the password:
 ```bash
-export HASHED_PASSWORD=$(openssl passwd -apr1)
+echo "USERS=$USER:$(openssl passwd -apr1)" >> .env
+```
+
+You can add a new set of credentials by editing the .env file like
+```env
+USERS=toto:pass,tata:pass, ...
 ```
 
 ### Scalling up

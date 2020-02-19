@@ -7,26 +7,24 @@ services:
   traefik:
     image: traefik:1.7.12
     command: >
-     --api
-     --api.statistics
-    restart: always
-    ports:
-      - '80:80'
-      - '443:443'
-    expose:
-      - '8080'
+      --api
+      --api.statistics
+    restart: alway
     networks:
-      - 'srv'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.port=8080'
-      - 'traefik.frontend.rule=Host:traefik.${SITE}'
-      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
+      - "srv"
+    ports:
+      - "80:80"
+      - "8080:8080"
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './traefik/traefik.toml:/traefik.toml'
       - './traefik/acme.json:/acme.json'
       - './traefik/logs:/logs'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.port=8080'
+      - 'traefik.frontend.rule=Host:traefik.${SITE}'
+      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
 
   logstash:
     image: docker.elastic.co/logstash/logstash:7.1.0
@@ -56,10 +54,10 @@ services:
     networks:
       - 'srv'
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:kibana.${SITE}'
-      - 'traefik.port=5601'
-      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:kibana.${SITE}"
+      - "traefik.port=5601"
+      - "traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}"
 
   gitlab:
     image: 'gitlab/gitlab-ce:latest'
@@ -101,7 +99,7 @@ services:
       - './nginx/conf:/etc/nginx/conf.d'
       - './nginx/logs:/var/log/nginx/'
     networks:
-      - 'srv'
+      - "srv"
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:${SITE}'
@@ -291,6 +289,8 @@ services:
     volumes:
       - ./blog/blog:/src
       - ./blog/nginx/conf/www:/output
+    labels:
+      - 'traefik.enable=false'
 
   blog:
     image: nginx:stable-alpine
@@ -311,12 +311,66 @@ services:
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './portainer/data:/data'
+    labels:
+      - 'traefik.frontend.rule=Host:portainer.${SITE}'
+      - 'traefik.port=9000'
+
+  jackett:
+    image: linuxserver/jackett:v0.12.1323-ls48
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - ./jackett/config:/config
+      - ./jackett/downloads:/downloads
+    labels:
+      - 'traefik.frontend.rule=Host:jackett.${SITE}'
+      - 'traefik.port=8080'
+      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
+
+  sonarr:
+    image: linuxserver/sonarr:2.0.0.5337-ls92
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - ./sonarr/config:/config
+      - ./sonarr/downloads:/downloads
+      - ./sonarr/tv:/tv
+    links:
+      - transmission
+      - jackett
     networks:
       - 'srv'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:portainer.${SITE}'
-      - 'traefik.port=9000'
+      - 'traefik.frontend.rule=Host:sonarr.${SITE}'
+      - 'traefik.port=8080'
+      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
+
+  bazarr:
+    image: linuxserver/bazarr:v0.8.3.4-ls61
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - ./bazarr/config:/config
+      - ./bazarr/movies:/movies
+      - ./bazarr/tv:/tv
+    links:
+      - transmission
+      - jackett
+      - sonarr
+    networks:
+      - 'srv'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:bazarr.${SITE}'
+      - 'traefik.port=8080'
+      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
 
   arachni:
     image: arachni/arachni
