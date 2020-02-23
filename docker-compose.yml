@@ -53,12 +53,12 @@ services:
     links:
       - elasticsearch
     networks:
-      - "srv"
+      - 'srv'
     labels:
-      - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:kibana.${SITE}"
-      - "traefik.port=5601"
-      - "traefik.frontend.auth.basic.users=${USERS}"
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:kibana.${SITE}'
+      - 'traefik.port=5601'
+      - 'traefik.frontend.auth.basic.users=${USERS}'
 
   gitlab:
     image: 'gitlab/gitlab-ce:latest'
@@ -75,7 +75,7 @@ services:
       - './gitlab/logs:/var/log/gitlab'
       - './gitlab/data:/var/opt/gitlab'
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:gitlab.${SITE}'
@@ -98,7 +98,7 @@ services:
       - './nginx/conf:/etc/nginx/conf.d'
       - './nginx/logs:/var/log/nginx/'
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:${SITE}'
@@ -119,7 +119,7 @@ services:
       - './transmission/downloads:/downloads'
       - './transmission/watch:/watch'
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:torrent.${SITE}'
@@ -131,7 +131,7 @@ services:
     volumes:
       - './transmission/downloads:/data'
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:video.${SITE}'
@@ -167,7 +167,7 @@ services:
       - './jupyter/work:/work'
       - './jupyter/work:/home/jovyan/work'
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:jupyter.${SITE}'
@@ -178,7 +178,7 @@ services:
     image: mkodockx/docker-pastebin:latest
     restart: always
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:paste.${SITE}'
@@ -206,7 +206,7 @@ services:
     volumes:
       - './nextcloud/data:/var/www/html'
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:cloud.${SITE}'
@@ -226,7 +226,7 @@ services:
       - './sharelatex/data:/var/lib/sharelatex'
       - '/var/run/docker.sock:/var/run/docker.sock'
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:latex.${SITE}'
@@ -272,7 +272,7 @@ services:
       - ./jackett/config:/config
       - ./jackett/downloads:/downloads
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:jackett.${SITE}'
@@ -299,7 +299,7 @@ services:
       - './blog/nginx/conf:/etc/nginx/conf.d'
       - './blog/nginx/logs:/var/log/nginx/'
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:blog.${SITE}'
@@ -343,7 +343,7 @@ services:
       - transmission
       - jackett
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:sonarr.${SITE}'
@@ -365,7 +365,7 @@ services:
       - jackett
       - sonarr
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:bazarr.${SITE}'
@@ -375,7 +375,7 @@ services:
   arachni:
     image: arachni/arachni
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:arachni.${SITE}'
@@ -391,7 +391,7 @@ services:
     volumes:
       - ./bitwarden/data:/data
     networks:
-      - "srv"
+      - 'srv'
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:bitwarden.${SITE}'
