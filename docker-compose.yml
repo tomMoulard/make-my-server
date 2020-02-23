@@ -58,7 +58,7 @@ services:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:kibana.${SITE}"
       - "traefik.port=5601"
-      - "traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}"
+      - "traefik.frontend.auth.basic.users=${USERS}"
 
   gitlab:
     image: 'gitlab/gitlab-ce:latest'
@@ -124,7 +124,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:torrent.${SITE}'
       - 'traefik.port=9091'
-      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
+      - 'traefik.frontend.auth.basic.users=${USERS}'
 
   video:
     image: gkiko/streama:v1.7.0-RC13
@@ -172,7 +172,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:jupyter.${SITE}'
       - 'traefik.port=8888'
-      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
+      - 'traefik.frontend.auth.basic.users=${USERS}'
 
   pastebin:
     image: mkodockx/docker-pastebin:latest
@@ -327,7 +327,7 @@ services:
     labels:
       - 'traefik.frontend.rule=Host:jackett.${SITE}'
       - 'traefik.port=8080'
-      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
+      - 'traefik.frontend.auth.basic.users=${USERS}'
 
   sonarr:
     image: linuxserver/sonarr:2.0.0.5337-ls92
@@ -348,7 +348,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:sonarr.${SITE}'
       - 'traefik.port=8080'
-      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
+      - 'traefik.frontend.auth.basic.users=${USERS}'
 
   bazarr:
     image: linuxserver/bazarr:v0.8.3.4-ls61
@@ -370,7 +370,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:bazarr.${SITE}'
       - 'traefik.port=8080'
-      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
+      - 'traefik.frontend.auth.basic.users=${USERS}'
 
   arachni:
     image: arachni/arachni

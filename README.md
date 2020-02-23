@@ -44,7 +44,8 @@ docker-compose down
  - [X] blog using [hugo](http://gohugo.io)
  - [ ] MOOC
  - [ ] Latex online editor
- - [ ] [Bazarr](https://hub.docker.com/r/linuxserver/bazarr) (subs), [lidarr](https://hub.docker.com/r/linuxserver/lidarr) (music), [sonarr](https://hub.docker.com/r/linuxserver/sonarr) (shows), [jackett](https://hub.docker.com/r/linuxserver/jackett) (interface)
+ - [X] [Bazarr](https://hub.docker.com/r/linuxserver/bazarr) (subs), [lidarr](https://hub.docker.com/r/linuxserver/lidarr) (music), [sonarr](https://hub.docker.com/r/linuxserver/sonarr) (shows), [jackett](https://hub.docker.com/r/linuxserver/jackett) (interface)
+ - [X] Bitwarden
 
 [more](https://github.com/Kickball/awesome-selfhosted)
 
