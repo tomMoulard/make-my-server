@@ -387,7 +387,7 @@ services:
     environment:
       - ROCKET_PORT=8080
       - DOMAIN=bitwarden.${SITE}
-      - ADMIN_TOKEN=tvckwoQtkcojv3uoFALR2tZA0z5ACQXDlqIG+JQ04K++cTKuCPQFTBUrzLriWKcc
+      - ADMIN_TOKEN=${USERS}
     volumes:
       - ./bitwarden/data:/data
     networks:
