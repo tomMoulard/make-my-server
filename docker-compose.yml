@@ -6,24 +6,26 @@ services:
   traefik:
     image: traefik:1.7.12
     command: >
-      --api
-      --api.statistics
-    restart: alway
-    networks:
-      - "srv"
+     --api
+     --api.statistics
+    restart: always
     ports:
-      - "80:80"
-      - "8080:8080"
+      - '80:80'
+      - '443:443'
+    expose:
+      - '8080'
+    networks:
+      - 'srv'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.port=8080'
+      - 'traefik.frontend.rule=Host:traefik.${SITE}'
+      - 'traefik.frontend.auth.basic.users=${USERS}'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './traefik/traefik.toml:/traefik.toml'
       - './traefik/acme.json:/acme.json'
       - './traefik/logs:/logs'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.port=8080'
-      - 'traefik.frontend.rule=Host:traefik.${SITE}'
-      - 'traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}'
 
   logstash:
     image: docker.elastic.co/logstash/logstash:7.1.0
@@ -85,8 +87,6 @@ services:
     volumes:
       - './gitlab/runner:/etc/gitlab-runner'
       - '/var/run/docker.sock:/var/run/docker.sock'
-    networks:
-      - gitlab
     links:
       - gitlab
     labels:
@@ -311,6 +311,7 @@ services:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './portainer/data:/data'
     labels:
+      - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:portainer.${SITE}'
       - 'traefik.port=9000'
 
@@ -379,3 +380,21 @@ services:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:arachni.${SITE}'
       - 'traefik.port=9292'
+
+  bitwarden:
+    image: bitwardenrs/server:latest
+    user: nobody
+    environment:
+      - ROCKET_PORT=8080
+      - LOG_FILE=/bitwarden.log
+      - DOMAIN=bitwarden.${SITE}
+      - ADMIN_TOKEN=tvckwoQtkcojv3uoFALR2tZA0z5ACQXDlqIG+JQ04K++cTKuCPQFTBUrzLriWKcc
+    volumes:
+      - ./bitwarden/data:/data
+      - ./bitwarden/log:/bitwarden.log
+    networks:
+      - "srv"
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:bitwarden.${SITE}'
+      - 'traefik.port=8080'
