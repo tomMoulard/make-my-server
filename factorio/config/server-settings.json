@@ -10,7 +10,7 @@
                           "lan: Game will be broadcast on LAN"],
   "visibility":
   {
-    "public": true,
+    "public": false,
     "lan": true
   },
 
