@@ -395,3 +395,14 @@ services:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:bitwarden.${SITE}'
       - 'traefik.port=8080'
+
+  factorio:
+    image: factoriotools/factorio
+    restart: always
+    ports:
+      - '34197:34197/udp'
+      # - '27015:27015/tcp' # RCON port
+    volumes:
+      - ./factorio:/factorio
+    labels:
+      - 'traefik.enable=false'
