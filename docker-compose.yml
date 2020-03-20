@@ -424,7 +424,7 @@ services:
       - 'srv'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:cloud.${SITE}'
+      - 'traefik.frontend.rule=Host:wordpress.${SITE}'
       - 'traefik.port=80'
 
   wordpress-db:
@@ -438,5 +438,54 @@ services:
       - ./wordpress/db:/var/lib/mysql
     networks:
       - 'srv'
+    labels:
+      - 'traefik.enable=false'
+
+  peertube:
+    image: chocobozzz/peertube:production-buster
+    environment:
+      - 'PEERTUBE_DB_USERNAME=peertube'
+      - 'PEERTUBE_DB_PASSWORD=${USERS}'
+      - 'PEERTUBE_DB_HOSTNAME=peertube-db'
+      - 'PEERTUBE_WEBSERVER_HOSTNAME=peertube.${SITE}'
+      - 'PEERTUBE_WEBSERVER_PORT=443'
+      - 'PEERTUBE_WEBSERVER_HTTPS=true'
+      - 'PEERTUBE_ADMIN_EMAIL=admin@${SITE}'
+      - 'PEERTUBE_TRUST_PROXY=["127.0.0.1", "loopback", "172.18.0.0/16"]'
+    volumes:
+      - ./peertube/data:/data
+      - ./peertube/config:/config
+    depends_on:
+      - peertube-db
+      - peertube-redis
+    links:
+      - peertube-db
+      - peertube-redis
+    networks:
+      - 'srv'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:peertube.${SITE}'
+      - 'traefik.port=9000'
+
+  peertube-db: # peertube-db
+    image: postgres:10-alpine
+    environment:
+      - 'POSTGRES_USER=peertube'
+      - 'POSTGRES_PASSWORD=${USERS}'
+      - 'POSTGRES_DB=peertube'
+    networks:
+      - 'srv'
+    volumes:
+      - ./peertube/db:/var/lib/postgresql/data
+    labels:
+      - 'traefik.enable=false'
+
+  peertube-redis: # peertube-redis
+    image: redis:4-alpine
+    networks:
+      - 'srv'
+    volumes:
+      - ./peertube/redis:/data
     labels:
       - 'traefik.enable=false'
