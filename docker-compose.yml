@@ -307,6 +307,8 @@ services:
 
   portainer:
     image: portainer/portainer
+    networks:
+      - 'srv'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './portainer/data:/data'
@@ -316,7 +318,7 @@ services:
       - 'traefik.port=9000'
 
   jackett:
-    image: linuxserver/jackett:v0.12.1323-ls48
+    image: linuxserver/jackett:v0.15.5-ls61
     environment:
       - PUID=1000
       - PGID=1000
@@ -324,9 +326,12 @@ services:
     volumes:
       - ./jackett/config:/config
       - ./jackett/downloads:/downloads
+    networks:
+      - 'srv'
     labels:
+      - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:jackett.${SITE}'
-      - 'traefik.port=8080'
+      - 'traefik.port=9117'
       - 'traefik.frontend.auth.basic.users=${USERS}'
 
   sonarr:
