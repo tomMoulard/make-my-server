@@ -8,7 +8,6 @@ services:
     command: >
      --api
      --api.statistics
-    restart: always
     ports:
       - '80:80'
       - '443:443'
@@ -16,6 +15,7 @@ services:
       - '8080'
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.port=8080'
@@ -35,6 +35,7 @@ services:
       - './logstash/:/usr/share/logstash/pipeline/'
       - './traefik/logs:/var/log/traefik'
       - './nginx/logs:/var/log/nginx'
+    restart: always
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.1.0
@@ -43,6 +44,7 @@ services:
       - 'bootstrap.memory_lock=true'
       - 'discovery.type=single-node'
       - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    restart: always
     ulimits:
       memlock:
         soft: -1
@@ -54,6 +56,9 @@ services:
       - elasticsearch
     networks:
       - 'srv'
+        # volumes:
+        # - './kibana/:/usr/share/kibana/config/'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:kibana.${SITE}'
@@ -76,6 +81,7 @@ services:
       - './gitlab/data:/var/opt/gitlab'
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:gitlab.${SITE}'
@@ -89,6 +95,7 @@ services:
       - '/var/run/docker.sock:/var/run/docker.sock'
     links:
       - gitlab
+    restart: always
     labels:
       - 'traefik.enable=false'
 
@@ -99,6 +106,7 @@ services:
       - './nginx/logs:/var/log/nginx/'
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:${SITE}'
@@ -106,7 +114,6 @@ services:
 
   transmission:
     image: linuxserver/transmission:2.94-r1-ls12
-    restart: always
     environment:
       - 'PGID=1000'
       - 'PUID=1000'
@@ -120,6 +127,7 @@ services:
       - './transmission/watch:/watch'
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:torrent.${SITE}'
@@ -132,6 +140,7 @@ services:
       - './transmission/downloads:/data'
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:video.${SITE}'
@@ -139,7 +148,6 @@ services:
 
   vpn:
     image: hwdsl2/ipsec-vpn-server:latest
-    restart: always
     privileged: true
     environment:
       - 'VPN_IPSEC_PSK='
@@ -150,12 +158,12 @@ services:
     ports:
       - '500:500'
       - '4500:4500/udp'
+    restart: always
     volumes:
       - '/lib/modules:/lib/modules:ro'
 
   jupyter:
     image: jupyter/tensorflow-notebook:45f07a14b422
-    restart: always
     command: >
      jupyter notebook
      --NotebookApp.token=''
@@ -168,6 +176,7 @@ services:
       - './jupyter/work:/home/jovyan/work'
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:jupyter.${SITE}'
@@ -176,9 +185,9 @@ services:
 
   pastebin:
     image: mkodockx/docker-pastebin:latest
-    restart: always
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:paste.${SITE}'
@@ -187,7 +196,6 @@ services:
   nextcloud-db:
     image: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-    restart: always
     volumes:
       - './nextcloud/db:/var/lib/mysql'
     environment:
@@ -195,25 +203,25 @@ services:
       - 'MYSQL_PASSWORD='
       - 'MYSQL_DATABASE=nextcloud'
       - 'MYSQL_USER=nextcloud'
+    restart: always
     labels:
       - 'traefik.enable=false'
 
   nextcloud:
     image: nextcloud
-    restart: always
     links:
       - nextcloud-db
     volumes:
       - './nextcloud/data:/var/www/html'
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:cloud.${SITE}'
       - 'traefik.port=80'
 
   sharelatex:
-    restart: always
     image: sharelatex/sharelatex
     depends_on:
       - sharelatex-mongo
@@ -227,6 +235,7 @@ services:
       - '/var/run/docker.sock:/var/run/docker.sock'
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:latex.${SITE}'
@@ -247,6 +256,7 @@ services:
       - 27017
     volumes:
       - ./sharelatex/mongo:/data/db
+    restart: always
     labels:
       - 'traefik.enable=false'
 
@@ -257,26 +267,9 @@ services:
       - 6379
     volumes:
       - ./sharelatex/redis/data:/data
+    restart: always
     labels:
       - 'traefik.enable=false'
-
-  jackett:
-    image: linuxserver/jackett:v0.11.572-ls21
-    restart: unless-stopped
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Paris
-      - RUN_OPTS=-p 8080
-    volumes:
-      - ./jackett/config:/config
-      - ./jackett/downloads:/downloads
-    networks:
-      - 'srv'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:jackett.${SITE}'
-      - 'traefik.port=8080'
 
   blog-builder:
     image: jojomi/hugo:0.59
@@ -288,6 +281,7 @@ services:
     volumes:
       - ./blog/blog:/src
       - ./blog/nginx/conf/www:/output
+    restart: always
     labels:
       - 'traefik.enable=false'
 
@@ -300,6 +294,7 @@ services:
       - './blog/nginx/logs:/var/log/nginx/'
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:blog.${SITE}'
@@ -312,6 +307,7 @@ services:
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './portainer/data:/data'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:portainer.${SITE}'
@@ -328,6 +324,7 @@ services:
       - ./jackett/downloads:/downloads
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:jackett.${SITE}'
@@ -349,6 +346,7 @@ services:
       - jackett
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:sonarr.${SITE}'
@@ -371,6 +369,7 @@ services:
       - sonarr
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:bazarr.${SITE}'
@@ -381,6 +380,7 @@ services:
     image: arachni/arachni
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:arachni.${SITE}'
@@ -396,6 +396,7 @@ services:
       - ./bitwarden/data:/data
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:bitwarden.${SITE}'
@@ -403,12 +404,12 @@ services:
 
   factorio:
     image: factoriotools/factorio
-    restart: always
     ports:
       - '34197:34197/udp'
       # - '27015:27015/tcp' # RCON port
     volumes:
       - ./factorio:/factorio
+    restart: always
     labels:
       - 'traefik.enable=false'
 
@@ -427,6 +428,7 @@ services:
       - wordpress-db
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:wordpress.${SITE}'
@@ -443,6 +445,7 @@ services:
       - ./wordpress/db:/var/lib/mysql
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=false'
 
@@ -468,6 +471,7 @@ services:
       - peertube-redis
     networks:
       - 'srv'
+    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:peertube.${SITE}'
@@ -483,6 +487,7 @@ services:
       - 'srv'
     volumes:
       - ./peertube/db:/var/lib/postgresql/data
+    restart: always
     labels:
       - 'traefik.enable=false'
 
@@ -492,5 +497,6 @@ services:
       - 'srv'
     volumes:
       - ./peertube/redis:/data
+    restart: always
     labels:
       - 'traefik.enable=false'
