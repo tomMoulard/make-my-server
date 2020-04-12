@@ -127,7 +127,7 @@ services:
       - 'traefik.frontend.auth.basic.users=${USERS}'
 
   video:
-    image: gkiko/streama:v1.7.0-RC13
+    image: gkiko/streama:v1.8.1
     volumes:
       - './transmission/downloads:/data'
     networks:
