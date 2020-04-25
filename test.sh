@@ -32,3 +32,4 @@ file=$(mktemp) && dc config > $file 2>$log_file && test diff test_config.yml $fi
 
 [ $errors -gt 0 ] && echo "There were $errors errors found" && exit 1
 
+exit 0
