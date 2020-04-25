@@ -2,6 +2,10 @@
 
 ## Setup
 ```bash
+docker-compose ()
+{
+    docker-compose $(find . -name "docker-compose*.yml" -type f -exec printf " -f {}" \; 2>/dev/null) $@
+}
 SITE=tom.moulard.org docker-compose up -d
 ```
 
@@ -13,6 +17,8 @@ cp .env.default .env
 ```
 
 and edit the file to use the correct site url.
+
+The `docker-compose` function gather all docker-compose files in order to have the whole configuration in one place (`docker-compose config`).
 
 ### Tear down
 ```bash
