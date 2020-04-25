@@ -3,9 +3,9 @@ set -e
 errors=0
 log_file=log.log
 
-GREEN="$(tput setaf 2)"
-RED="$(tput setaf 1)"
-WHITE="$(tput setaf 7)"
+GREEN="\e[32m"
+RED="\e[31m"
+WHITE="\e[0m"
 
 dc ()
 {
@@ -17,11 +17,13 @@ test ()
     tmp=$($@ 2>$log_file 1>$log_file)
     rt=$?
     if [[ $rt -ne 0 ]]; then
-        echo "[${RED}X${WHITE}] $@: $rt"
+        printf "[${RED}X${WHITE}] $@: $rt"
+        echo
         ((errors += 1))
         return
     fi
-    echo "[${GREEN}V${WHITE}] $@"
+    printf "[${GREEN}V${WHITE}] $@"
+    echo
 }
 
 # set -x #debug
@@ -30,4 +32,5 @@ test dc config -q
 
 file=$(mktemp) && dc config > $file 2>$log_file && test diff test_config.yml $file && rm $file
 
-[ $errors -gt 0 ] && echo "There were $errors errors found" && exit 1
+[ $errors -gt 0 ] && printf "There were $errors errors found\n" && exit 1
+
