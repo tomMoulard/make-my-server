@@ -1,5 +1,6 @@
 # Server configuration
-![Docker](https://github.com/tomMoulard/make-my-server/workflows/Docker/badge.svg)
+[![Docker](https://github.com/tomMoulard/make-my-server/workflows/Docker/badge.svg)](https://github.com/tomMoulard/make-my-server/actions)
+
 ## Setup
 ```bash
 docker-compose ()
