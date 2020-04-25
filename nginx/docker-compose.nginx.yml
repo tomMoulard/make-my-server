@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    volumes:
+      - './nginx/conf:/etc/nginx/conf.d'
+      - './nginx/logs:/var/log/nginx/'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:${SITE}'
+      - 'traefik.port=80'
