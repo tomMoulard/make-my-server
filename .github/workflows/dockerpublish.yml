@@ -15,3 +15,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run tests
         run: ./test.sh
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: logs
+          path: log.log
