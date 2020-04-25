@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+  gitlab:
+    image: 'gitlab/gitlab-ce:latest'
+    restart: always
+    hostname: 'gitlab.${SITE}'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.${SITE}:80'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2224
+    ports:
+      - '2224:22'
+    volumes:
+      - './gitlab/config:/etc/gitlab'
+      - './gitlab/logs:/var/log/gitlab'
+      - './gitlab/data:/var/opt/gitlab'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:gitlab.${SITE}'
+      - 'traefik.port=80'
+
+  runner:
+    image: gitlab/gitlab-runner:latest
+    restart: always
+    volumes:
+      - './gitlab/runner:/etc/gitlab-runner'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    links:
+      - gitlab
+    restart: always
+    labels:
+      - 'traefik.enable=false'

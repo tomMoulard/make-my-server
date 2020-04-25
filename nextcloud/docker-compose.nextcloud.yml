@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  nextcloud:
+    image: nextcloud
+    links:
+      - nextcloud-db
+    volumes:
+      - './nextcloud/data:/var/www/html'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:cloud.${SITE}'
+      - 'traefik.port=80'
+
+  nextcloud-db:
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    volumes:
+      - './nextcloud/db:/var/lib/mysql'
+    environment:
+      - 'MYSQL_ROOT_PASSWORD=pass'
+      - 'MYSQL_PASSWORD='
+      - 'MYSQL_DATABASE=nextcloud'
+      - 'MYSQL_USER=nextcloud'
+    restart: always
+    labels:
+      - 'traefik.enable=false'

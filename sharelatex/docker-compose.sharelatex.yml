@@ -1,0 +1,52 @@
+version: '2'
+
+services:
+  sharelatex:
+    image: sharelatex/sharelatex
+    depends_on:
+      - sharelatex-mongo
+      - sharelatex-redis
+    privileged: true
+    links:
+      - sharelatex-mongo
+      - sharelatex-redis
+    volumes:
+      - './sharelatex/data:/var/lib/sharelatex'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:latex.${SITE}'
+      - 'traefik.port=80'
+    environment:
+      SHARELATEX_MONGO_URL: mongodb://sharelatex-mongo/sharelatex
+      SHARELATEX_REDIS_HOST: sharelatex-redis
+      SHARELATEX_APP_NAME: ${USERNAME}'s ShareLaTeX
+      SHARELATEX_NAV_TITLE: ${SITE} - ShareLaTeX
+      SHARELATEX_SITE_URL: https://latex.${SITE}
+      SHARELATEX_HEADER_IMAGE_URL: http://somewhere.com/mylogo.png
+      SHARELATEX_ADMIN_EMAIL: ${EMAIL}
+
+  sharelatex-mongo:
+    restart: always
+    image: mongo
+    expose:
+      - 27017
+    volumes:
+      - ./sharelatex/mongo:/data/db
+    restart: always
+    labels:
+      - 'traefik.enable=false'
+
+  sharelatex-redis:
+    restart: always
+    image: redis
+    expose:
+      - 6379
+    volumes:
+      - ./sharelatex/redis/data:/data
+    restart: always
+    labels:
+      - 'traefik.enable=false'

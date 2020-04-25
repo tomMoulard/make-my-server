@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  streama:
+    image: gkiko/streama:v1.8.3
+    volumes:
+      - './transmission/downloads:/data'
+      - './streama/streama.mv.db:/app/streama/streama.mv.db'
+      - './streama/streama.trace.db:/app/streama/streama.trace.db'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:streama.${SITE}'
+      - 'traefik.port=8080'

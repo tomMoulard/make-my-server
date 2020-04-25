@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  portainer:
+    image: portainer/portainer
+    networks:
+      - 'srv'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - './portainer/data:/data'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:portainer.${SITE}'
+      - 'traefik.port=9000'

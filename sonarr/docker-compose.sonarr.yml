@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  sonarr:
+    image: linuxserver/sonarr:2.0.0.5337-ls92
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - ./sonarr/config:/config
+      - ./sonarr/downloads:/downloads
+      - ./sonarr/tv:/tv
+    links:
+      - transmission
+      - jackett
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:sonarr.${SITE}'
+      - 'traefik.port=8080'
+      - 'traefik.frontend.auth.basic.users=${USERS}'

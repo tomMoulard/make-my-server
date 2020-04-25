@@ -1,0 +1,26 @@
+version: '2'
+
+services:
+  traefik:
+    image: traefik:1.7.12
+    command: >
+     --api
+     --api.statistics
+    ports:
+      - '80:80'
+      - '443:443'
+    expose:
+      - '8080'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.port=8080'
+      - 'traefik.frontend.rule=Host:traefik.${SITE}'
+      - 'traefik.frontend.auth.basic.users=${USERS}'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - './traefik/traefik.toml:/traefik.toml'
+      - './traefik/acme.json:/acme.json'
+      - './traefik/logs:/logs'

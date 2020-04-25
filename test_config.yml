@@ -1,0 +1,471 @@
+networks:
+  srv: {}
+services:
+  arachni:
+    image: arachni/arachni
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:arachni.
+      traefik.port: '9292'
+    networks:
+      srv: {}
+    restart: always
+  bazarr:
+    environment:
+      PGID: '1000'
+      PUID: '1000'
+      TZ: Europe/Paris
+    image: linuxserver/bazarr:v0.8.3.4-ls61
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.auth.basic.users: ''
+      traefik.frontend.rule: Host:bazarr.
+      traefik.port: '8080'
+    links:
+    - jackett
+    - sonarr
+    - transmission
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/bazarr/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/bazarr/movies:/movies:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/bazarr/tv:/tv:rw
+  bitwarden:
+    environment:
+      ADMIN_TOKEN: ''
+      ROCKET_PORT: '8080'
+    image: bitwardenrs/server:latest
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:bitwarden.
+      traefik.port: '8080'
+    networks:
+      srv: {}
+    restart: always
+    user: nobody
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/bitwarden/data:/data:rw
+  blog:
+    depends_on:
+    - blog-builder
+    image: nginx:stable-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:blog.
+      traefik.port: '80'
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/blog/nginx/conf:/etc/nginx/conf.d:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/blog/nginx/logs:/var/log/nginx:rw
+  blog-builder:
+    environment:
+      HUGO_BASEURL: /
+      HUGO_REFRESH_TIME: '3600'
+      HUGO_THEME: hugo-theme-cactus-plus
+    image: jojomi/hugo:0.59
+    labels:
+      traefik.enable: "false"
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/blog/nginx/conf/www:/output:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/blog/blog:/src:rw
+  elasticsearch:
+    environment:
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      bootstrap.memory_lock: "true"
+      cluster.name: docker-cluster
+      discovery.type: single-node
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.1.0
+    restart: always
+    ulimits:
+      memlock:
+        hard: -1
+        soft: -1
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/elk/elasticsearch/data:/usr/share/elasticsearch/data:rw
+  factorio:
+    image: factoriotools/factorio
+    labels:
+      traefik.enable: "false"
+    ports:
+    - 34197:34197/udp
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/factorio:/factorio:rw
+  gitlab:
+    environment:
+      GITLAB_OMNIBUS_CONFIG: 'external_url ''http://gitlab.:80''
+
+        gitlab_rails[''gitlab_shell_ssh_port''] = 2224
+
+        '
+    hostname: gitlab.
+    image: gitlab/gitlab-ce:latest
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:gitlab.
+      traefik.port: '80'
+    networks:
+      srv: {}
+    ports:
+    - 2224:22/tcp
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/gitlab/config:/etc/gitlab:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/gitlab/logs:/var/log/gitlab:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/gitlab/data:/var/opt/gitlab:rw
+  jackett:
+    environment:
+      PGID: '1000'
+      PUID: '1000'
+      TZ: Europe/Paris
+    image: linuxserver/jackett:v0.15.5-ls61
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.auth.basic.users: ''
+      traefik.frontend.rule: Host:jackett.
+      traefik.port: '9117'
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/jackett/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/jackett/downloads:/downloads:rw
+  jupyter:
+    command: 'jupyter notebook --NotebookApp.token='''' --NotebookApp.password=''''
+
+      '
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+    image: jupyter/tensorflow-notebook:45f07a14b422
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.auth.basic.users: ''
+      traefik.frontend.rule: Host:jupyter.
+      traefik.port: '8888'
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/jupyter/work:/home/jovyan/work:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/jupyter/jupyter/config:/root/.jupyter:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/jupyter/work:/work:rw
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.1.0
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.auth.basic.users: ''
+      traefik.frontend.rule: Host:kibana.
+      traefik.port: '5601'
+    links:
+    - elasticsearch
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:rw
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.1.0
+    links:
+    - elasticsearch
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/elk/logstash:/usr/share/logstash/pipeline:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/nginx/logs:/var/log/nginx:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/traefik/logs:/var/log/traefik:rw
+  nextcloud:
+    image: nextcloud
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:cloud.
+      traefik.port: '80'
+    links:
+    - nextcloud-db
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/nextcloud/data:/var/www/html:rw
+  nextcloud-db:
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    environment:
+      MYSQL_DATABASE: nextcloud
+      MYSQL_PASSWORD: ''
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_USER: nextcloud
+    image: mariadb
+    labels:
+      traefik.enable: "false"
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/nextcloud/db:/var/lib/mysql:rw
+  nginx:
+    image: nginx:stable-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: 'Host:'
+      traefik.port: '80'
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/nginx/conf:/etc/nginx/conf.d:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/nginx/logs:/var/log/nginx:rw
+  pastebin:
+    image: mkodockx/docker-pastebin:latest
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:paste.
+      traefik.port: '80'
+    networks:
+      srv: {}
+    restart: always
+  peertube:
+    depends_on:
+    - peertube-db
+    - peertube-redis
+    environment:
+      PEERTUBE_ADMIN_EMAIL: admin@
+      PEERTUBE_DB_HOSTNAME: peertube-db
+      PEERTUBE_DB_PASSWORD: ''
+      PEERTUBE_DB_USERNAME: peertube
+      PEERTUBE_TRUST_PROXY: '["127.0.0.1", "loopback", "172.18.0.0/16"]'
+      PEERTUBE_WEBSERVER_HOSTNAME: peertube.
+      PEERTUBE_WEBSERVER_HTTPS: "true"
+      PEERTUBE_WEBSERVER_PORT: '443'
+    image: chocobozzz/peertube:production-buster
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:peertube.
+      traefik.port: '9000'
+    links:
+    - peertube-db
+    - peertube-redis
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/peertube/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/peertube/data:/data:rw
+  peertube-db:
+    environment:
+      POSTGRES_DB: peertube
+      POSTGRES_PASSWORD: ''
+      POSTGRES_USER: peertube
+    image: postgres:10-alpine
+    labels:
+      traefik.enable: "false"
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/peertube/db:/var/lib/postgresql/data:rw
+  peertube-redis:
+    image: redis:4-alpine
+    labels:
+      traefik.enable: "false"
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/peertube/redis:/data:rw
+  portainer:
+    image: portainer/portainer
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:portainer.
+      traefik.port: '9000'
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/portainer/data:/data:rw
+    - /var/run/docker.sock:/var/run/docker.sock:rw
+  runner:
+    image: gitlab/gitlab-runner:latest
+    labels:
+      traefik.enable: "false"
+    links:
+    - gitlab
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/gitlab/runner:/etc/gitlab-runner:rw
+    - /var/run/docker.sock:/var/run/docker.sock:rw
+  sharelatex:
+    depends_on:
+    - sharelatex-mongo
+    - sharelatex-redis
+    environment:
+      SHARELATEX_ADMIN_EMAIL: ''
+      SHARELATEX_APP_NAME: '''s ShareLaTeX'
+      SHARELATEX_HEADER_IMAGE_URL: http://somewhere.com/mylogo.png
+      SHARELATEX_MONGO_URL: mongodb://sharelatex-mongo/sharelatex
+      SHARELATEX_NAV_TITLE: ' - ShareLaTeX'
+      SHARELATEX_REDIS_HOST: sharelatex-redis
+      SHARELATEX_SITE_URL: https://latex.
+    image: sharelatex/sharelatex
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:latex.
+      traefik.port: '80'
+    links:
+    - sharelatex-mongo
+    - sharelatex-redis
+    networks:
+      srv: {}
+    privileged: true
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/sharelatex/data:/var/lib/sharelatex:rw
+    - /var/run/docker.sock:/var/run/docker.sock:rw
+  sharelatex-mongo:
+    expose:
+    - '27017'
+    image: mongo
+    labels:
+      traefik.enable: "false"
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/sharelatex/mongo:/data/db:rw
+  sharelatex-redis:
+    expose:
+    - '6379'
+    image: redis
+    labels:
+      traefik.enable: "false"
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/sharelatex/redis/data:/data:rw
+  sonarr:
+    environment:
+      PGID: '1000'
+      PUID: '1000'
+      TZ: Europe/Paris
+    image: linuxserver/sonarr:2.0.0.5337-ls92
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.auth.basic.users: ''
+      traefik.frontend.rule: Host:sonarr.
+      traefik.port: '8080'
+    links:
+    - jackett
+    - transmission
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/sonarr/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/sonarr/downloads:/downloads:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/sonarr/tv:/tv:rw
+  streama:
+    image: gkiko/streama:v1.8.3
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:streama.
+      traefik.port: '8080'
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/streama/streama.mv.db:/app/streama/streama.mv.db:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/streama/streama.trace.db:/app/streama/streama.trace.db:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/transmission/downloads:/data:rw
+  traefik:
+    command: '--api --api.statistics
+
+      '
+    expose:
+    - '8080'
+    image: traefik:1.7.12
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.auth.basic.users: ''
+      traefik.frontend.rule: Host:traefik.
+      traefik.port: '8080'
+    networks:
+      srv: {}
+    ports:
+    - 80:80/tcp
+    - 443:443/tcp
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/traefik/acme.json:/acme.json:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/traefik/logs:/logs:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/traefik/traefik.toml:/traefik.toml:rw
+    - /var/run/docker.sock:/var/run/docker.sock:rw
+  transmission:
+    environment:
+      PGID: '1000'
+      PUID: '1000'
+      TZ: Europe/Paris
+    image: linuxserver/transmission:2.94-r1-ls12
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.auth.basic.users: ''
+      traefik.frontend.rule: Host:torrent.
+      traefik.port: '9091'
+    networks:
+      srv: {}
+    ports:
+    - 51413:51413/tcp
+    - 51413:51413/udp
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/transmission/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/transmission/downloads:/downloads:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/transmission/watch:/watch:rw
+  vpn:
+    environment:
+      VPN_ADDL_PASSWORDS: ''
+      VPN_ADDL_USERS: ''
+      VPN_IPSEC_PSK: ''
+      VPN_PASSWORD: ''
+      VPN_USER: ''
+    image: hwdsl2/ipsec-vpn-server:latest
+    ports:
+    - 500:500/tcp
+    - 4500:4500/udp
+    privileged: true
+    restart: always
+    volumes:
+    - /lib/modules:/lib/modules:ro
+  wordpress:
+    depends_on:
+    - wordpress-db
+    environment:
+      WORDPRESS_DB_HOST: wordpress-db
+      WORDPRESS_DB_NAME: wordpress-db
+      WORDPRESS_DB_PASSWORD: ''
+      WORDPRESS_DB_USER: wordpress-user
+    image: wordpress
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:wordpress.
+      traefik.port: '80'
+    links:
+    - wordpress-db
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/wordpress/wordpress:/var/www/html:rw
+  wordpress-db:
+    environment:
+      MYSQL_DATABASE: wordpress-db
+      MYSQL_PASSWORD: ''
+      MYSQL_RANDOM_ROOT_PASSWORD: ''
+      MYSQL_USER: wordpress-user
+    image: mysql:5.7
+    labels:
+      traefik.enable: "false"
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/pastebin/wordpress/db:/var/lib/mysql:rw
+version: '2.0'
+

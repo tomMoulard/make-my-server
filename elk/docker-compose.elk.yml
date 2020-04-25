@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.1.0
+    links:
+      - elasticsearch
+    volumes:
+      - './elk/logstash/:/usr/share/logstash/pipeline/'
+      - './traefik/logs:/var/log/traefik'
+      - './nginx/logs:/var/log/nginx'
+    restart: always
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.1.0
+    volumes:
+      - './elk/elasticsearch/data:/usr/share/elasticsearch/data'
+    environment:
+      - 'cluster.name=docker-cluster'
+      - 'bootstrap.memory_lock=true'
+      - 'discovery.type=single-node'
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    restart: always
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.1.0
+    links:
+      - elasticsearch
+    volumes:
+      - './elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:kibana.${SITE}'
+      - 'traefik.port=5601'
+      - 'traefik.frontend.auth.basic.users=${USERS}'
+

@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  pastebin:
+    image: mkodockx/docker-pastebin:latest
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:paste.${SITE}'
+      - 'traefik.port=80'
