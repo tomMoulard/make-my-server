@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  wordpress:
+    image: wordpress
+    environment:
+      - WORDPRESS_DB_HOST=wordpress-db
+      - WORDPRESS_DB_USER=wordpress-user
+      - WORDPRESS_DB_PASSWORD=${USERS}
+      - WORDPRESS_DB_NAME=wordpress-db
+    volumes:
+      - ./wordpress/wordpress:/var/www/html
+    depends_on:
+      - wordpress-db
+    links:
+      - wordpress-db
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:wordpress.${SITE}'
+      - 'traefik.port=80'
+
