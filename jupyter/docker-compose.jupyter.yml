@@ -1,0 +1,23 @@
+version: '2'
+
+services:
+  jupyter:
+    image: jupyter/tensorflow-notebook:45f07a14b422
+    command: >
+     jupyter notebook
+     --NotebookApp.token=''
+     --NotebookApp.password=''
+    environment:
+      - 'JUPYTER_ENABLE_LAB=yes'
+    volumes:
+      - './jupyter/jupyter/config:/root/.jupyter/'
+      - './jupyter/work:/work'
+      - './jupyter/work:/home/jovyan/work'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:jupyter.${SITE}'
+      - 'traefik.port=8888'
+      - 'traefik.frontend.auth.basic.users=${USERS}'
