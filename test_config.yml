@@ -468,3 +468,4 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/pastebin/wordpress/db:/var/lib/mysql:rw
 version: '2.0'
+
