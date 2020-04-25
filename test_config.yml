@@ -8,7 +8,7 @@ services:
       traefik.frontend.rule: Host:arachni.
       traefik.port: '9292'
     networks:
-      srv: null
+      srv: {}
     restart: always
   bazarr:
     environment:
@@ -26,7 +26,7 @@ services:
     - jackett
     - sonarr
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/bazarr/config:/config:rw
@@ -42,7 +42,7 @@ services:
       traefik.frontend.rule: Host:bitwarden.
       traefik.port: '8080'
     networks:
-      srv: null
+      srv: {}
     restart: always
     user: nobody
     volumes:
@@ -56,7 +56,7 @@ services:
       traefik.frontend.rule: Host:blog.
       traefik.port: '80'
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/blog/nginx/conf:/etc/nginx/conf.d:rw
@@ -108,7 +108,7 @@ services:
       traefik.frontend.rule: Host:gitlab.
       traefik.port: '80'
     networks:
-      srv: null
+      srv: {}
     ports:
     - 2224:22/tcp
     restart: always
@@ -128,7 +128,7 @@ services:
       traefik.frontend.rule: Host:jackett.
       traefik.port: '9117'
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/jackett/config:/config:rw
@@ -146,7 +146,7 @@ services:
       traefik.frontend.rule: Host:jupyter.
       traefik.port: '8888'
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/jupyter/jupyter/config:/root/.jupyter:rw
@@ -162,7 +162,7 @@ services:
     links:
     - elasticsearch
     networks:
-      srv: null
+      srv: {}
     restart: always
   logstash:
     image: docker.elastic.co/logstash/logstash:7.1.0
@@ -182,7 +182,7 @@ services:
     links:
     - nextcloud-db
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/nextcloud/data:/var/www/html:rw
@@ -206,7 +206,7 @@ services:
       traefik.frontend.rule: 'Host:'
       traefik.port: '80'
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/nginx/conf:/etc/nginx/conf.d:rw
@@ -218,7 +218,7 @@ services:
       traefik.frontend.rule: Host:paste.
       traefik.port: '80'
     networks:
-      srv: null
+      srv: {}
     restart: always
   peertube:
     depends_on:
@@ -242,7 +242,7 @@ services:
     - peertube-db
     - peertube-redis
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/peertube/data:/data:rw
@@ -256,7 +256,7 @@ services:
     labels:
       traefik.enable: "false"
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/peertube/db:/var/lib/postgresql/data:rw
@@ -265,7 +265,7 @@ services:
     labels:
       traefik.enable: "false"
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/peertube/redis:/data:rw
@@ -276,7 +276,7 @@ services:
       traefik.frontend.rule: Host:portainer.
       traefik.port: '9000'
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock:rw
@@ -312,7 +312,7 @@ services:
     - sharelatex-mongo
     - sharelatex-redis
     networks:
-      srv: null
+      srv: {}
     privileged: true
     restart: always
   /home/runner/work/make-my-server/make-my-server/tmp/make-my-server/sharelatex/data:/var/lib/sharelatex:rw
@@ -350,7 +350,7 @@ services:
     - transmission
     - jackett
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/sonarr/config:/config:rw
@@ -369,7 +369,7 @@ services:
       traefik.frontend.rule: Host:traefik.
       traefik.port: '8080'
     networks:
-      srv: null
+      srv: {}
     ports:
     - 80:80/tcp
     - 443:443/tcp
@@ -391,7 +391,7 @@ services:
       traefik.frontend.rule: Host:torrent.
       traefik.port: '9091'
     networks:
-      srv: null
+      srv: {}
     ports:
     - 51413:51413/tcp
     - 51413:51413/udp
@@ -407,7 +407,7 @@ services:
       traefik.frontend.rule: Host:video.
       traefik.port: '8080'
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/transmission/downloads:/data:rw
@@ -442,7 +442,7 @@ services:
     links:
     - wordpress-db
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/wordpress/wordpress:/var/www/html:rw
@@ -456,7 +456,7 @@ services:
     labels:
       traefik.enable: "false"
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/wordpress/db:/var/lib/mysql:rw
