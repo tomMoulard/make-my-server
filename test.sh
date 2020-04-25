@@ -28,7 +28,7 @@ test ()
 
 test dc config -q
 
-file=$(mktemp) && dc config > $file 2>$log_file && test diff test_config.yml $file && rm $file
+file=config.yml && dc config > $file 2>$log_file && test diff test_config.yml $file # && rm $file
 
 [ $errors -gt 0 ] && echo "There were $errors errors found" && exit 1
 
