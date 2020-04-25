@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  bazarr:
+    image: linuxserver/bazarr:v0.8.3.4-ls61
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - ./bazarr/config:/config
+      - ./bazarr/movies:/movies
+      - ./bazarr/tv:/tv
+    links:
+      - transmission
+      - jackett
+      - sonarr
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:bazarr.${SITE}'
+      - 'traefik.port=8080'
+      - 'traefik.frontend.auth.basic.users=${USERS}'
