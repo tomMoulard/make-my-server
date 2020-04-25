@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  factorio:
+    image: factoriotools/factorio
+    ports:
+      - '34197:34197/udp'
+      # - '27015:27015/tcp' # RCON port
+    volumes:
+      - ./factorio:/factorio
+    restart: always
+    labels:
+      - 'traefik.enable=false'
