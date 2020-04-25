@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+  blog:
+    image: nginx:stable-alpine
+    depends_on:
+      - blog-builder
+    volumes:
+      - './blog/nginx/conf:/etc/nginx/conf.d'
+      - './blog/nginx/logs:/var/log/nginx/'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:blog.${SITE}'
+      - 'traefik.port=80'
+
+  blog-builder:
+    image: jojomi/hugo:0.59
+    restart: always
+    environment:
+    - HUGO_REFRESH_TIME=3600
+    - HUGO_THEME=hugo-theme-cactus-plus
+    - HUGO_BASEURL=/
+    volumes:
+      - ./blog/blog:/src
+      - ./blog/nginx/conf/www:/output
+    restart: always
+    labels:
+      - 'traefik.enable=false'
