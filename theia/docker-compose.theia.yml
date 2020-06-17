@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  theia:
+    image: theiaide/theia
+    volumes:
+      - '${HOME}:/home/project:cached'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:theia.${SITE}'
+      - 'traefik.port=3000'
