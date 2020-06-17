@@ -1,0 +1,50 @@
+version: '2'
+
+services:
+  searx:
+    image: searx/searx:latest
+    command: -f
+    volumes:
+      - './searx/searx/:/etc/searx:rw'
+    networks:
+      - 'srv'
+    restart: always
+    environment:
+      - 'BIND_ADDRESS=0.0.0.0:8080'
+      - 'BASE_URL=https://searx.${SITE}/'
+      - 'MORTY_URL=https://morty.${SITE}/'
+      - 'MORTY_KEY=${MORTY_KEY}'
+    depends_on:
+      - morty
+      - searx-checker
+    links:
+      - morty
+      - searx-checker
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:searx.${SITE}'
+      - 'traefik.port=8080'
+
+  morty:
+    image: dalf/morty:latest
+    command: -listen 0.0.0.0:3000 -timeout 6 -ipv6
+    networks:
+      - 'srv'
+    restart: always
+    environment:
+      - 'MORTY_KEY=${MORTY_KEY}'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:morty.${SITE}'
+      - 'traefik.port=3000'
+
+  searx-checker:
+    image: searx/searx-checker:latest
+    command: -cron -o html/data/status.json http://searx:8080
+    volumes:
+      - './searx/searx-checker/:/usr/local/searx-checker/html/data:rw'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=false'
