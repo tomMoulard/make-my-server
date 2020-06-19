@@ -5,14 +5,13 @@ services:
     image: jupyter/tensorflow-notebook:45f07a14b422
     command: >
      jupyter notebook
-     --NotebookApp.token=''
+     --NotebookApp.token=''   # removing token & password to enable traefik auth
      --NotebookApp.password=''
     environment:
       - 'JUPYTER_ENABLE_LAB=yes'
     volumes:
       - './jupyter/jupyter/config:/root/.jupyter/'
-      - './jupyter/work:/work'
-      - './jupyter/work:/home/jovyan/work'
+      - './jupyter/notebooks:/home/jovyan/'
     networks:
       - 'srv'
     restart: always
