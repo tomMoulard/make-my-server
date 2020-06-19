@@ -187,7 +187,7 @@ services:
       traefik.frontend.rule: Host:morty.
       traefik.port: '3000'
     networks:
-      srv: null
+      srv: {}
     restart: always
   nextcloud:
     image: nextcloud
@@ -326,17 +326,17 @@ services:
     - morty
     - searx-checker
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
-    - /tmp/make-my-server/searx/searx:/etc/searx:rw
+    - /home/runner/work/make-my-server/make-my-server/pastebin/searx/searx:/etc/searx:rw
   searx-checker:
     command: -cron -o html/data/status.json http://searx:8080
     image: searx/searx-checker:latest
     labels:
       traefik.enable: "false"
     networks:
-      srv: null
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/searx/searx-checker:/usr/local/searx-checker/html/data:rw
@@ -426,7 +426,7 @@ services:
       traefik.frontend.rule: Host:theia.
       traefik.port: '3000'
     networks:
-      srv: null
+      srv: {}
   traefik:
     command: '--api --api.statistics
 
