@@ -29,9 +29,9 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/bazarr/config:/config:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/bazarr/movies:/movies:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/bazarr/tv:/tv:rw
+    - /home/runner/work/make-my-server/make-my-server/bazarr/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/bazarr/movies:/movies:rw
+    - /home/runner/work/make-my-server/make-my-server/bazarr/tv:/tv:rw
   bitwarden:
     environment:
       ADMIN_TOKEN: ''
@@ -46,7 +46,7 @@ services:
     restart: always
     user: nobody
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/bitwarden/data:/data:rw
+    - /home/runner/work/make-my-server/make-my-server/bitwarden/data:/data:rw
   blog:
     depends_on:
     - blog-builder
@@ -59,8 +59,8 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/blog/nginx/conf:/etc/nginx/conf.d:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/blog/nginx/logs:/var/log/nginx:rw
+    - /home/runner/work/make-my-server/make-my-server/blog/nginx/conf:/etc/nginx/conf.d:rw
+    - /home/runner/work/make-my-server/make-my-server/blog/nginx/logs:/var/log/nginx:rw
   blog-builder:
     environment:
       HUGO_BASEURL: /
@@ -71,8 +71,8 @@ services:
       traefik.enable: "false"
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/blog/nginx/conf/www:/output:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/blog/blog:/src:rw
+    - /home/runner/work/make-my-server/make-my-server/blog/nginx/conf/www:/output:rw
+    - /home/runner/work/make-my-server/make-my-server/blog/blog:/src:rw
   elasticsearch:
     environment:
       ES_JAVA_OPTS: -Xms512m -Xmx512m
@@ -86,7 +86,7 @@ services:
         hard: -1
         soft: -1
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/elk/elasticsearch/data:/usr/share/elasticsearch/data:rw
+    - /home/runner/work/make-my-server/make-my-server/elk/elasticsearch/data:/usr/share/elasticsearch/data:rw
   factorio:
     image: factoriotools/factorio
     labels:
@@ -95,7 +95,7 @@ services:
     - 34197:34197/udp
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/factorio:/factorio:rw
+    - /home/runner/work/make-my-server/make-my-server/factorio:/factorio:rw
   gitlab:
     environment:
       GITLAB_OMNIBUS_CONFIG: 'external_url ''http://gitlab.:80''
@@ -115,9 +115,9 @@ services:
     - 2224:22/tcp
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/gitlab/config:/etc/gitlab:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/gitlab/logs:/var/log/gitlab:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/gitlab/data:/var/opt/gitlab:rw
+    - /home/runner/work/make-my-server/make-my-server/gitlab/config:/etc/gitlab:rw
+    - /home/runner/work/make-my-server/make-my-server/gitlab/logs:/var/log/gitlab:rw
+    - /home/runner/work/make-my-server/make-my-server/gitlab/data:/var/opt/gitlab:rw
   jackett:
     environment:
       PGID: '1000'
@@ -133,8 +133,8 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/jackett/config:/config:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/jackett/downloads:/downloads:rw
+    - /home/runner/work/make-my-server/make-my-server/jackett/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/jackett/downloads:/downloads:rw
   jupyter:
     command: 'jupyter notebook --NotebookApp.token='''' --NotebookApp.password=''''
 
@@ -151,9 +151,9 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/jupyter/work:/home/jovyan/work:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/jupyter/jupyter/config:/root/.jupyter:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/jupyter/work:/work:rw
+    - /home/runner/work/make-my-server/make-my-server/jupyter/work:/home/jovyan/work:rw
+    - /home/runner/work/make-my-server/make-my-server/jupyter/jupyter/config:/root/.jupyter:rw
+    - /home/runner/work/make-my-server/make-my-server/jupyter/work:/work:rw
   kibana:
     image: docker.elastic.co/kibana/kibana:7.1.0
     labels:
@@ -167,16 +167,16 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:rw
+    - /home/runner/work/make-my-server/make-my-server/elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:rw
   logstash:
     image: docker.elastic.co/logstash/logstash:7.1.0
     links:
     - elasticsearch
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/elk/logstash:/usr/share/logstash/pipeline:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/nginx/logs:/var/log/nginx:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/traefik/logs:/var/log/traefik:rw
+    - /home/runner/work/make-my-server/make-my-server/elk/logstash:/usr/share/logstash/pipeline:rw
+    - /home/runner/work/make-my-server/make-my-server/nginx/logs:/var/log/nginx:rw
+    - /home/runner/work/make-my-server/make-my-server/traefik/logs:/var/log/traefik:rw
   morty:
     command: -listen 0.0.0.0:3000 -timeout 6 -ipv6
     environment:
@@ -201,7 +201,7 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/nextcloud/data:/var/www/html:rw
+    - /home/runner/work/make-my-server/make-my-server/nextcloud/data:/var/www/html:rw
   nextcloud-db:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     environment:
@@ -214,7 +214,7 @@ services:
       traefik.enable: "false"
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/nextcloud/db:/var/lib/mysql:rw
+    - /home/runner/work/make-my-server/make-my-server/nextcloud/db:/var/lib/mysql:rw
   nginx:
     image: nginx:stable-alpine
     labels:
@@ -225,8 +225,8 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/nginx/conf:/etc/nginx/conf.d:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/nginx/logs:/var/log/nginx:rw
+    - /home/runner/work/make-my-server/make-my-server/nginx/conf:/etc/nginx/conf.d:rw
+    - /home/runner/work/make-my-server/make-my-server/nginx/logs:/var/log/nginx:rw
   pastebin:
     image: mkodockx/docker-pastebin:latest
     labels:
@@ -261,8 +261,8 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/peertube/config:/config:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/peertube/data:/data:rw
+    - /home/runner/work/make-my-server/make-my-server/peertube/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/peertube/data:/data:rw
   peertube-db:
     environment:
       POSTGRES_DB: peertube
@@ -275,7 +275,7 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/peertube/db:/var/lib/postgresql/data:rw
+    - /home/runner/work/make-my-server/make-my-server/peertube/db:/var/lib/postgresql/data:rw
   peertube-redis:
     image: redis:4-alpine
     labels:
@@ -284,7 +284,7 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/peertube/redis:/data:rw
+    - /home/runner/work/make-my-server/make-my-server/peertube/redis:/data:rw
   portainer:
     image: portainer/portainer
     labels:
@@ -295,7 +295,7 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/portainer/data:/data:rw
+    - /home/runner/work/make-my-server/make-my-server/portainer/data:/data:rw
     - /var/run/docker.sock:/var/run/docker.sock:rw
   runner:
     image: gitlab/gitlab-runner:latest
@@ -305,7 +305,7 @@ services:
     - gitlab
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/gitlab/runner:/etc/gitlab-runner:rw
+    - /home/runner/work/make-my-server/make-my-server/gitlab/runner:/etc/gitlab-runner:rw
     - /var/run/docker.sock:/var/run/docker.sock:rw
   searx:
     command: -f
@@ -329,7 +329,7 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/searx/searx:/etc/searx:rw
+    - /home/runner/work/make-my-server/make-my-server/searx/searx:/etc/searx:rw
   searx-checker:
     command: -cron -o html/data/status.json http://searx:8080
     image: searx/searx-checker:latest
@@ -365,7 +365,7 @@ services:
     privileged: true
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/sharelatex/data:/var/lib/sharelatex:rw
+    - /home/runner/work/make-my-server/make-my-server/sharelatex/data:/var/lib/sharelatex:rw
     - /var/run/docker.sock:/var/run/docker.sock:rw
   sharelatex-mongo:
     expose:
@@ -375,7 +375,7 @@ services:
       traefik.enable: "false"
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/sharelatex/mongo:/data/db:rw
+    - /home/runner/work/make-my-server/make-my-server/sharelatex/mongo:/data/db:rw
   sharelatex-redis:
     expose:
     - '6379'
@@ -384,7 +384,7 @@ services:
       traefik.enable: "false"
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/sharelatex/redis/data:/data:rw
+    - /home/runner/work/make-my-server/make-my-server/sharelatex/redis/data:/data:rw
   sonarr:
     environment:
       PGID: '1000'
@@ -403,9 +403,9 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/sonarr/config:/config:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/sonarr/downloads:/downloads:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/sonarr/tv:/tv:rw
+    - /home/runner/work/make-my-server/make-my-server/sonarr/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/sonarr/downloads:/downloads:rw
+    - /home/runner/work/make-my-server/make-my-server/sonarr/tv:/tv:rw
   streama:
     image: gkiko/streama:v1.8.3
     labels:
@@ -416,9 +416,9 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/streama/streama.mv.db:/app/streama/streama.mv.db:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/streama/streama.trace.db:/app/streama/streama.trace.db:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/transmission/downloads:/data:rw
+    - /home/runner/work/make-my-server/make-my-server/streama/streama.mv.db:/app/streama/streama.mv.db:rw
+    - /home/runner/work/make-my-server/make-my-server/streama/streama.trace.db:/app/streama/streama.trace.db:rw
+    - /home/runner/work/make-my-server/make-my-server/transmission/downloads:/data:rw
   theia:
     image: theiaide/theia
     labels:
@@ -446,9 +446,9 @@ services:
     - 443:443/tcp
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/traefik/acme.json:/acme.json:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/traefik/logs:/logs:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/traefik/traefik.toml:/traefik.toml:rw
+    - /home/runner/work/make-my-server/make-my-server/traefik/acme.json:/acme.json:rw
+    - /home/runner/work/make-my-server/make-my-server/traefik/logs:/logs:rw
+    - /home/runner/work/make-my-server/make-my-server/traefik/traefik.toml:/traefik.toml:rw
     - /var/run/docker.sock:/var/run/docker.sock:rw
   transmission:
     environment:
@@ -468,9 +468,9 @@ services:
     - 51413:51413/udp
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/transmission/config:/config:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/transmission/downloads:/downloads:rw
-    - /home/runner/work/make-my-server/make-my-server/pastebin/transmission/watch:/watch:rw
+    - /home/runner/work/make-my-server/make-my-server/transmission/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/transmission/downloads:/downloads:rw
+    - /home/runner/work/make-my-server/make-my-server/transmission/watch:/watch:rw
   vpn:
     environment:
       VPN_ADDL_PASSWORDS: ''
@@ -505,7 +505,7 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/wordpress/wordpress:/var/www/html:rw
+    - /home/runner/work/make-my-server/make-my-server/wordpress/wordpress:/var/www/html:rw
   wordpress-db:
     environment:
       MYSQL_DATABASE: wordpress-db
@@ -519,6 +519,6 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/pastebin/wordpress/db:/var/lib/mysql:rw
+    - /home/runner/work/make-my-server/make-my-server/wordpress/db:/var/lib/mysql:rw
 version: '2.0'
 
