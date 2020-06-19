@@ -429,7 +429,7 @@ services:
       srv: {}
     restart: always
     volumes:
-        - /home/runner:/home/project:cached
+    - /home/runner:/home/project:cached
   traefik:
     command: '--api --api.statistics
 
