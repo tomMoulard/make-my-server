@@ -9,7 +9,7 @@ WHITE="\e[0m"
 
 dc ()
 {
-    docker-compose $(find . -name "docker-compose*.yml" -type f -exec printf " -f {}" \; 2>$log_file) $@
+    docker-compose $(find -name 'docker-compose*.yml' -type f -printf '%p\t%d\n'  2>/dev/null | sort -n -k2 | cut -f 1 | awk '{print "-f "$0}') $@
 }
 
 test ()
@@ -33,3 +33,4 @@ file=$(mktemp) && dc config > $file 2>$log_file && test diff test_config.yml $fi
 [ $errors -gt 0 ] && echo "There were $errors errors found" && exit 1
 
 exit 0
+
