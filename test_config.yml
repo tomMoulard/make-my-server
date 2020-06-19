@@ -339,7 +339,7 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/searx/searx-checker:/usr/local/searx-checker/html/data:rw
+    - /home/runner/work/make-my-server/make-my-server/searx/searx-checker:/usr/local/searx-checker/html/data:rw
   sharelatex:
     depends_on:
     - sharelatex-mongo
@@ -427,6 +427,9 @@ services:
       traefik.port: '3000'
     networks:
       srv: {}
+    restart: always
+    volumes:
+        - /home/runner:/home/project:cached
   traefik:
     command: '--api --api.statistics
 
