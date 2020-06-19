@@ -151,7 +151,7 @@ services:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/jupyter:/home/jovyan:rw
+    - /home/runner/work/make-my-server/make-my-server/jupyter/notebooks:/home/jovyan:rw
     - /home/runner/work/make-my-server/make-my-server/jupyter/jupyter/config:/root/.jupyter:rw
   kibana:
     image: docker.elastic.co/kibana/kibana:7.1.0

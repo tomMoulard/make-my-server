@@ -5,8 +5,9 @@ services:
     image: jupyter/tensorflow-notebook:45f07a14b422
     command: >
      jupyter notebook
-     --NotebookApp.token=''   # removing token & password to enable traefik auth
+     --NotebookApp.token=''
      --NotebookApp.password=''
+    # removing token & password to enable traefik auth
     environment:
       - 'JUPYTER_ENABLE_LAB=yes'
     volumes:
