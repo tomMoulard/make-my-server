@@ -177,6 +177,18 @@ services:
     - /home/runner/work/make-my-server/make-my-server/pastebin/elk/logstash:/usr/share/logstash/pipeline:rw
     - /home/runner/work/make-my-server/make-my-server/pastebin/nginx/logs:/var/log/nginx:rw
     - /home/runner/work/make-my-server/make-my-server/pastebin/traefik/logs:/var/log/traefik:rw
+  morty:
+    command: -listen 0.0.0.0:3000 -timeout 6 -ipv6
+    environment:
+      MORTY_KEY: ''
+    image: dalf/morty:latest
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:morty.
+      traefik.port: '3000'
+    networks:
+      srv: null
+    restart: always
   nextcloud:
     image: nextcloud
     labels:
@@ -295,6 +307,39 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/pastebin/gitlab/runner:/etc/gitlab-runner:rw
     - /var/run/docker.sock:/var/run/docker.sock:rw
+  searx:
+    command: -f
+    depends_on:
+    - morty
+    - searx-checker
+    environment:
+      BASE_URL: https://searx./
+      BIND_ADDRESS: 0.0.0.0:8080
+      MORTY_KEY: ''
+      MORTY_URL: https://morty./
+    image: searx/searx:latest
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:searx.
+      traefik.port: '8080'
+    links:
+    - morty
+    - searx-checker
+    networks:
+      srv: null
+    restart: always
+    volumes:
+    - /tmp/make-my-server/searx/searx:/etc/searx:rw
+  searx-checker:
+    command: -cron -o html/data/status.json http://searx:8080
+    image: searx/searx-checker:latest
+    labels:
+      traefik.enable: "false"
+    networks:
+      srv: null
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/searx/searx-checker:/usr/local/searx-checker/html/data:rw
   sharelatex:
     depends_on:
     - sharelatex-mongo
@@ -374,6 +419,14 @@ services:
     - /home/runner/work/make-my-server/make-my-server/pastebin/streama/streama.mv.db:/app/streama/streama.mv.db:rw
     - /home/runner/work/make-my-server/make-my-server/pastebin/streama/streama.trace.db:/app/streama/streama.trace.db:rw
     - /home/runner/work/make-my-server/make-my-server/pastebin/transmission/downloads:/data:rw
+  theia:
+    image: theiaide/theia
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:theia.
+      traefik.port: '3000'
+    networks:
+      srv: null
   traefik:
     command: '--api --api.statistics
 
