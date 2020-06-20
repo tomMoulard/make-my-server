@@ -63,7 +63,7 @@ services:
     - /home/runner/work/make-my-server/make-my-server/blog/nginx/logs:/var/log/nginx:rw
   blog-builder:
     environment:
-      HUGO_BASEURL: /
+      HUGO_BASEURL: https://blog.
       HUGO_REFRESH_TIME: '3600'
       HUGO_THEME: hugo-theme-cactus-plus
     image: jojomi/hugo:0.59
