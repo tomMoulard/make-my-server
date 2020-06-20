@@ -22,7 +22,7 @@ services:
     environment:
     - HUGO_REFRESH_TIME=3600
     - HUGO_THEME=hugo-theme-cactus-plus
-    - HUGO_BASEURL=https://blog.${SITE}
+    - HUGO_BASEURL=https://blog.${SITE}/
     volumes:
       - ./blog/blog:/src
       - ./blog/nginx/conf/www:/output
