@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  codimd:
+    image: nabo.codimd.dev/hackmdio/hackmd:2.1.0
+    environment:
+      - 'CMD_DB_URL=postgres://codimd:mypwd@codimd-db/codimd'
+      - 'CMD_USECDN=false'
+    depends_on:
+      - codimd-db
+    links:
+      - codimd-db
+    volumes:
+      - './codimd/data:/home/hackmd/app/public/uploads'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:codimd.${SITE}'
+      - 'traefik.port=3000'
+  codimd-db:
+    image: postgres:11.6-alpine
+    environment:
+      - POSTGRES_USER=codimd
+      - POSTGRES_PASSWORD=mypwd
+      - POSTGRES_DB=codimd
+    volumes:
+      - './codimd/db:/var/lib/postgresql/data'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=false'
