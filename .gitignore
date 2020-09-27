@@ -3,3 +3,4 @@ blog/blog*
 blog/nginx/conf/www
 gitlab/logs
 portainer/data
+.env
