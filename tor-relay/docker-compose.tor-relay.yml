@@ -1,0 +1,21 @@
+version: '2'
+
+# See https://blog.jessfraz.com/post/running-a-tor-relay-with-docker/
+# Checkou logs and https://atlas.torproject.org/ for annalytics
+
+services:
+  tor-relay:
+    image: jess/tor-relay
+    # Choose one of the bellow to set the type of node
+    # command: -f /etc/tor/torrc.bridge
+    command: -f /etc/tor/torrc.middle
+    # command: -f /etc/tor/torrc.exit
+    volumes:
+      - '/etc/localtime:/etc/localtime'
+    networks:
+      - 'srv'
+    ports:
+        - '9001:9001'
+    restart: always
+    labels:
+      - 'traefik.enable=false'
