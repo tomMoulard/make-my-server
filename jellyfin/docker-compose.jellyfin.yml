@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin
+    volumes:
+      - './jellyfin/config:/config'
+      - './jellyfin/cache:/cache'
+      - './jellyfin/media:/media' # You medias
+      - './jellyfin/logs:/logs'
+    networks:
+      - 'srv'
+    restart: always
+    user: 1000:1000
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:jellyfin.${SITE}'
+      - 'traefik.port=8096'
