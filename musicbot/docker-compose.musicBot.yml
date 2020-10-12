@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  musicbot:
+    image: raiponce/musicbot:0.2.10
+    volumes:
+      - './musicbot/conf:/musicBot/conf/'
+      - './musicbot/playlists:/musicBot/playlists/'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=false'
