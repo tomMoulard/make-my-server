@@ -188,6 +188,16 @@ services:
     networks:
       srv: {}
     restart: always
+  musicBot:
+    image: raiponce/musicBot:0.2.10
+    labels:
+      traefik.enable: "false"
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/musicBot/conf:/musicBot/conf:rw
+    - /home/runner/work/make-my-server/make-my-server/musicBot/playlists:/musicBot/playlists:rw
   nextcloud:
     image: nextcloud
     labels:
