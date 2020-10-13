@@ -73,6 +73,38 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/blog/nginx/conf/www:/output:rw
     - /home/runner/work/make-my-server/make-my-server/blog/blog:/src:rw
+  codimd:
+    depends_on:
+      codimd-db:
+        condition: service_started
+    environment:
+      CMD_DB_URL: postgres://codimd:mypwd@codimd-db/codimd
+      CMD_USECDN: "false"
+    image: nabo.codimd.dev/hackmdio/hackmd:2.1.0
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:codimd.
+      traefik.port: '3000'
+    links:
+    - codimd-db
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/codimd/data:/home/hackmd/app/public/uploads:rw
+  codimd-db:
+    environment:
+      POSTGRES_DB: codimd
+      POSTGRES_PASSWORD: mypwd
+      POSTGRES_USER: codimd
+    image: postgres:11.6-alpine
+    labels:
+      traefik.enable: "false"
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/codimd/db:/var/lib/postgresql/data:rw
   elasticsearch:
     environment:
       ES_JAVA_OPTS: -Xms512m -Xmx512m
@@ -439,6 +471,19 @@ services:
     restart: always
     volumes:
     - /home/runner:/home/project:cached
+  tor-relay:
+    command: -f /etc/tor/torrc.middle
+    image: jess/tor-relay
+    labels:
+      traefik.enable: "false"
+    networks:
+      srv: {}
+    ports:
+    - published: 9001
+      target: 9001
+    restart: always
+    volumes:
+    - /etc/localtime:/etc/localtime:rw
   traefik:
     command: '--api --api.statistics
 
@@ -532,5 +577,5 @@ services:
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/wordpress/db:/var/lib/mysql:rw
-version: '2.0'
+version: '2'
 
