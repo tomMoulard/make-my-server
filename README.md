@@ -40,9 +40,11 @@ Feel free to do a Pull Request to add your ideas.
 [more ideas](https://github.com/awesome-selfhosted/awesome-selfhosted)
 
 ## Configuration
-Don't forget to change db passwords. (might not be needed since they are beyond
-the reverse proxy).
-Fill VPN secrets(if none provided, they are generated directly).
+Don't forget to change:
+
+ - db passwords (might not be needed since they are beyond the reverse proxy)
+ - VPN secrets (if none provided, they are generated directly).
+
 Configuration files are: `docker-compose.yml`, `nginx.conf`
 
 To set the password:
@@ -121,5 +123,5 @@ Gitlab helper:
 
 Discord MusicBot:
  - [huvell_m](mailto:martin.huvelle@epita.fr),
-see [PR #6](https://github.com/tomMoulard/make-my-server/pull/6)
+see PR [#6](https://github.com/tomMoulard/make-my-server/pull/6)
 
