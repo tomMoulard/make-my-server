@@ -49,8 +49,8 @@ services:
     - /home/runner/work/make-my-server/make-my-server/bitwarden/data:/data:rw
   blog:
     depends_on:
-        blog-builder:
-            condition: service_started
+      blog-builder:
+        condition: service_started
     image: nginx:stable-alpine
     labels:
       traefik.enable: "true"
@@ -126,8 +126,8 @@ services:
       traefik.enable: "false"
     ports:
     - protocol: udp
-        published: 34197
-        target: 34197
+      published: 34197
+      target: 34197
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/factorio:/factorio:rw
@@ -148,7 +148,7 @@ services:
       srv: {}
     ports:
     - published: 2224
-        target: 22
+      target: 22
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/gitlab/config:/etc/gitlab:rw
