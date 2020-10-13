@@ -49,7 +49,8 @@ services:
     - /home/runner/work/make-my-server/make-my-server/bitwarden/data:/data:rw
   blog:
     depends_on:
-    - blog-builder
+        blog-builder:
+            condition: service_started
     image: nginx:stable-alpine
     labels:
       traefik.enable: "true"
@@ -63,7 +64,7 @@ services:
     - /home/runner/work/make-my-server/make-my-server/blog/nginx/logs:/var/log/nginx:rw
   blog-builder:
     environment:
-      HUGO_BASEURL: https://blog.
+      HUGO_BASEURL: https://blog./
       HUGO_REFRESH_TIME: '3600'
       HUGO_THEME: hugo-theme-cactus-plus
     image: jojomi/hugo:0.59
@@ -124,7 +125,9 @@ services:
     labels:
       traefik.enable: "false"
     ports:
-    - 34197:34197/udp
+    - protocol: udp
+        published: 34197
+        target: 34197
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/factorio:/factorio:rw
@@ -144,7 +147,8 @@ services:
     networks:
       srv: {}
     ports:
-    - 2224:22/tcp
+    - published: 2224
+        target: 22
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/gitlab/config:/etc/gitlab:rw
@@ -167,6 +171,21 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/jackett/config:/config:rw
     - /home/runner/work/make-my-server/make-my-server/jackett/downloads:/downloads:rw
+  jellyfin:
+    image: jellyfin/jellyfin
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:jellyfin.
+      traefik.port: '8096'
+    networks:
+      srv: {}
+    restart: always
+    user: 1000:1000
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/jellyfin/cache:/cache:rw
+    - /home/runner/work/make-my-server/make-my-server/jellyfin/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/jellyfin/logs:/logs:rw
+    - /home/runner/work/make-my-server/make-my-server/jellyfin/media:/media:rw
   jupyter:
     command: 'jupyter notebook --NotebookApp.token='''' --NotebookApp.password=''''
 
@@ -279,8 +298,10 @@ services:
     restart: always
   peertube:
     depends_on:
-    - peertube-db
-    - peertube-redis
+      peertube-db:
+        condition: service_started
+      peertube-redis:
+        condition: service_started
     environment:
       PEERTUBE_ADMIN_EMAIL: admin@
       PEERTUBE_DB_HOSTNAME: peertube-db
@@ -351,8 +372,10 @@ services:
   searx:
     command: -f
     depends_on:
-    - morty
-    - searx-checker
+      morty:
+        condition: service_started
+      searx-checker:
+        condition: service_started
     environment:
       BASE_URL: https://searx./
       BIND_ADDRESS: 0.0.0.0:8080
@@ -383,8 +406,10 @@ services:
     - /home/runner/work/make-my-server/make-my-server/searx/searx-checker:/usr/local/searx-checker/html/data:rw
   sharelatex:
     depends_on:
-    - sharelatex-mongo
-    - sharelatex-redis
+      sharelatex-mongo:
+        condition: service_started
+      sharelatex-redis:
+        condition: service_started
     environment:
       SHARELATEX_ADMIN_EMAIL: ''
       SHARELATEX_APP_NAME: '''s ShareLaTeX'
@@ -488,8 +513,6 @@ services:
     command: '--api --api.statistics
 
       '
-    expose:
-    - '8080'
     image: traefik:1.7.12
     labels:
       traefik.enable: "true"
@@ -499,11 +522,12 @@ services:
     networks:
       srv: {}
     ports:
-    - 80:80/tcp
-    - 443:443/tcp
+    - published: 80
+      target: 80
+    - published: 443
+      target: 443
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/traefik/acme.json:/acme.json:rw
     - /home/runner/work/make-my-server/make-my-server/traefik/logs:/logs:rw
     - /home/runner/work/make-my-server/make-my-server/traefik/traefik.toml:/traefik.toml:rw
     - /var/run/docker.sock:/var/run/docker.sock:rw
@@ -521,8 +545,11 @@ services:
     networks:
       srv: {}
     ports:
-    - 51413:51413/tcp
-    - 51413:51413/udp
+    - published: 51413
+      target: 51413
+    - protocol: udp
+      published: 51413
+      target: 51413
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/transmission/config:/config:rw
@@ -537,15 +564,19 @@ services:
       VPN_USER: ''
     image: hwdsl2/ipsec-vpn-server:latest
     ports:
-    - 500:500/tcp
-    - 4500:4500/udp
+    - published: 500
+      target: 500
+    - protocol: udp
+      published: 4500
+      target: 4500
     privileged: true
     restart: always
     volumes:
     - /lib/modules:/lib/modules:ro
   wordpress:
     depends_on:
-    - wordpress-db
+      wordpress-db:
+        condition: service_started
     environment:
       WORDPRESS_DB_HOST: wordpress-db
       WORDPRESS_DB_NAME: wordpress-db
