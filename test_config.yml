@@ -1,6 +1,6 @@
 networks:
-  srv: {}
   mastodon-internal: {}
+  srv: {}
 services:
   arachni:
     image: arachni/arachni
