@@ -1,0 +1,86 @@
+version: '2'
+
+networks:
+  mastodon-internal:
+
+services:
+  mastodon-postgres:
+    image: postgres:9.6-alpine
+    restart: always
+    shm_size: 256mb
+    networks:
+      - 'mastodon-internal'
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+    volumes:
+      - ./mastodon/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=mastodon-postgres-pass
+    labels:
+      - 'traefik.enable=false'
+
+  mastodon-redis:
+    image: redis:6.0-alpine
+    restart: always
+    networks:
+      - 'mastodon-internal'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    volumes:
+      - ./mastodon/redis:/data
+    labels:
+      - 'traefik.enable=false'
+
+  mastodon:
+    image: tootsuite/mastodon
+    restart: always
+    env_file: ./mastodon/.env.production
+    command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
+    networks:
+      - 'srv'
+      - 'mastodon-internal'
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:3000/health || exit 1"]
+    depends_on:
+      - mastodon-postgres
+      - mastodon-redis
+      - mastodon-streaming
+      - mastodon-sidekiq
+    volumes:
+      - ./mastodon/mastodon:/mastodon/public/system
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:mastodon.${SITE}'
+      - 'traefik.port=3000'
+
+  mastodon-streaming:
+    image: tootsuite/mastodon
+    restart: always
+    env_file: ./mastodon/.env.production
+    command: node ./streaming
+    networks:
+      - 'srv'
+      - 'mastodon-internal'
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1"]
+    depends_on:
+      - mastodon-postgres
+      - mastodon-redis
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:api.mastodon.${SITE}'
+      - 'traefik.port=4000'
+
+  mastodon-sidekiq:
+    image: tootsuite/mastodon
+    restart: always
+    env_file: ./mastodon/.env.production
+    command: bundle exec sidekiq
+    depends_on:
+      - mastodon-postgres
+      - mastodon-redis
+    networks:
+      - 'srv'
+      - 'mastodon-internal'
+    volumes:
+      - ./mastodon/mastodon:/mastodon/public/system
