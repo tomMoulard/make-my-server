@@ -1,5 +1,6 @@
 networks:
   srv: {}
+  mastodon-internal: {}
 services:
   arachni:
     image: arachni/arachni
@@ -227,6 +228,178 @@ services:
     - /home/runner/work/make-my-server/make-my-server/elk/logstash:/usr/share/logstash/pipeline:rw
     - /home/runner/work/make-my-server/make-my-server/nginx/logs:/var/log/nginx:rw
     - /home/runner/work/make-my-server/make-my-server/traefik/logs:/var/log/traefik:rw
+  mastodon:
+    command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p
+      3000"
+    depends_on:
+      mastodon-postgres:
+        condition: service_started
+      mastodon-redis:
+        condition: service_started
+      mastodon-sidekiq:
+        condition: service_started
+      mastodon-streaming:
+        condition: service_started
+    environment:
+      AWS_ACCESS_KEY_ID: ''
+      AWS_SECRET_ACCESS_KEY: ''
+      DB_HOST: mastodon-postgres
+      DB_NAME: postgres
+      DB_PASS: mastodon-postgres-pass
+      DB_PORT: '5432'
+      DB_USER: postgres
+      ES_ENABLED: "false"
+      ES_HOST: localhost
+      ES_PORT: '9200'
+      LOCAL_DOMAIN: mastodon.example.com
+      OTP_SECRET: ''
+      REDIS_HOST: mastodon-redis
+      REDIS_PORT: '6379'
+      S3_ALIAS_HOST: files.example.com
+      S3_BUCKET: files.example.com
+      S3_ENABLED: "false"
+      SECRET_KEY_BASE: ''
+      SMTP_FROM_ADDRESS: notificatons@example.com
+      SMTP_LOGIN: ''
+      SMTP_PASSWORD: ''
+      SMTP_PORT: '587'
+      SMTP_SERVER: smtp.mailgun.org
+      VAPID_PRIVATE_KEY: ''
+      VAPID_PUBLIC_KEY: ''
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q --spider --proxy=off localhost:3000/health || exit 1
+    image: tootsuite/mastodon
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:mastodon.
+      traefik.port: '3000'
+    networks:
+      mastodon-internal: {}
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/mastodon/mastodon:/mastodon/public/system:rw
+  mastodon-postgres:
+    environment:
+      POSTGRES_PASSWORD: mastodon-postgres-pass
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - postgres
+    image: postgres:9.6-alpine
+    labels:
+      traefik.enable: "false"
+    networks:
+      mastodon-internal: {}
+    restart: always
+    shm_size: 256mb
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/mastodon/postgres:/var/lib/postgresql/data:rw
+  mastodon-redis:
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - ping
+    image: redis:6.0-alpine
+    labels:
+      traefik.enable: "false"
+    networks:
+      mastodon-internal: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/mastodon/redis:/data:rw
+  mastodon-sidekiq:
+    command: bundle exec sidekiq
+    depends_on:
+      mastodon-postgres:
+        condition: service_started
+      mastodon-redis:
+        condition: service_started
+    environment:
+      AWS_ACCESS_KEY_ID: ''
+      AWS_SECRET_ACCESS_KEY: ''
+      DB_HOST: mastodon-postgres
+      DB_NAME: postgres
+      DB_PASS: mastodon-postgres-pass
+      DB_PORT: '5432'
+      DB_USER: postgres
+      ES_ENABLED: "false"
+      ES_HOST: localhost
+      ES_PORT: '9200'
+      LOCAL_DOMAIN: mastodon.example.com
+      OTP_SECRET: ''
+      REDIS_HOST: mastodon-redis
+      REDIS_PORT: '6379'
+      S3_ALIAS_HOST: files.example.com
+      S3_BUCKET: files.example.com
+      S3_ENABLED: "false"
+      SECRET_KEY_BASE: ''
+      SMTP_FROM_ADDRESS: notificatons@example.com
+      SMTP_LOGIN: ''
+      SMTP_PASSWORD: ''
+      SMTP_PORT: '587'
+      SMTP_SERVER: smtp.mailgun.org
+      VAPID_PRIVATE_KEY: ''
+      VAPID_PUBLIC_KEY: ''
+    image: tootsuite/mastodon
+    networks:
+      mastodon-internal: {}
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/mastodon/mastodon:/mastodon/public/system:rw
+  mastodon-streaming:
+    command: node ./streaming
+    depends_on:
+      mastodon-postgres:
+        condition: service_started
+      mastodon-redis:
+        condition: service_started
+    environment:
+      AWS_ACCESS_KEY_ID: ''
+      AWS_SECRET_ACCESS_KEY: ''
+      DB_HOST: mastodon-postgres
+      DB_NAME: postgres
+      DB_PASS: mastodon-postgres-pass
+      DB_PORT: '5432'
+      DB_USER: postgres
+      ES_ENABLED: "false"
+      ES_HOST: localhost
+      ES_PORT: '9200'
+      LOCAL_DOMAIN: mastodon.example.com
+      OTP_SECRET: ''
+      REDIS_HOST: mastodon-redis
+      REDIS_PORT: '6379'
+      S3_ALIAS_HOST: files.example.com
+      S3_BUCKET: files.example.com
+      S3_ENABLED: "false"
+      SECRET_KEY_BASE: ''
+      SMTP_FROM_ADDRESS: notificatons@example.com
+      SMTP_LOGIN: ''
+      SMTP_PASSWORD: ''
+      SMTP_PORT: '587'
+      SMTP_SERVER: smtp.mailgun.org
+      VAPID_PRIVATE_KEY: ''
+      VAPID_PUBLIC_KEY: ''
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit
+        1
+    image: tootsuite/mastodon
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:api.mastodon.
+      traefik.port: '4000'
+    networks:
+      mastodon-internal: {}
+      srv: {}
+    restart: always
   morty:
     command: -listen 0.0.0.0:3000 -timeout 6 -ipv6
     environment:
