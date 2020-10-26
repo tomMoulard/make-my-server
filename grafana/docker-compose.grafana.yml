@@ -1,0 +1,84 @@
+version: '2'
+
+services:
+  grafana:
+    image: grafana/grafana:7.2.2
+    volumes:
+      - './grafana/grafana:/var/lib/grafana'
+    networks:
+      - 'srv'
+    user: 1000:1000
+    restart: always
+    depends_on:
+      - prometheus
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:grafana.${SITE}'
+      - 'traefik.port=3000'
+    environment:
+      - 'GF_METRICS_ENABLED=true'
+      - 'GF_AUTH_ANONYMOUS_ENABLED=true'
+      - 'GF_AUTH_ANONYMOUS_ORG_ROLE=Admin'
+      - 'GF_AUTH_BASIC_ENABLED=false'
+      - 'GF_AUTH_DISABLE_LOGIN_FORM=true'
+      - 'GF_INSTALL_PLUGINS=grafana-piechart-panel'
+
+  prometheus:
+    image: prom/prometheus:v2.22.0
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - 'srv'
+    user: 1000:1000
+    restart: always
+    depends_on:
+      - node_exporter
+      - alertmanager
+      - cadvisor
+    volumes:
+      - './grafana/prometheus/datas:/prometheus'
+      - './grafana/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml'
+      - './grafana/prometheus/rules:/etc/prometheus/rules'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:prometheus.${SITE}'
+      - 'traefik.port=9090'
+
+  node_exporter:
+    image: prom/node-exporter:v1.0.1
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:node_exporter.${SITE}'
+      - 'traefik.port=9100'
+    networks:
+      - 'srv'
+
+  alertmanager:
+    image: prom/alertmanager:v0.21.0
+    networks:
+      - 'srv'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:alertmanager.${SITE}'
+      - 'traefik.port=9093'
+    restart: always
+
+  cadvisor:
+    image: gcr.io/google-containers/cadvisor:v0.36.0
+    volumes:
+    - '/:/rootfs:ro'
+    - '/var/run:/var/run:rw'
+    - '/sys:/sys:ro'
+    - '/var/lib/docker/:/var/lib/docker:ro'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:cadvisor.${SITE}'
+      - 'traefik.port=8080'
