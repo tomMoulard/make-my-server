@@ -2,6 +2,15 @@ networks:
   mastodon-internal: {}
   srv: {}
 services:
+  alertmanager:
+    image: prom/alertmanager:v0.21.0
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:alertmanager.
+      traefik.port: '9093'
+    networks:
+      srv: {}
+    restart: always
   arachni:
     image: arachni/arachni
     labels:
@@ -75,6 +84,20 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/blog/nginx/conf/www:/output:rw
     - /home/runner/work/make-my-server/make-my-server/blog/blog:/src:rw
+  cadvisor:
+    image: gcr.io/google-containers/cadvisor:v0.36.0
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:cadvisor.
+      traefik.port: '8080'
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /:/rootfs:ro
+    - /sys:/sys:ro
+    - /var/lib/docker:/var/lib/docker:ro
+    - /var/run:/var/run:rw
   codimd:
     depends_on:
       codimd-db:
@@ -155,6 +178,28 @@ services:
     - /home/runner/work/make-my-server/make-my-server/gitlab/config:/etc/gitlab:rw
     - /home/runner/work/make-my-server/make-my-server/gitlab/logs:/var/log/gitlab:rw
     - /home/runner/work/make-my-server/make-my-server/gitlab/data:/var/opt/gitlab:rw
+  grafana:
+    depends_on:
+      prometheus:
+        condition: service_started
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_BASIC_ENABLED: "false"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+      GF_METRICS_ENABLED: "true"
+    image: grafana/grafana:7.2.2
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:grafana.
+      traefik.port: '3000'
+    networks:
+      srv: {}
+    restart: always
+    user: 1000:1000
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/grafana/grafana:/var/lib/grafana:rw
   jackett:
     environment:
       PGID: '1000'
@@ -460,6 +505,15 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/nginx/conf:/etc/nginx/conf.d:rw
     - /home/runner/work/make-my-server/make-my-server/nginx/logs:/var/log/nginx:rw
+  node_exporter:
+    image: prom/node-exporter:v1.0.1
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:node_exporter.
+      traefik.port: '9100'
+    networks:
+      srv: {}
+    restart: always
   pastebin:
     image: mkodockx/docker-pastebin:latest
     labels:
@@ -532,6 +586,33 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/portainer/data:/data:rw
     - /var/run/docker.sock:/var/run/docker.sock:rw
+  prometheus:
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --storage.tsdb.retention.time=30d
+    - --web.console.libraries=/usr/share/prometheus/console_libraries
+    - --web.console.templates=/usr/share/prometheus/consoles
+    depends_on:
+      alertmanager:
+        condition: service_started
+      cadvisor:
+        condition: service_started
+      node_exporter:
+        condition: service_started
+    image: prom/prometheus:v2.22.0
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:prometheus.
+      traefik.port: '9090'
+    networks:
+      srv: {}
+    restart: always
+    user: 1000:1000
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:rw
+    - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/rules:/etc/prometheus/rules:rw
+    - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/datas:/prometheus:rw
   runner:
     image: gitlab/gitlab-runner:latest
     labels:
