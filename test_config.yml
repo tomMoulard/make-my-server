@@ -1,5 +1,6 @@
 networks:
   mastodon-internal: {}
+  hits-internal: {}
   srv: {}
 services:
   alertmanager:
@@ -200,6 +201,33 @@ services:
     user: 1000:1000
     volumes:
     - /home/runner/work/make-my-server/make-my-server/grafana/grafana:/var/lib/grafana:rw
+  hits:
+    depends_on:
+      hits-postgresql:
+        condition: service_started
+    image: tommoulard/hits
+    labels:
+      traefik.docker.network: make-my-server_srv
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:hits.
+      traefik.port: '4000'
+    networks:
+      hits-internal: {}
+      srv: {}
+    restart: always
+  hits-postgresql:
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    image: postgres
+    networks:
+      hits-internal:
+        aliases:
+        - postgresql
+    restart: always
+    user: 1000:1000
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/hits/postgresql:/var/lib/postgresql/data:rw
   jackett:
     environment:
       PGID: '1000'
