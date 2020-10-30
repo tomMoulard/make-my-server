@@ -1,6 +1,6 @@
 networks:
-  mastodon-internal: {}
   hits-internal: {}
+  mastodon-internal: {}
   srv: {}
 services:
   alertmanager:
