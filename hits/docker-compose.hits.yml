@@ -1,0 +1,32 @@
+version: '2'
+
+networks:
+  hits-internal:
+
+services:
+  hits:
+    image: tommoulard/hits
+    networks:
+      - 'srv'
+      - 'hits-internal'
+    restart: always
+    depends_on:
+      - 'hits-postgresql'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:hits.${SITE}'
+      - 'traefik.port=4000'
+  hits-postgresql:
+    image: postgres
+    restart: always
+    user: 1000:1000
+    networks:
+      hits-internal:
+        aliases:
+          - 'postgresql'
+    environment:
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_PASSWORD=postgres'
+    volumes:
+      - './hits/postgresql/:/var/lib/postgresql/data'
+
