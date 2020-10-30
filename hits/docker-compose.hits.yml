@@ -15,6 +15,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:hits.${SITE}'
+      - 'traefik.docker.network=make-my-server_srv'
       - 'traefik.port=4000'
   hits-postgresql:
     image: postgres
