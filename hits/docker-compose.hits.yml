@@ -12,11 +12,17 @@ services:
     restart: always
     depends_on:
       - 'hits-postgresql'
+    healthcheck:
+      test: ['CMD', 'curl', '0.0.0.0:4000']
+      interval: 30s
+      timeout: 10s
+      retries: 5
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:hits.${SITE}'
       - 'traefik.docker.network=make-my-server_srv'
       - 'traefik.port=4000'
+
   hits-postgresql:
     image: postgres
     restart: always
@@ -28,6 +34,11 @@ services:
     environment:
       - 'POSTGRES_USER=postgres'
       - 'POSTGRES_PASSWORD=postgres'
+    healthcheck:
+      test: ['CMD', 'pg_isready']
+      interval: 30s
+      timeout: 10s
+      retries: 5
     volumes:
       - './hits/postgresql/:/var/lib/postgresql/data'
 
