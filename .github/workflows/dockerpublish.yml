@@ -21,4 +21,4 @@ jobs:
           name: test-artifacts
           path: |
             log.log
-            test_patch.patch
+            *.patch

@@ -35,7 +35,9 @@ rm $file
 
 # Creating a patch to fix test_config.yml
 dc config > test_config.yml
-git diff test_config.yml > test_patch.patch
+git add test_config.yml
+git commit -m "uncommited"
+git format-patch HEAD~1
 
 [ $errors -gt 0 ] && echo "There were $errors errors found" && exit 1
 
