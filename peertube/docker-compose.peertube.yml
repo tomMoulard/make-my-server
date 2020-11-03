@@ -39,6 +39,11 @@ services:
       - 'srv'
     volumes:
       - ./peertube/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD', 'pg_isready']
+      interval: 30s
+      timeout: 10s
+      retries: 5
     restart: always
     labels:
       - 'traefik.enable=false'
@@ -50,5 +55,10 @@ services:
     volumes:
       - ./peertube/redis:/data
     restart: always
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'PING']
+      interval: 30s
+      timeout: 10s
+      retries: 5
     labels:
       - 'traefik.enable=false'
