@@ -10,6 +10,11 @@ services:
     networks:
       - 'srv'
     restart: always
+    healthcheck:
+      test: ['CMD', 'curl', '0.0.0.0:8080/login/auth']
+      interval: 30s
+      timeout: 10s
+      retries: 5
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:streama.${SITE}'
