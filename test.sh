@@ -28,7 +28,14 @@ test ()
 
 test dc config -q
 
-file=$(mktemp) && dc config > $file 2>$log_file && test diff test_config.yml $file && rm $file
+file=$(mktemp)
+dc config > $file 2>$log_file
+test diff test_config.yml $file
+rm $file
+
+# Creating a patch to fix test_config.yml
+dc config > test_config.yml
+git diff > test_patch.patch
 
 [ $errors -gt 0 ] && echo "There were $errors errors found" && exit 1
 
