@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+# set -e
 errors=0
 log_file=log.log
 
@@ -35,7 +35,7 @@ rm $file
 
 # Creating a patch to fix test_config.yml
 dc config > test_config.yml
-git diff > test_patch.patch
+git diff test_config.yml > test_patch.patch
 
 [ $errors -gt 0 ] && echo "There were $errors errors found" && exit 1
 
