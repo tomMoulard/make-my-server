@@ -35,6 +35,8 @@ rm $file
 
 # Creating a patch to fix test_config.yml
 dc config > test_config.yml
+git config --global user.email "contact@github.com"
+git config --global user.name "Github Action"
 git add test_config.yml
 git commit -m "uncommited"
 git format-patch HEAD~1
