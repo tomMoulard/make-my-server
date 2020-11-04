@@ -649,6 +649,8 @@ services:
       test:
       - CMD
       - pg_isready
+      - -U
+      - peertube
       timeout: 10s
     image: postgres:10-alpine
     labels:
