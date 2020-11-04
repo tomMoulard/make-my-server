@@ -17,15 +17,24 @@ jobs:
           path: |
             log.log
             *.patch
-      - name: Build the docker-compose function
-        run: function dc { docker-compose $(find -name 'docker-compose*.yml' -type f -printf '%p\t%d\n'  2>/dev/null | sort -n -k2 | cut -f 1 | awk '{print "-f "$0}') $@;}
+  Health checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
       - name: Build the docker-compose stack
-        run: dc up -d
+        run: |
+          docker-compose $(find -name 'docker-compose*.yml' -type f -printf '%p\t%d\n'  2>/dev/null | sort -n -k2 | cut -f 1 | awk '{print "-f "$0}') \
+            up -d
       - name: Sleep for 30 seconds
         uses: jakejarvis/wait-action@master
         with:
           time: '30s'
       - name: Check running containers
-        run: dc ps
+        run: |
+          docker-compose $(find -name 'docker-compose*.yml' -type f -printf '%p\t%d\n'  2>/dev/null | sort -n -k2 | cut -f 1 | awk '{print "-f "$0}') \
+            ps
       - name: Check health
-        run: dc ps | grep unhealthy; [ $? -eq 0 ] && exit 1
+        run: docker-compose $(find -name 'docker-compose*.yml' -type f -printf '%p\t%d\n'  2>/dev/null | sort -n -k2 | cut -f 1 | awk '{print "-f "$0}') ps | grep unhealthy; [ $? -eq 0 ] && exit 1
+        run: |
+          docker-compose $(find -name 'docker-compose*.yml' -type f -printf '%p\t%d\n'  2>/dev/null | sort -n -k2 | cut -f 1 | awk '{print "-f "$0}') \
+            ps | grep unhealthy; [ $? -eq 0 ] && exit 1
