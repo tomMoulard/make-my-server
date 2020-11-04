@@ -989,7 +989,7 @@ services:
       - mysqladmin
       - ping
       - -uwordpress-user
-      - -p
+      - -p''
       - '|'
       - grep
       - alive
