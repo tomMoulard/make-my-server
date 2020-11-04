@@ -27,15 +27,15 @@ jobs:
           path: /var/lib/docker/
           key: ${{ runner.os }}-health-${{ github.job }}
       - name: Build the docker-compose stack
-        run: docker-compose -f nginx/docker-compose.nginx.yml up -d nginx
+        run: docker-compose -f docker-compose.yml -f nginx/docker-compose.nginx.yml up -d nginx
       - name: Sleep for 30 seconds
         uses: jakejarvis/wait-action@master
         with:
           time: '10s'
       - name: Check running containers
-        run: docker-compose -f nginx/docker-compose.nginx.yml ps
+        run: docker-compose -f docker-compose.yml -f nginx/docker-compose.nginx.yml ps
       - name: Check health
         run: |
           set -x
-          docker-compose -f nginx/docker-compose.nginx.yml ps | grep unhealthy
+          docker-compose -f docker-compose.yml -f nginx/docker-compose.nginx.yml ps | grep unhealthy
           ([ $? -eq 0 ] && exit 1) || exit 0
