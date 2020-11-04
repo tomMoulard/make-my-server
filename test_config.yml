@@ -241,6 +241,8 @@ services:
       test:
       - CMD
       - pg_isready
+      - -U
+      - postgres
       timeout: 10s
     image: postgres
     networks:
