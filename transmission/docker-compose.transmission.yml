@@ -19,7 +19,7 @@ services:
     restart: always
     healthcheck:
       test: ['CMD', 'curl', '0.0.0.0:9091/transmission/web/']
-      interval: 30s
+      interval: 10s
       timeout: 10s
       retries: 5
     labels:
