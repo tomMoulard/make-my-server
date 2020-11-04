@@ -35,7 +35,4 @@ jobs:
       - name: Check running containers
         run: docker-compose -f docker-compose.yml -f nginx/docker-compose.nginx.yml ps
       - name: Check health
-        run: |
-          set -x
-          docker-compose -f docker-compose.yml -f nginx/docker-compose.nginx.yml ps | grep unhealthy
-          ([ $? -eq 0 ] && exit 1) || exit 0
+        run: docker-compose -f docker-compose.yml -f nginx/docker-compose.nginx.yml ps | grep "Up (healthy)"
