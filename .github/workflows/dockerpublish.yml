@@ -68,8 +68,8 @@ jobs:
           key: ${{ runner.os }}-health-${{ github.job }}
       - name: Build the docker-compose stack
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d
-      - name: Waiting for service startup (10s)
-        run: sleep 10s
+      - name: Waiting for service startup (20s)
+        run: sleep 20s
       - name: Check running containers
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
@@ -125,8 +125,8 @@ jobs:
           key: ${{ runner.os }}-health-${{ github.job }}
       - name: Build the docker-compose stack
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d
-      - name: Waiting for service startup (10s)
-        run: sleep 10s
+      - name: Waiting for service startup (20s)
+        run: sleep 20s
       - name: Check running containers
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
