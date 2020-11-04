@@ -1,5 +1,8 @@
 version: '2'
 
+networks:
+    codi-internal:
+
 services:
   codimd:
     image: nabo.codimd.dev/hackmdio/hackmd:2.1.0
@@ -14,11 +17,13 @@ services:
       - './codimd/data:/home/hackmd/app/public/uploads'
     networks:
       - 'srv'
+      - 'codi-internal'
     restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:codimd.${SITE}'
       - 'traefik.port=3000'
+
   codimd-db:
     image: postgres:11.6-alpine
     environment:
@@ -28,7 +33,7 @@ services:
     volumes:
       - './codimd/db:/var/lib/postgresql/data'
     networks:
-      - 'srv'
+      - 'codi-internal'
     restart: always
     labels:
       - 'traefik.enable=false'
