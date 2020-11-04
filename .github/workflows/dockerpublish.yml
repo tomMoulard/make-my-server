@@ -17,14 +17,19 @@ jobs:
           path: |
             log.log
             *.patch
-  Health-checks:
+  Health-checks-nginx:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Caching
+        uses: actions/cache@v2
+        with:
+          path: /var/lib/docker/
+          key: ${{ runner.os }}-health-${{ github.job }}
       - name: Build the docker-compose stack
         run: |
           docker-compose $(find -name 'docker-compose*.yml' -type f -printf '%p\t%d\n'  2>/dev/null | sort -n -k2 | cut -f 1 | awk '{print "-f "$0}') \
-            up -d
+            up -d nginx
       - name: Sleep for 30 seconds
         uses: jakejarvis/wait-action@master
         with:
