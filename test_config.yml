@@ -1,4 +1,5 @@
 networks:
+  codi-internal: {}
   hits-internal: {}
   mastodon-internal: {}
   srv: {}
@@ -122,6 +123,7 @@ services:
     links:
     - codimd-db
     networks:
+      codi-internal: {}
       srv: {}
     restart: always
     volumes:
@@ -135,7 +137,7 @@ services:
     labels:
       traefik.enable: "false"
     networks:
-      srv: {}
+      codi-internal: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/codimd/db:/var/lib/postgresql/data:rw
