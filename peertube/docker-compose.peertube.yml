@@ -40,7 +40,7 @@ services:
     volumes:
       - ./peertube/db:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD', 'pg_isready']
+      test: ['CMD', 'pg_isready', '-U', 'peertube']
       interval: 10s
       timeout: 10s
       retries: 5
