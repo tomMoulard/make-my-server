@@ -1,14 +1,9 @@
-name: Docker
+name: Tests
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
 
 jobs:
-  # Run tests.
-  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
   test:
     runs-on: ubuntu-latest
     steps:
@@ -22,3 +17,15 @@ jobs:
           path: |
             log.log
             *.patch
+      - name: Build the docker-compose function
+        run: function dc { docker-compose $(find -name 'docker-compose*.yml' -type f -printf '%p\t%d\n'  2>/dev/null | sort -n -k2 | cut -f 1 | awk '{print "-f "$0}') $@;}
+      - name: Build the docker-compose stack
+        run: dc up -d
+      - name: Sleep for 30 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '30s'
+      - name: Check running containers
+        run: dc ps
+      - name: Check health
+        run: dc ps | grep unhealthy; [ $? -eq 0 ] && exit 1
