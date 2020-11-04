@@ -55,3 +55,117 @@ jobs:
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+  Health-checks-hits:
+    runs-on: ubuntu-latest
+    env:
+      SERVICE: hits
+    steps:
+      - uses: actions/checkout@v2
+      - name: Caching
+        uses: actions/cache@v2
+        with:
+          path: /var/lib/docker/
+          key: ${{ runner.os }}-health-${{ github.job }}
+      - name: Build the docker-compose stack
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d
+      - name: Waiting for service startup (10s)
+        run: sleep 10s
+      - name: Check running containers
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
+      - name: Check health
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+  Health-checks-peertube:
+    runs-on: ubuntu-latest
+    env:
+      SERVICE: peertube
+    steps:
+      - uses: actions/checkout@v2
+      - name: Caching
+        uses: actions/cache@v2
+        with:
+          path: /var/lib/docker/
+          key: ${{ runner.os }}-health-${{ github.job }}
+      - name: Build the docker-compose stack
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d
+      - name: Waiting for service startup (10s)
+        run: sleep 10s
+      - name: Check running containers
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
+      - name: Check health
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+  Health-checks-transmission:
+    runs-on: ubuntu-latest
+    env:
+      SERVICE: transmission
+    steps:
+      - uses: actions/checkout@v2
+      - name: Caching
+        uses: actions/cache@v2
+        with:
+          path: /var/lib/docker/
+          key: ${{ runner.os }}-health-${{ github.job }}
+      - name: Build the docker-compose stack
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d
+      - name: Waiting for service startup (10s)
+        run: sleep 10s
+      - name: Check running containers
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
+      - name: Check health
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+  Health-checks-wordpress:
+    runs-on: ubuntu-latest
+    env:
+      SERVICE: wordpress
+    steps:
+      - uses: actions/checkout@v2
+      - name: Caching
+        uses: actions/cache@v2
+        with:
+          path: /var/lib/docker/
+          key: ${{ runner.os }}-health-${{ github.job }}
+      - name: Build the docker-compose stack
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d
+      - name: Waiting for service startup (10s)
+        run: sleep 10s
+      - name: Check running containers
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
+      - name: Check health
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+  Health-checks-nextcloud:
+    runs-on: ubuntu-latest
+    env:
+      SERVICE: nextcloud
+    steps:
+      - uses: actions/checkout@v2
+      - name: Caching
+        uses: actions/cache@v2
+        with:
+          path: /var/lib/docker/
+          key: ${{ runner.os }}-health-${{ github.job }}
+      - name: Build the docker-compose stack
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d
+      - name: Waiting for service startup (10s)
+        run: sleep 10s
+      - name: Check running containers
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
+      - name: Check health
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+  Health-checks-jackett:
+    runs-on: ubuntu-latest
+    env:
+      SERVICE: jackett
+    steps:
+      - uses: actions/checkout@v2
+      - name: Caching
+        uses: actions/cache@v2
+        with:
+          path: /var/lib/docker/
+          key: ${{ runner.os }}-health-${{ github.job }}
+      - name: Build the docker-compose stack
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d
+      - name: Waiting for service startup (10s)
+        run: sleep 10s
+      - name: Check running containers
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
+      - name: Check health
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
