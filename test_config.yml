@@ -571,7 +571,7 @@ services:
     - /home/runner/work/make-my-server/make-my-server/nextcloud/db:/var/lib/mysql:rw
   nginx:
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD
