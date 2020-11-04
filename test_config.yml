@@ -63,7 +63,7 @@ services:
       blog-builder:
         condition: service_started
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD
