@@ -40,7 +40,7 @@ services:
       - 'srv'
     restart: always
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping' , '-p 3306', '-uwordpress-user', '-p${USERS}', '|', 'grep', 'alive']
+      test: ['CMD', 'mysqladmin', 'ping' , '-uwordpress-user', "-p'${USERS}'", '|', 'grep', 'alive']
       interval: 10s
       timeout: 10s
       retries: 5
