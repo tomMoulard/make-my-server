@@ -988,7 +988,6 @@ services:
       - CMD
       - mysqladmin
       - ping
-      - -p 3306
       - -uwordpress-user
       - -p
       - '|'
