@@ -120,13 +120,13 @@ services:
       retries: 5
       test:
       - CMD
-      - curl
+      - wget
       - 0.0.0.0:3000
       - '|'
       - grep
-      - 200
+      - '200'
       timeout: 10s
-    image: nabo.codimd.dev/hackmdio/hackmd:2.1.0
+    image: nabo.codimd.dev/hackmdio/hackmd:2.2.0
     labels:
       traefik.enable: "true"
       traefik.frontend.rule: Host:codimd.
