@@ -4,7 +4,7 @@ on:
   push:
 
 jobs:
-  test:
+  Config-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,7 +17,7 @@ jobs:
           path: |
             log.log
             *.patch
-  Health checks:
+  Health-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
