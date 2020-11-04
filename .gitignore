@@ -5,3 +5,4 @@ gitlab/logs
 portainer/data
 .env
 *.patch
+*.swp
