@@ -19,7 +19,7 @@ services:
     restart: always
     healthcheck:
       test: ['CMD', 'curl', '0.0.0.0:80']
-      interval: 30s
+      interval: 10s
       timeout: 10s
       retries: 5
     labels:
@@ -41,7 +41,7 @@ services:
     restart: always
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping' , '-p 3306', '-uwordpress-user', '-p${USERS}', '|', 'grep', 'alive']
-      interval: 30s
+      interval: 10s
       timeout: 10s
       retries: 5
     labels:

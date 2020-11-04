@@ -214,7 +214,7 @@ services:
       hits-postgresql:
         condition: service_started
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD
@@ -236,7 +236,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD
@@ -257,7 +257,7 @@ services:
       PUID: '1000'
       TZ: Europe/Paris
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD
@@ -528,7 +528,7 @@ services:
     - /home/runner/work/make-my-server/make-my-server/musicbot/playlists:/musicBot/playlists:rw
   nextcloud:
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD
@@ -555,7 +555,7 @@ services:
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_USER: nextcloud
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD
@@ -642,7 +642,7 @@ services:
       POSTGRES_PASSWORD: ''
       POSTGRES_USER: peertube
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD
@@ -658,7 +658,7 @@ services:
     - /home/runner/work/make-my-server/make-my-server/peertube/db:/var/lib/postgresql/data:rw
   peertube-redis:
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD
@@ -827,7 +827,7 @@ services:
     - /home/runner/work/make-my-server/make-my-server/sonarr/tv:/tv:rw
   streama:
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD
@@ -898,7 +898,7 @@ services:
       PUID: '1000'
       TZ: Europe/Paris
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD
@@ -952,7 +952,7 @@ services:
       WORDPRESS_DB_PASSWORD: ''
       WORDPRESS_DB_USER: wordpress-user
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD
@@ -978,7 +978,7 @@ services:
       MYSQL_RANDOM_ROOT_PASSWORD: ''
       MYSQL_USER: wordpress-user
     healthcheck:
-      interval: 30s
+      interval: 10s
       retries: 5
       test:
       - CMD

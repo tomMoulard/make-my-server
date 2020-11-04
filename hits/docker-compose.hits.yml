@@ -14,7 +14,7 @@ services:
       - 'hits-postgresql'
     healthcheck:
       test: ['CMD', 'curl', '0.0.0.0:4000']
-      interval: 30s
+      interval: 10s
       timeout: 10s
       retries: 5
     labels:
@@ -36,7 +36,7 @@ services:
       - 'POSTGRES_PASSWORD=postgres'
     healthcheck:
       test: ['CMD', 'pg_isready']
-      interval: 30s
+      interval: 10s
       timeout: 10s
       retries: 5
     volumes:

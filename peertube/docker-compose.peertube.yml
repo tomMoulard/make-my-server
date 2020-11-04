@@ -41,7 +41,7 @@ services:
       - ./peertube/db:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD', 'pg_isready']
-      interval: 30s
+      interval: 10s
       timeout: 10s
       retries: 5
     restart: always
@@ -57,7 +57,7 @@ services:
     restart: always
     healthcheck:
       test: ['CMD', 'redis-cli', 'PING']
-      interval: 30s
+      interval: 10s
       timeout: 10s
       retries: 5
     labels:
