@@ -131,3 +131,22 @@ jobs:
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+  Health-checks-codimd:
+    runs-on: ubuntu-latest
+    env:
+      SERVICE: codimd
+    steps:
+      - uses: actions/checkout@v2
+      - name: Caching
+        uses: actions/cache@v2
+        with:
+          path: /var/lib/docker/
+          key: ${{ runner.os }}-health-${{ github.job }}
+      - name: Build the docker-compose stack
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d
+      - name: Waiting for service startup (10s)
+        run: sleep 10s
+      - name: Check running containers
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
+      - name: Check health
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"

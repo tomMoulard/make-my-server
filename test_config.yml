@@ -115,6 +115,17 @@ services:
     environment:
       CMD_DB_URL: postgres://codimd:mypwd@codimd-db/codimd
       CMD_USECDN: "false"
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:3000
+      - '|'
+      - grep
+      - 200
+      timeout: 10s
     image: nabo.codimd.dev/hackmdio/hackmd:2.1.0
     labels:
       traefik.enable: "true"
@@ -133,6 +144,15 @@ services:
       POSTGRES_DB: codimd
       POSTGRES_PASSWORD: mypwd
       POSTGRES_USER: codimd
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - codimd
+      timeout: 10s
     image: postgres:11.6-alpine
     labels:
       traefik.enable: "false"

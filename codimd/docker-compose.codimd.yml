@@ -5,7 +5,7 @@ networks:
 
 services:
   codimd:
-    image: nabo.codimd.dev/hackmdio/hackmd:2.1.0
+    image: nabo.codimd.dev/hackmdio/hackmd:2.2.0
     environment:
       - 'CMD_DB_URL=postgres://codimd:mypwd@codimd-db/codimd'
       - 'CMD_USECDN=false'
@@ -19,6 +19,11 @@ services:
       - 'srv'
       - 'codi-internal'
     restart: always
+    healthcheck:
+      test: ['CMD', 'wget', '0.0.0.0:3000', '|', 'grep', '200']
+      interval: 10s
+      timeout: 10s
+      retries: 5
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:codimd.${SITE}'
@@ -35,5 +40,10 @@ services:
     networks:
       - 'codi-internal'
     restart: always
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'codimd']
+      interval: 10s
+      timeout: 10s
+      retries: 5
     labels:
       - 'traefik.enable=false'
