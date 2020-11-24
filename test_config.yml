@@ -176,6 +176,15 @@ services:
     - /home/runner/work/make-my-server/make-my-server/elk/logstash:/usr/share/logstash/pipeline:rw
     - /home/runner/work/make-my-server/make-my-server/nginx/logs:/var/log/nginx:rw
     - /home/runner/work/make-my-server/make-my-server/traefik/logs:/var/log/traefik:rw
+  minecraft:
+    image: itzg/minecraft-server
+    labels:
+      traefik.enable: "false"
+    ports:
+      - 25565:25565/udp
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/factorio:/minecraft:rw
   morty:
     command: -listen 0.0.0.0:3000 -timeout 6 -ipv6
     environment:
