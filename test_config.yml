@@ -1,6 +1,18 @@
 networks:
+  codi-internal: {}
+  hits-internal: {}
+  mastodon-internal: {}
   srv: {}
 services:
+  alertmanager:
+    image: prom/alertmanager:v0.21.0
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:alertmanager.
+      traefik.port: '9093'
+    networks:
+      srv: {}
+    restart: always
   arachni:
     image: arachni/arachni
     labels:
@@ -49,7 +61,16 @@ services:
     - /home/runner/work/make-my-server/make-my-server/bitwarden/data:/data:rw
   blog:
     depends_on:
-    - blog-builder
+      blog-builder:
+        condition: service_started
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:80
+      timeout: 10s
     image: nginx:stable-alpine
     labels:
       traefik.enable: "true"
@@ -63,7 +84,7 @@ services:
     - /home/runner/work/make-my-server/make-my-server/blog/nginx/logs:/var/log/nginx:rw
   blog-builder:
     environment:
-      HUGO_BASEURL: https://blog.
+      HUGO_BASEURL: https://blog./
       HUGO_REFRESH_TIME: '3600'
       HUGO_THEME: hugo-theme-cactus-plus
     image: jojomi/hugo:0.59
@@ -73,6 +94,73 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/blog/nginx/conf/www:/output:rw
     - /home/runner/work/make-my-server/make-my-server/blog/blog:/src:rw
+  cadvisor:
+    image: gcr.io/google-containers/cadvisor:v0.36.0
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:cadvisor.
+      traefik.port: '8080'
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /:/rootfs:ro
+    - /sys:/sys:ro
+    - /var/lib/docker:/var/lib/docker:ro
+    - /var/run:/var/run:rw
+  codimd:
+    depends_on:
+      codimd-db:
+        condition: service_started
+    environment:
+      CMD_DB_URL: postgres://codimd:mypwd@codimd-db/codimd
+      CMD_USECDN: "false"
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - wget
+      - 0.0.0.0:3000
+      - '|'
+      - grep
+      - '200'
+      timeout: 10s
+    image: nabo.codimd.dev/hackmdio/hackmd:2.2.0
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:codimd.
+      traefik.port: '3000'
+    links:
+    - codimd-db
+    networks:
+      codi-internal: {}
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/codimd/data:/home/hackmd/app/public/uploads:rw
+  codimd-db:
+    environment:
+      POSTGRES_DB: codimd
+      POSTGRES_PASSWORD: mypwd
+      POSTGRES_USER: codimd
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - codimd
+      timeout: 10s
+    image: postgres:11.6-alpine
+    labels:
+      traefik.enable: "false"
+    networks:
+      codi-internal: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/codimd/db:/var/lib/postgresql/data:rw
   elasticsearch:
     environment:
       ES_JAVA_OPTS: -Xms512m -Xmx512m
@@ -92,7 +180,9 @@ services:
     labels:
       traefik.enable: "false"
     ports:
-    - 34197:34197/udp
+    - protocol: udp
+      published: 34197
+      target: 34197
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/factorio:/factorio:rw
@@ -112,17 +202,92 @@ services:
     networks:
       srv: {}
     ports:
-    - 2224:22/tcp
+    - published: 2224
+      target: 22
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/gitlab/config:/etc/gitlab:rw
     - /home/runner/work/make-my-server/make-my-server/gitlab/logs:/var/log/gitlab:rw
     - /home/runner/work/make-my-server/make-my-server/gitlab/data:/var/opt/gitlab:rw
+  grafana:
+    depends_on:
+      prometheus:
+        condition: service_started
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_BASIC_ENABLED: "false"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+      GF_METRICS_ENABLED: "true"
+    image: grafana/grafana:7.2.2
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:grafana.
+      traefik.port: '3000'
+    networks:
+      srv: {}
+    restart: always
+    user: 1000:1000
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/grafana/grafana:/var/lib/grafana:rw
+  hits:
+    depends_on:
+      hits-postgresql:
+        condition: service_started
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:4000
+      timeout: 10s
+    image: tommoulard/hits
+    labels:
+      traefik.docker.network: make-my-server_srv
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:hits.
+      traefik.port: '4000'
+    networks:
+      hits-internal: {}
+      srv: {}
+    restart: always
+  hits-postgresql:
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - postgres
+      timeout: 10s
+    image: postgres
+    networks:
+      hits-internal:
+        aliases:
+        - postgresql
+    restart: always
+    user: 1000:1000
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/hits/postgresql:/var/lib/postgresql/data:rw
   jackett:
     environment:
       PGID: '1000'
       PUID: '1000'
       TZ: Europe/Paris
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:9117/UI/Login?ReturnUrl=%2FUI%2FDashboard
+      timeout: 10s
     image: linuxserver/jackett:v0.15.5-ls61
     labels:
       traefik.enable: "true"
@@ -135,6 +300,21 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/jackett/config:/config:rw
     - /home/runner/work/make-my-server/make-my-server/jackett/downloads:/downloads:rw
+  jellyfin:
+    image: jellyfin/jellyfin
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:jellyfin.
+      traefik.port: '8096'
+    networks:
+      srv: {}
+    restart: always
+    user: 1000:1000
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/jellyfin/cache:/cache:rw
+    - /home/runner/work/make-my-server/make-my-server/jellyfin/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/jellyfin/logs:/logs:rw
+    - /home/runner/work/make-my-server/make-my-server/jellyfin/media:/media:rw
   jupyter:
     command: 'jupyter notebook --NotebookApp.token='''' --NotebookApp.password=''''
 
@@ -176,6 +356,178 @@ services:
     - /home/runner/work/make-my-server/make-my-server/elk/logstash:/usr/share/logstash/pipeline:rw
     - /home/runner/work/make-my-server/make-my-server/nginx/logs:/var/log/nginx:rw
     - /home/runner/work/make-my-server/make-my-server/traefik/logs:/var/log/traefik:rw
+  mastodon:
+    command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p
+      3000"
+    depends_on:
+      mastodon-postgres:
+        condition: service_started
+      mastodon-redis:
+        condition: service_started
+      mastodon-sidekiq:
+        condition: service_started
+      mastodon-streaming:
+        condition: service_started
+    environment:
+      AWS_ACCESS_KEY_ID: ''
+      AWS_SECRET_ACCESS_KEY: ''
+      DB_HOST: mastodon-postgres
+      DB_NAME: postgres
+      DB_PASS: mastodon-postgres-pass
+      DB_PORT: '5432'
+      DB_USER: postgres
+      ES_ENABLED: "false"
+      ES_HOST: localhost
+      ES_PORT: '9200'
+      LOCAL_DOMAIN: mastodon.example.com
+      OTP_SECRET: ''
+      REDIS_HOST: mastodon-redis
+      REDIS_PORT: '6379'
+      S3_ALIAS_HOST: files.example.com
+      S3_BUCKET: files.example.com
+      S3_ENABLED: "false"
+      SECRET_KEY_BASE: ''
+      SMTP_FROM_ADDRESS: notificatons@example.com
+      SMTP_LOGIN: ''
+      SMTP_PASSWORD: ''
+      SMTP_PORT: '587'
+      SMTP_SERVER: smtp.mailgun.org
+      VAPID_PRIVATE_KEY: ''
+      VAPID_PUBLIC_KEY: ''
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q --spider --proxy=off localhost:3000/health || exit 1
+    image: tootsuite/mastodon
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:mastodon.
+      traefik.port: '3000'
+    networks:
+      mastodon-internal: {}
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/mastodon/mastodon:/mastodon/public/system:rw
+  mastodon-postgres:
+    environment:
+      POSTGRES_PASSWORD: mastodon-postgres-pass
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - postgres
+    image: postgres:9.6-alpine
+    labels:
+      traefik.enable: "false"
+    networks:
+      mastodon-internal: {}
+    restart: always
+    shm_size: 256mb
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/mastodon/postgres:/var/lib/postgresql/data:rw
+  mastodon-redis:
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - ping
+    image: redis:6.0-alpine
+    labels:
+      traefik.enable: "false"
+    networks:
+      mastodon-internal: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/mastodon/redis:/data:rw
+  mastodon-sidekiq:
+    command: bundle exec sidekiq
+    depends_on:
+      mastodon-postgres:
+        condition: service_started
+      mastodon-redis:
+        condition: service_started
+    environment:
+      AWS_ACCESS_KEY_ID: ''
+      AWS_SECRET_ACCESS_KEY: ''
+      DB_HOST: mastodon-postgres
+      DB_NAME: postgres
+      DB_PASS: mastodon-postgres-pass
+      DB_PORT: '5432'
+      DB_USER: postgres
+      ES_ENABLED: "false"
+      ES_HOST: localhost
+      ES_PORT: '9200'
+      LOCAL_DOMAIN: mastodon.example.com
+      OTP_SECRET: ''
+      REDIS_HOST: mastodon-redis
+      REDIS_PORT: '6379'
+      S3_ALIAS_HOST: files.example.com
+      S3_BUCKET: files.example.com
+      S3_ENABLED: "false"
+      SECRET_KEY_BASE: ''
+      SMTP_FROM_ADDRESS: notificatons@example.com
+      SMTP_LOGIN: ''
+      SMTP_PASSWORD: ''
+      SMTP_PORT: '587'
+      SMTP_SERVER: smtp.mailgun.org
+      VAPID_PRIVATE_KEY: ''
+      VAPID_PUBLIC_KEY: ''
+    image: tootsuite/mastodon
+    networks:
+      mastodon-internal: {}
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/mastodon/mastodon:/mastodon/public/system:rw
+  mastodon-streaming:
+    command: node ./streaming
+    depends_on:
+      mastodon-postgres:
+        condition: service_started
+      mastodon-redis:
+        condition: service_started
+    environment:
+      AWS_ACCESS_KEY_ID: ''
+      AWS_SECRET_ACCESS_KEY: ''
+      DB_HOST: mastodon-postgres
+      DB_NAME: postgres
+      DB_PASS: mastodon-postgres-pass
+      DB_PORT: '5432'
+      DB_USER: postgres
+      ES_ENABLED: "false"
+      ES_HOST: localhost
+      ES_PORT: '9200'
+      LOCAL_DOMAIN: mastodon.example.com
+      OTP_SECRET: ''
+      REDIS_HOST: mastodon-redis
+      REDIS_PORT: '6379'
+      S3_ALIAS_HOST: files.example.com
+      S3_BUCKET: files.example.com
+      S3_ENABLED: "false"
+      SECRET_KEY_BASE: ''
+      SMTP_FROM_ADDRESS: notificatons@example.com
+      SMTP_LOGIN: ''
+      SMTP_PASSWORD: ''
+      SMTP_PORT: '587'
+      SMTP_SERVER: smtp.mailgun.org
+      VAPID_PRIVATE_KEY: ''
+      VAPID_PUBLIC_KEY: ''
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit
+        1
+    image: tootsuite/mastodon
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:api.mastodon.
+      traefik.port: '4000'
+    networks:
+      mastodon-internal: {}
+      srv: {}
+    restart: always
   minecraft:
     image: itzg/minecraft-server
     labels:
@@ -208,6 +560,14 @@ services:
     - /home/runner/work/make-my-server/make-my-server/musicbot/conf:/musicBot/conf:rw
     - /home/runner/work/make-my-server/make-my-server/musicbot/playlists:/musicBot/playlists:rw
   nextcloud:
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:80
+      timeout: 10s
     image: nextcloud
     labels:
       traefik.enable: "true"
@@ -227,6 +587,15 @@ services:
       MYSQL_PASSWORD: ''
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_USER: nextcloud
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - mysqlcheck
+      - --all-databases
+      - -ppass
+      timeout: 10s
     image: mariadb
     labels:
       traefik.enable: "false"
@@ -234,6 +603,14 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/nextcloud/db:/var/lib/mysql:rw
   nginx:
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:80
+      timeout: 10s
     image: nginx:stable-alpine
     labels:
       traefik.enable: "true"
@@ -245,6 +622,15 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/nginx/conf:/etc/nginx/conf.d:rw
     - /home/runner/work/make-my-server/make-my-server/nginx/logs:/var/log/nginx:rw
+  node_exporter:
+    image: prom/node-exporter:v1.0.1
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:node_exporter.
+      traefik.port: '9100'
+    networks:
+      srv: {}
+    restart: always
   pastebin:
     image: mkodockx/docker-pastebin:latest
     labels:
@@ -256,8 +642,10 @@ services:
     restart: always
   peertube:
     depends_on:
-    - peertube-db
-    - peertube-redis
+      peertube-db:
+        condition: service_started
+      peertube-redis:
+        condition: service_started
     environment:
       PEERTUBE_ADMIN_EMAIL: admin@
       PEERTUBE_DB_HOSTNAME: peertube-db
@@ -286,6 +674,15 @@ services:
       POSTGRES_DB: peertube
       POSTGRES_PASSWORD: ''
       POSTGRES_USER: peertube
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - peertube
+      timeout: 10s
     image: postgres:10-alpine
     labels:
       traefik.enable: "false"
@@ -295,6 +692,14 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/peertube/db:/var/lib/postgresql/data:rw
   peertube-redis:
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - redis-cli
+      - PING
+      timeout: 10s
     image: redis:4-alpine
     labels:
       traefik.enable: "false"
@@ -315,6 +720,33 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/portainer/data:/data:rw
     - /var/run/docker.sock:/var/run/docker.sock:rw
+  prometheus:
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --storage.tsdb.retention.time=30d
+    - --web.console.libraries=/usr/share/prometheus/console_libraries
+    - --web.console.templates=/usr/share/prometheus/consoles
+    depends_on:
+      alertmanager:
+        condition: service_started
+      cadvisor:
+        condition: service_started
+      node_exporter:
+        condition: service_started
+    image: prom/prometheus:v2.22.0
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:prometheus.
+      traefik.port: '9090'
+    networks:
+      srv: {}
+    restart: always
+    user: 1000:1000
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:rw
+    - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/rules:/etc/prometheus/rules:rw
+    - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/datas:/prometheus:rw
   runner:
     image: gitlab/gitlab-runner:latest
     labels:
@@ -328,8 +760,10 @@ services:
   searx:
     command: -f
     depends_on:
-    - morty
-    - searx-checker
+      morty:
+        condition: service_started
+      searx-checker:
+        condition: service_started
     environment:
       BASE_URL: https://searx./
       BIND_ADDRESS: 0.0.0.0:8080
@@ -360,8 +794,10 @@ services:
     - /home/runner/work/make-my-server/make-my-server/searx/searx-checker:/usr/local/searx-checker/html/data:rw
   sharelatex:
     depends_on:
-    - sharelatex-mongo
-    - sharelatex-redis
+      sharelatex-mongo:
+        condition: service_started
+      sharelatex-redis:
+        condition: service_started
     environment:
       SHARELATEX_ADMIN_EMAIL: ''
       SHARELATEX_APP_NAME: '''s ShareLaTeX'
@@ -425,6 +861,14 @@ services:
     - /home/runner/work/make-my-server/make-my-server/sonarr/downloads:/downloads:rw
     - /home/runner/work/make-my-server/make-my-server/sonarr/tv:/tv:rw
   streama:
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:8080/login/auth
+      timeout: 10s
     image: gkiko/streama:v1.8.3
     labels:
       traefik.enable: "true"
@@ -448,12 +892,23 @@ services:
     restart: always
     volumes:
     - /home/runner:/home/project:cached
+  tor-relay:
+    command: -f /etc/tor/torrc.middle
+    image: jess/tor-relay
+    labels:
+      traefik.enable: "false"
+    networks:
+      srv: {}
+    ports:
+    - published: 9001
+      target: 9001
+    restart: always
+    volumes:
+    - /etc/localtime:/etc/localtime:rw
   traefik:
     command: '--api --api.statistics
 
       '
-    expose:
-    - '8080'
     image: traefik:1.7.12
     labels:
       traefik.enable: "true"
@@ -463,11 +918,12 @@ services:
     networks:
       srv: {}
     ports:
-    - 80:80/tcp
-    - 443:443/tcp
+    - published: 80
+      target: 80
+    - published: 443
+      target: 443
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/traefik/acme.json:/acme.json:rw
     - /home/runner/work/make-my-server/make-my-server/traefik/logs:/logs:rw
     - /home/runner/work/make-my-server/make-my-server/traefik/traefik.toml:/traefik.toml:rw
     - /var/run/docker.sock:/var/run/docker.sock:rw
@@ -476,17 +932,28 @@ services:
       PGID: '1000'
       PUID: '1000'
       TZ: Europe/Paris
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:9091/transmission/web/
+      timeout: 10s
     image: linuxserver/transmission:2.94-r1-ls12
     labels:
       traefik.enable: "true"
       traefik.frontend.auth.basic.users: ''
-      traefik.frontend.rule: Host:torrent.
+      traefik.frontend.rule: Host:transmission.
       traefik.port: '9091'
     networks:
       srv: {}
     ports:
-    - 51413:51413/tcp
-    - 51413:51413/udp
+    - published: 51413
+      target: 51413
+    - protocol: udp
+      published: 51413
+      target: 51413
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/transmission/config:/config:rw
@@ -501,20 +968,32 @@ services:
       VPN_USER: ''
     image: hwdsl2/ipsec-vpn-server:latest
     ports:
-    - 500:500/tcp
-    - 4500:4500/udp
+    - published: 500
+      target: 500
+    - protocol: udp
+      published: 4500
+      target: 4500
     privileged: true
     restart: always
     volumes:
     - /lib/modules:/lib/modules:ro
   wordpress:
     depends_on:
-    - wordpress-db
+      wordpress-db:
+        condition: service_started
     environment:
       WORDPRESS_DB_HOST: wordpress-db
       WORDPRESS_DB_NAME: wordpress-db
       WORDPRESS_DB_PASSWORD: ''
       WORDPRESS_DB_USER: wordpress-user
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:80
+      timeout: 10s
     image: wordpress
     labels:
       traefik.enable: "true"
@@ -533,6 +1012,19 @@ services:
       MYSQL_PASSWORD: ''
       MYSQL_RANDOM_ROOT_PASSWORD: ''
       MYSQL_USER: wordpress-user
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - mysqladmin
+      - ping
+      - -uwordpress-user
+      - -p''
+      - '|'
+      - grep
+      - alive
+      timeout: 10s
     image: mysql:5.7
     labels:
       traefik.enable: "false"
@@ -541,5 +1033,5 @@ services:
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/wordpress/db:/var/lib/mysql:rw
-version: '2.0'
+version: '2'
 

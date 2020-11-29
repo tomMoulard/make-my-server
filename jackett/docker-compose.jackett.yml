@@ -13,6 +13,11 @@ services:
     networks:
       - 'srv'
     restart: always
+    healthcheck:
+      test: ['CMD', 'curl', '0.0.0.0:9117/UI/Login?ReturnUrl=%2FUI%2FDashboard']
+      interval: 10s
+      timeout: 10s
+      retries: 5
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:jackett.${SITE}'

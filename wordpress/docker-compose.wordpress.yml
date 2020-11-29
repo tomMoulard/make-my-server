@@ -17,6 +17,11 @@ services:
     networks:
       - 'srv'
     restart: always
+    healthcheck:
+      test: ['CMD', 'curl', '0.0.0.0:80']
+      interval: 10s
+      timeout: 10s
+      retries: 5
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:wordpress.${SITE}'
@@ -34,5 +39,10 @@ services:
     networks:
       - 'srv'
     restart: always
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping' , '-uwordpress-user', "-p'${USERS}'", '|', 'grep', 'alive']
+      interval: 10s
+      timeout: 10s
+      retries: 5
     labels:
       - 'traefik.enable=false'

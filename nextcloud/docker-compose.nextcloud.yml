@@ -10,6 +10,11 @@ services:
     networks:
       - 'srv'
     restart: always
+    healthcheck:
+      test: ['CMD', 'curl', '0.0.0.0:80']
+      interval: 10s
+      timeout: 10s
+      retries: 5
     labels:
       - 'traefik.enable=true'
       - 'traefik.frontend.rule=Host:cloud.${SITE}'
@@ -26,5 +31,10 @@ services:
       - 'MYSQL_DATABASE=nextcloud'
       - 'MYSQL_USER=nextcloud'
     restart: always
+    healthcheck:
+      test: ['CMD', 'mysqlcheck', '--all-databases', '-ppass']
+      interval: 10s
+      timeout: 10s
+      retries: 5
     labels:
       - 'traefik.enable=false'
