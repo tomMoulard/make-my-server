@@ -1,4 +1,12 @@
 # Gitlab
+https://about.gitlab.com/
+
+GitLab is a web-based DevOps lifecycle tool that provides a Git-repository
+manager providing wiki, issue-tracking and continuous integration and
+deployment pipeline features, using an open-source license, developed by
+GitLab Inc. The software was created by Ukrainian developers Dmitriy
+Zaporozhets and Valery Sizov.
+
 ## Gitlab runner
 ### Get the Registration Token
 Find your runner registration token (\$REGISTRATION_TOKEN) at
