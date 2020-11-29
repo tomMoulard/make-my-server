@@ -35,6 +35,25 @@ run the `traefik` service.
 
 Thus each folder represent an available service.
 
+The directory must follow the following architecture:
+```
+service/
+├── conf
+│   └── ...
+├── data
+│   └── ...
+├── docker-compose.servicename.yml
+├── logs
+│   ├── access.log
+│   └── error.log
+└── README.md
+```
+
+If the service you are adding can use volumes:
+ - `data/`, is where to store to service data
+ - `conf/`, is where to store to service configuration
+ - `logs/`, is where to store to service logs (others than Docker logs)
+
 Feel free to do a Pull Request to add your ideas.
 
 [more ideas](https://github.com/awesome-selfhosted/awesome-selfhosted)
@@ -78,7 +97,7 @@ Main author:
 Gitlab helper:
  - [michel_k](mailto:thomas.michelot@epita.fr)
 
-Discord MusicBot:
+Discord MusicBot/minecraft:
  - [huvell_m](mailto:martin.huvelle@epita.fr),
 see PR [#6](https://github.com/tomMoulard/make-my-server/pull/6)
 
