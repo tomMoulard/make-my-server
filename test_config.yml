@@ -529,14 +529,18 @@ services:
       srv: {}
     restart: always
   minecraft:
+    environment:
+      EULA: "TRUE"
     image: itzg/minecraft-server
     labels:
       traefik.enable: "false"
     ports:
-      - 25565:25565/udp
+    - protocol: udp
+      published: 25565
+      target: 25565
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/factorio:/minecraft:rw
+    - /home/runner/work/make-my-server/make-my-server/minecraft:/data:rw
   morty:
     command: -listen 0.0.0.0:3000 -timeout 6 -ipv6
     environment:
