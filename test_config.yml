@@ -528,6 +528,15 @@ services:
       mastodon-internal: {}
       srv: {}
     restart: always
+  minecraft:
+    image: itzg/minecraft-server
+    labels:
+      traefik.enable: "false"
+    ports:
+      - 25565:25565/udp
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/factorio:/minecraft:rw
   morty:
     command: -listen 0.0.0.0:3000 -timeout 6 -ipv6
     environment:
