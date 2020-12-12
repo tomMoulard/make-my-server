@@ -1,0 +1,42 @@
+version: '2'
+
+networks:
+  rocketchat-internal:
+
+services:
+  rocketchat-mongo:
+    image: mongo:4.0
+    command: mongod --smallfiles --oplogSize 128 --replSet rs01
+    volumes:
+      - './rocketchat/db/:/data/db'
+    networks:
+      - 'rocketchat-internal'
+    labels:
+      - 'traefik.enable=false'
+
+  rocketchat-mongo-replica:
+    image: mongo:4.0
+    command: 'mongo rocketchat-mongo/rocketchat --eval "rs.initiate({ _id: ''rs01'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"'
+    networks:
+      - 'rocketchat-internal'
+    depends_on:
+      - 'rocketchat-mongo'
+    labels:
+      - 'traefik.enable=false'
+
+  rocketchat:
+    image: rocket.chat:latest
+    restart: unless-stopped
+    environment:
+      - 'ROOT_URL=https://rocketchat.${SITE}'
+      - 'MONGO_URL=mongodb://rocketchat-mongo:27017/rocketchat'
+      - 'MONGO_OPLOG_URL=mongodb://rocketchat-mongo:27017/local'
+    networks:
+      - 'srv'
+      - 'rocketchat-internal'
+    depends_on:
+      - 'rocketchat-mongo'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:rocketchat.${SITE}'
+      - 'traefik.port=3000'
