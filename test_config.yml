@@ -186,6 +186,19 @@ services:
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/factorio:/factorio:rw
+  ftb:
+    environment:
+      EULA: "TRUE"
+    image: jonasbonno/ftb-revelation
+    labels:
+      traefik.enable: "false"
+    ports:
+      - protocol: udp
+        published: 25565
+        target: 25565
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/ftb:/data:rw
   gitlab:
     environment:
       GITLAB_OMNIBUS_CONFIG: 'external_url ''http://gitlab.:80''
