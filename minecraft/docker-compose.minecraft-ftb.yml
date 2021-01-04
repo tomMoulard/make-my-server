@@ -6,7 +6,7 @@ services:
     ports:
       - '25565:25565/udp'
     volumes:
-      - './minecraft-ftb:/minecraft'
+      - './minecraft/ftb-data:/minecraft'
     restart: always
     labels:
       - 'traefik.enable=false'
