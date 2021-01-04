@@ -2,6 +2,7 @@ networks:
   codi-internal: {}
   hits-internal: {}
   mastodon-internal: {}
+  rocketchat-internal: {}
   srv: {}
 services:
   alertmanager:
@@ -186,19 +187,6 @@ services:
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/factorio:/factorio:rw
-  minecraft-ftb:
-    environment:
-      EULA: "TRUE"
-    image: jonasbonno/ftb-revelation
-    labels:
-      traefik.enable: "false"
-    ports:
-      - protocol: udp
-        published: 25565
-        target: 25565
-    restart: always
-    volumes:
-    - /home/runner/work/make-my-server/make-my-server/minecraft/ftb-data:/minecraft:rw
   gitlab:
     environment:
       GITLAB_OMNIBUS_CONFIG: 'external_url ''http://gitlab.:80''
@@ -554,6 +542,19 @@ services:
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/minecraft:/data:rw
+  minecraft-ftb:
+    environment:
+      EULA: "TRUE"
+    image: jonasbonno/ftb-revelation
+    labels:
+      traefik.enable: "false"
+    ports:
+    - protocol: udp
+      published: 25565
+      target: 25565
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/minecraft/ftb-data:/minecraft:rw
   morty:
     command: -listen 0.0.0.0:3000 -timeout 6 -ipv6
     environment:
@@ -764,6 +765,63 @@ services:
     - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:rw
     - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/rules:/etc/prometheus/rules:rw
     - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/datas:/prometheus:rw
+  rocketchat:
+    depends_on:
+      rocketchat-mongo:
+        condition: service_started
+      rocketchat-mongo-replica:
+        condition: service_started
+    environment:
+      MONGO_OPLOG_URL: mongodb://rocketchat-mongo:27017/local
+      MONGO_URL: mongodb://rocketchat-mongo:27017/rocketchat
+      ROOT_URL: https://rocketchat.
+    image: rocket.chat:latest
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:rocketchat.
+      traefik.port: '3000'
+    networks:
+      rocketchat-internal: {}
+      srv: {}
+    restart: unless-stopped
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/rocketchat/uploads:/app/uploads:rw
+  rocketchat-hubot:
+    depends_on:
+      rocketchat:
+        condition: service_started
+    environment:
+      BOT_NAME: bot
+      ROCKETCHAT_PASSWORD: botpassword
+      ROCKETCHAT_ROOM: GENERAL
+      ROCKETCHAT_URL: rocketchat:3000
+      ROCKETCHAT_USER: bot
+    image: rocketchat/hubot-rocketchat:latest
+    labels:
+      traefik.enable: "false"
+    restart: unless-stopped
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/rocketchat/scripts:/home/hubot/scripts:rw
+  rocketchat-mongo:
+    command: mongod --smallfiles --oplogSize 128 --replSet rs01
+    image: mongo:4.0
+    labels:
+      traefik.enable: "false"
+    networks:
+      rocketchat-internal: {}
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/rocketchat/db:/data/db:rw
+  rocketchat-mongo-replica:
+    command: 'mongo rocketchat-mongo/rocketchat --eval "rs.initiate({ _id: ''rs01'',
+      members: [ { _id: 0, host: ''localhost:27017'' } ]})"'
+    depends_on:
+      rocketchat-mongo:
+        condition: service_started
+    image: mongo:4.0
+    labels:
+      traefik.enable: "false"
+    networks:
+      rocketchat-internal: {}
   runner:
     image: gitlab/gitlab-runner:latest
     labels:
