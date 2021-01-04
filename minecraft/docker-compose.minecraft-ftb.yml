@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  minecraft:
+    image: jonasbonno/ftb-revelation
+    ports:
+      - '25565:25565/udp'
+    volumes:
+      - './minecraft-ftb:/minecraft'
+    restart: always
+    labels:
+      - 'traefik.enable=false'
+    environment:
+      - EULA=TRUE
