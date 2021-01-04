@@ -186,7 +186,7 @@ services:
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/factorio:/factorio:rw
-  ftb:
+  minecraft-ftb:
     environment:
       EULA: "TRUE"
     image: jonasbonno/ftb-revelation
