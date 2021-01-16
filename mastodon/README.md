@@ -22,3 +22,8 @@ To setup, change ./mastodon/.env.production
 docker-compose run mastodon rake secret
 docker-compose run mastodon rake mastodon:webpush:generate_vapid_key
 ```
+
+To create users from cli, see:
+```bash
+docker-compose exec mastodon tootctl accounts create --help
+```
