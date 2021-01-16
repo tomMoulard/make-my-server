@@ -13,3 +13,16 @@ or for off-premises file storage hosting.
 The original ownCloud developer Frank Karlitschek forked ownCloud and created
 Nextcloud, which continues to be actively developed by Karlitschek and other
 members of the original ownCloud team.
+
+## Upgrade
+How to upgrade your Nextcloud instance:
+```bash
+docker-compose pull nextcloud
+docker-compose stop nextcloud && docker-compose up -d nextcloud
+docker-compose exec -u www-data nextcloud ./occ upgrade^C
+```
+
+To remove maintenance mode:
+```bash
+docker-compose exec -u www-data nextcloud php occ maintenance:mode --off
+```
