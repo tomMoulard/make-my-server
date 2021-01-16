@@ -10,5 +10,3 @@ services:
     restart: always
     labels:
       - 'traefik.enable=false'
-    environment:
-      - EULA=TRUE
