@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  authelia:
+    image: authelia/authelia
+    environment:
+      - 'TZ=${TZ}'
+      - 'AUTHELIA_JWT_SECRET_FILE=/secrets/jwt'
+      - 'AUTHELIA_DUO_API_SECRET_KEY_FILE=/secrets/duo'
+      - 'AUTHELIA_SESSION_SECRET_FILE=/secrets/session'
+      # - 'AUTHELIA_SESSION_REDIS_PASSWORD_FILE=/secrets/redis'
+      # - 'AUTHELIA_STORAGE_MYSQL_PASSWORD_FILE=/secrets/mysql'
+      - 'AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE=/secrets/smtp'
+      # - 'AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE=/secrets/ldap'
+    volumes:
+      - './authelia/config:/config'
+      - './authelia/logs:/logs'
+      - './authelia/secrets:/secrets'
+    networks:
+      - 'srv'
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.frontend.rule=Host:authelia.${SITE}'
+      - 'traefik.port=9091'
