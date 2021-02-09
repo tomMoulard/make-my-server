@@ -23,6 +23,25 @@ services:
     networks:
       srv: {}
     restart: always
+  authelia:
+    environment:
+      AUTHELIA_DUO_API_SECRET_KEY_FILE: /secrets/duo
+      AUTHELIA_JWT_SECRET_FILE: /secrets/jwt
+      AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE: /secrets/smtp
+      AUTHELIA_SESSION_SECRET_FILE: /secrets/session
+      TZ: ''
+    image: authelia/authelia
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: Host:authelia.
+      traefik.port: '9091'
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/authelia/config:/config:rw
+    - /home/runner/work/make-my-server/make-my-server/authelia/logs:/logs:rw
+    - /home/runner/work/make-my-server/make-my-server/authelia/secrets:/secrets:rw
   bazarr:
     environment:
       PGID: '1000'
