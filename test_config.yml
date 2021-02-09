@@ -27,7 +27,7 @@ services:
     environment:
       PGID: '1000'
       PUID: '1000'
-      TZ: Europe/Paris
+      TZ: ''
     image: linuxserver/bazarr:v0.8.3.4-ls61
     labels:
       traefik.enable: "true"
@@ -280,7 +280,7 @@ services:
     environment:
       PGID: '1000'
       PUID: '1000'
-      TZ: Europe/Paris
+      TZ: ''
     healthcheck:
       interval: 10s
       retries: 5
@@ -541,10 +541,8 @@ services:
       target: 25565
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/minecraft:/data:rw
+    - /home/runner/work/make-my-server/make-my-server/minecraft/minecraft-data:/data:rw
   minecraft-ftb:
-    environment:
-      EULA: "TRUE"
     image: jonasbonno/ftb-revelation
     labels:
       traefik.enable: "false"
@@ -918,7 +916,7 @@ services:
     environment:
       PGID: '1000'
       PUID: '1000'
-      TZ: Europe/Paris
+      TZ: ''
     image: linuxserver/sonarr:2.0.0.5337-ls92
     labels:
       traefik.enable: "true"
@@ -1006,7 +1004,7 @@ services:
     environment:
       PGID: '1000'
       PUID: '1000'
-      TZ: Europe/Paris
+      TZ: ''
     healthcheck:
       interval: 10s
       retries: 5
