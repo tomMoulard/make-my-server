@@ -19,7 +19,7 @@ How to upgrade your Nextcloud instance:
 ```bash
 docker-compose pull nextcloud
 docker-compose stop nextcloud && docker-compose up -d nextcloud
-docker-compose exec -u www-data nextcloud ./occ upgrade^C
+docker-compose exec -u www-data nextcloud ./occ upgrade
 ```
 
 To remove maintenance mode:
