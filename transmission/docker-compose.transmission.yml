@@ -6,7 +6,7 @@ services:
     environment:
       - 'PGID=1000'
       - 'PUID=1000'
-      - 'TZ=Europe/Paris'
+      - 'TZ=${TZ}'
     ports:
       - '51413:51413'
       - '51413:51413/udp'
