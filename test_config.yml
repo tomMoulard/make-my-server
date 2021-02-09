@@ -243,6 +243,7 @@ services:
     image: grafana/grafana:7.2.2
     labels:
       traefik.enable: "true"
+      traefik.frontend.auth.basic.users: ''
       traefik.frontend.rule: Host:grafana.
       traefik.port: '3000'
     networks:
