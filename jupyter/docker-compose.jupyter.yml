@@ -21,3 +21,6 @@ services:
       - 'traefik.frontend.rule=Host:jupyter.${SITE}'
       - 'traefik.port=8888'
       - 'traefik.frontend.auth.basic.users=${USERS}'
+      # - 'traefik.frontend.auth.forward.address=http://authelia:9091/api/verify?rd=https://authelia.${SITE}/'
+      # - 'traefik.frontend.auth.forward.trustForwardHeader=true'
+      # - 'traefik.frontend.auth.forward.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email'
