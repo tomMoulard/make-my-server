@@ -1,0 +1,3 @@
+secrets/*
+logs/*
+config/db.sqlite3
