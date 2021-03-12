@@ -979,9 +979,17 @@ services:
     volumes:
     - /etc/localtime:/etc/localtime:rw
   traefik:
-    command: '--api --api.statistics
+    command: '--api --api.statistics --ping=true
 
       '
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - ./traefik
+      - healthcheck
+      timeout: 10s
     image: traefik:1.7.12
     labels:
       traefik.enable: "true"
