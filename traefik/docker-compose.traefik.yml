@@ -6,12 +6,18 @@ services:
     command: >
      --api
      --api.statistics
+     --ping=true
     ports:
       - '80:80'
       - '443:443'
     networks:
       - 'srv'
     restart: always
+    healthcheck:
+      test: ['CMD', './traefik', 'healthcheck']
+      interval: 10s
+      timeout: 10s
+      retries: 5
     labels:
       - 'traefik.enable=true'
       - 'traefik.port=8080'

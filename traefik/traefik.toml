@@ -43,3 +43,4 @@ watch = true
 exposedByDefault = false
 network = "srv"
 
+[ping]
