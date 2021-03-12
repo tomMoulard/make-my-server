@@ -2548,6 +2548,7 @@
             "2d",
             "7d",
             "30d"
+        ]
     },
     "timezone": "browser",
     "title": "Docker and system monitoring",
