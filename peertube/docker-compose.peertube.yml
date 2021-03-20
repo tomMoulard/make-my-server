@@ -26,8 +26,8 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:peertube.${SITE}'
-      - 'traefik.port=9000'
+      - 'traefik.http.routers.peertube.rule=Host(`peertube.${SITE}`)'
+      - 'traefik.http.services.peertube.loadbalancer.server.port=9000'
 
   peertube-db: # peertube-db
     image: postgres:10-alpine
