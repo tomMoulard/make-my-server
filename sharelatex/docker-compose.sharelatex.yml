@@ -18,8 +18,8 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:latex.${SITE}'
-      - 'traefik.port=80'
+      - 'traefik.http.routers.sharelatex.rule=Host(`sharelatex.${SITE}`)'
+      - 'traefik.http.services.sharelatex.loadbalancer.server.port=80'
     environment:
       SHARELATEX_MONGO_URL: mongodb://sharelatex-mongo/sharelatex
       SHARELATEX_REDIS_HOST: sharelatex-redis
