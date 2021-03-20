@@ -1,3 +1,4 @@
 secrets/*
 logs/*
 config/db.sqlite3
+redis
