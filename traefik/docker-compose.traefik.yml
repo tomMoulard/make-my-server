@@ -21,8 +21,8 @@ services:
       - '--accesslog.filepath=/logs/access.log'
       - '--accesslog.format=json'
       - '--log.filepath=/logs/traefik.log'
-      # - '--log.format=json'
-      - '--log.level=DEBUG'
+      - '--log.format=json'
+      # - '--log.level=DEBUG'
       - '--metrics.prometheus'
       # Misc
       - '--api.insecure'
@@ -41,11 +41,11 @@ services:
     networks:
       - 'srv'
     restart: always
-    # healthcheck:
-      # test: ['CMD', './traefik', 'healthcheck']
-      # interval: 10s
-      # timeout: 10s
-      # retries: 5
+    healthcheck:
+      test: ['CMD', 'traefik', 'healthcheck', "--ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.traefik.rule=Host(`traefik.${SITE}`)'
