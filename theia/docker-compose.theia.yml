@@ -10,5 +10,6 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:theia.${SITE}'
-      - 'traefik.port=3000'
+      - 'traefik.http.routers.theia.rule=Host(`theia.${SITE}`)'
+      - 'traefik.http.services.theia.loadbalancer.server.port=3000'
+      - 'traefik.http.routers.theia.middlewares=basic_auth@docker'
