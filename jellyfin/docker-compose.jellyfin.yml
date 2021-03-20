@@ -6,7 +6,7 @@ services:
     volumes:
       - './jellyfin/config:/config'
       - './jellyfin/cache:/cache'
-      - './jellyfin/media:/media' # You medias
+      - './jellyfin/media:/media'
       - './jellyfin/logs:/logs'
     networks:
       - 'srv'
