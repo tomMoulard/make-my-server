@@ -14,5 +14,5 @@ services:
     user: 1000:1000
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:jellyfin.${SITE}'
-      - 'traefik.port=8096'
+      - 'traefik.http.routers.jellyfin.rule=Host(`jellyfin.${SITE}`)'
+      - 'traefik.http.services.jellyfin.loadbalancer.server.port=8096'
