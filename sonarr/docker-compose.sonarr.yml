@@ -19,6 +19,6 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:sonarr.${SITE}'
-      - 'traefik.port=8080'
-      - 'traefik.frontend.auth.basic.users=${USERS}'
+      - 'traefik.http.routers.sonarr.rule=Host(`sonarr.${SITE}`)'
+      - 'traefik.http.services.sonarr.loadbalancer.server.port=8080'
+      - 'traefik.http.routers.sonarr.middlewares=basic_auth@docker'
