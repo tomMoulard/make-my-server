@@ -22,8 +22,8 @@ services:
       - searx-checker
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:searx.${SITE}'
-      - 'traefik.port=8080'
+      - 'traefik.http.routers.searx.rule=Host(`searx.${SITE}`)'
+      - 'traefik.http.services.searx.loadbalancer.server.port=8080'
 
   morty:
     image: dalf/morty:latest
@@ -35,8 +35,9 @@ services:
       - 'MORTY_KEY=${MORTY_KEY}'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:morty.${SITE}'
-      - 'traefik.port=3000'
+      - 'traefik.http.routers.morty.rule=Host(`morty.${SITE}`)'
+      - 'traefik.http.services.morty.loadbalancer.server.port=3000'
+      - 'traefik.http.routers.morty.middlewares=basic_auth@docker'
 
   searx-checker:
     image: searx/searx-checker:latest
