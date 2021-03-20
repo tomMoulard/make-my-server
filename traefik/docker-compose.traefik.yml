@@ -2,28 +2,58 @@ version: '2'
 
 services:
   traefik:
-    image: traefik:1.7.12
-    command: >
-     --api
-     --api.statistics
-     --ping=true
+    image: traefik:2.4
+    command:
+      # Provider
+      - '--providers.docker'
+      - '--providers.docker.exposedbydefault=false'
+      - '--providers.docker.network=make-my-server_srv'
+      # Entrypoints
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
+      - '--entrypoints.websecure.address=:443'
+      # Let's Encrypt
+      - '--certificatesresolvers.myresolver.acme.email=tom@moulard.org'
+      - '--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web'
+      - '--certificatesresolvers.myresolver.acme.httpchallenge=true'
+      - '--entrypoints.websecure.http.tls.certresolver=myresolver'
+      # Logs
+      - '--accesslog.filepath=/logs/access.log'
+      - '--accesslog.format=json'
+      - '--log.filepath=/logs/traefik.log'
+      # - '--log.format=json'
+      - '--log.level=DEBUG'
+      - '--metrics.prometheus'
+      # Misc
+      - '--api.insecure'
+      - '--entrypoints.websecure.http.middlewares=compress@file,fail2ban@file'
+      - '--experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban'
+      - '--experimental.plugins.fail2ban.version=v0.6.0'
+      - '--global.checknewversion=false'
+      - '--global.sendanonymoususage=false'
+      - '--pilot.token=${TRAEFIK_PILOT_TOKEN}'
+      - '--ping'
+      - '--providers.file.directory=/dynamic_conf/'
+      - '--providers.file.watch=true'
     ports:
       - '80:80'
       - '443:443'
     networks:
       - 'srv'
     restart: always
-    healthcheck:
-      test: ['CMD', './traefik', 'healthcheck']
-      interval: 10s
-      timeout: 10s
-      retries: 5
+    # healthcheck:
+      # test: ['CMD', './traefik', 'healthcheck']
+      # interval: 10s
+      # timeout: 10s
+      # retries: 5
     labels:
       - 'traefik.enable=true'
-      - 'traefik.port=8080'
-      - 'traefik.frontend.rule=Host:traefik.${SITE}'
-      - 'traefik.frontend.auth.basic.users=${USERS}'
+      - 'traefik.http.routers.traefik.rule=Host(`traefik.${SITE}`)'
+      - 'traefik.http.routers.traefik.middlewares=basic_auth@docker'
+      - 'traefik.http.services.traefik.loadbalancer.server.port=8080'
+      # Middleware definitions
+      - 'traefik.http.middlewares.basic_auth.basicauth.users=${USERS}'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
-      - './traefik/traefik.toml:/traefik.toml'
       - './traefik/logs:/logs'
+      - './traefik/dynamic_conf:/dynamic_conf'
