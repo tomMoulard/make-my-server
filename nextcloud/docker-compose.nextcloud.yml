@@ -17,8 +17,8 @@ services:
       retries: 5
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:cloud.${SITE}'
-      - 'traefik.port=80'
+      - 'traefik.http.routers.nextcloud.rule=Host(`nextcloud.${SITE}`)'
+      - 'traefik.http.services.nextcloud.loadbalancer.server.port=80'
 
   nextcloud-db:
     image: mariadb
