@@ -20,8 +20,8 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:gitlab.${SITE}'
-      - 'traefik.port=80'
+      - 'traefik.http.routers.gitlab.rule=Host(`gitlab.${SITE}`)'
+      - 'traefik.http.services.gitlab.loadbalancer.server.port=80'
 
   runner:
     image: gitlab/gitlab-runner:latest
