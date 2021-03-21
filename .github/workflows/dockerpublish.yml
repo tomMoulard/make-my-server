@@ -55,10 +55,10 @@ jobs:
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
-  Health-checks-blog:
+  Health-checks-hugo:
     runs-on: ubuntu-latest
     env:
-      SERVICE: blog
+      SERVICE: hugo
     steps:
       - uses: actions/checkout@v2
       - name: Caching
