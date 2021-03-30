@@ -1006,7 +1006,7 @@ services:
     - --log.format=json
     - --metrics.prometheus
     - --api.insecure
-    - --entrypoints.websecure.http.middlewares=compress@file,fail2ban@file
+    - --entrypoints.websecure.http.middlewares=compress@file
     - --experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban
     - --experimental.plugins.fail2ban.version=v0.6.0
     - --global.checknewversion=false
