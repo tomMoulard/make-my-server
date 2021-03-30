@@ -13,8 +13,9 @@ services:
       - prometheus
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:grafana.${SITE}'
-      - 'traefik.port=3000'
+      - 'traefik.http.routers.grafana.rule=Host(`grafana.${SITE}`)'
+      - 'traefik.http.services.grafana.loadbalancer.server.port=3000'
+      - 'traefik.http.routers.grafana.middlewares=basic_auth@docker'
     environment:
       - 'GF_METRICS_ENABLED=true'
       - 'GF_AUTH_ANONYMOUS_ENABLED=true'
@@ -45,16 +46,18 @@ services:
       - './grafana/prometheus/rules:/etc/prometheus/rules'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:prometheus.${SITE}'
-      - 'traefik.port=9090'
+      - 'traefik.http.routers.prometheus.rule=Host(`prometheus.${SITE}`)'
+      - 'traefik.http.services.prometheus.loadbalancer.server.port=9090'
+      - 'traefik.http.routers.prometheus.middlewares=basic_auth@docker'
 
   node_exporter:
     image: prom/node-exporter:v1.0.1
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:node_exporter.${SITE}'
-      - 'traefik.port=9100'
+      - 'traefik.http.routers.node_exporter.rule=Host(`node_exporter.${SITE}`)'
+      - 'traefik.http.services.node_exporter.loadbalancer.server.port=9100'
+      - 'traefik.http.routers.node_exporter.middlewares=basic_auth@docker'
     networks:
       - 'srv'
 
@@ -64,8 +67,9 @@ services:
       - 'srv'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:alertmanager.${SITE}'
-      - 'traefik.port=9093'
+      - 'traefik.http.routers.alertmanager.rule=Host(`alertmanager.${SITE}`)'
+      - 'traefik.http.services.alertmanager.loadbalancer.server.port=9093'
+      - 'traefik.http.routers.alertmanager.middlewares=basic_auth@docker'
     restart: always
 
   cadvisor:
@@ -80,5 +84,6 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:cadvisor.${SITE}'
-      - 'traefik.port=8080'
+      - 'traefik.http.routers.cadvisor.rule=Host(`cadvisor.${SITE}`)'
+      - 'traefik.http.services.cadvisor.loadbalancer.server.port=8080'
+      - 'traefik.http.routers.cadvisor.middlewares=basic_auth@docker'

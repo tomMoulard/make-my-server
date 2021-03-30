@@ -1,0 +1,15 @@
+http:
+  middlewares:
+    fail2ban:
+      plugin:
+        fail2ban:
+          rules:
+            bantime: 3h
+            enabled: true
+            findtime: 10m
+            maxretry: 1000
+            ports: "80:443"
+          whitelist:
+            ip:
+              - ::1
+              - 127.0.0.1

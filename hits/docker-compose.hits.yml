@@ -19,9 +19,8 @@ services:
       retries: 5
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:hits.${SITE}'
-      - 'traefik.docker.network=make-my-server_srv'
-      - 'traefik.port=4000'
+      - 'traefik.http.routers.hits.rule=Host(`hits.${SITE}`)'
+      - 'traefik.http.services.hits.loadbalancer.server.port=4000'
 
   hits-postgresql:
     image: postgres

@@ -1,0 +1,4 @@
+config/gitlab-secrets.json
+config/*.pub
+config/*_key
+data/

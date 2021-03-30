@@ -9,8 +9,9 @@ services:
     image: prom/alertmanager:v0.21.0
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:alertmanager.
-      traefik.port: '9093'
+      traefik.http.routers.alertmanager.middlewares: basic_auth@docker
+      traefik.http.routers.alertmanager.rule: Host(`alertmanager.`)
+      traefik.http.services.alertmanager.loadbalancer.server.port: '9093'
     networks:
       srv: {}
     restart: always
@@ -18,8 +19,9 @@ services:
     image: arachni/arachni
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:arachni.
-      traefik.port: '9292'
+      traefik.http.routers.arachni.middlewares: basic_auth@docker
+      traefik.http.routers.arachni.rule: Host(`arachni.`)
+      traefik.http.services.arachni.loadbalancer.server.port: '9292'
     networks:
       srv: {}
     restart: always
@@ -31,9 +33,9 @@ services:
     image: linuxserver/bazarr:v0.8.3.4-ls61
     labels:
       traefik.enable: "true"
-      traefik.frontend.auth.basic.users: ''
-      traefik.frontend.rule: Host:bazarr.
-      traefik.port: '8080'
+      traefik.http.routers.bazarr.middlewares: basic_auth@docker
+      traefik.http.routers.bazarr.rule: Host(`bazarr.`)
+      traefik.http.services.bazarr.loadbalancer.server.port: '8080'
     links:
     - jackett
     - sonarr
@@ -52,55 +54,21 @@ services:
     image: bitwardenrs/server:latest
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:bitwarden.
-      traefik.port: '8080'
+      traefik.http.routers.bitwarden.rule: Host(`bitwarden.`)
+      traefik.http.services.bitwarden.loadbalancer.server.port: '8080'
     networks:
       srv: {}
     restart: always
     user: nobody
     volumes:
     - /home/runner/work/make-my-server/make-my-server/bitwarden/data:/data:rw
-  blog:
-    depends_on:
-      blog-builder:
-        condition: service_started
-    healthcheck:
-      interval: 10s
-      retries: 5
-      test:
-      - CMD
-      - curl
-      - 0.0.0.0:80
-      timeout: 10s
-    image: nginx:stable-alpine
-    labels:
-      traefik.enable: "true"
-      traefik.frontend.rule: Host:blog.
-      traefik.port: '80'
-    networks:
-      srv: {}
-    restart: always
-    volumes:
-    - /home/runner/work/make-my-server/make-my-server/blog/nginx/conf:/etc/nginx/conf.d:rw
-    - /home/runner/work/make-my-server/make-my-server/blog/nginx/logs:/var/log/nginx:rw
-  blog-builder:
-    environment:
-      HUGO_BASEURL: https://blog./
-      HUGO_REFRESH_TIME: '3600'
-      HUGO_THEME: hugo-theme-cactus-plus
-    image: jojomi/hugo:0.59
-    labels:
-      traefik.enable: "false"
-    restart: always
-    volumes:
-    - /home/runner/work/make-my-server/make-my-server/blog/nginx/conf/www:/output:rw
-    - /home/runner/work/make-my-server/make-my-server/blog/blog:/src:rw
   cadvisor:
     image: gcr.io/google-containers/cadvisor:v0.36.0
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:cadvisor.
-      traefik.port: '8080'
+      traefik.http.routers.cadvisor.middlewares: basic_auth@docker
+      traefik.http.routers.cadvisor.rule: Host(`cadvisor.`)
+      traefik.http.services.cadvisor.loadbalancer.server.port: '8080'
     networks:
       srv: {}
     restart: always
@@ -130,8 +98,8 @@ services:
     image: nabo.codimd.dev/hackmdio/hackmd:2.2.0
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:codimd.
-      traefik.port: '3000'
+      traefik.http.routers.codimd.rule: Host(`codimd.`)
+      traefik.http.services.codimd.loadbalancer.server.port: '3000'
     links:
     - codimd-db
     networks:
@@ -198,8 +166,8 @@ services:
     image: gitlab/gitlab-ce:latest
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:gitlab.
-      traefik.port: '80'
+      traefik.http.routers.gitlab.rule: Host(`gitlab.`)
+      traefik.http.services.gitlab.loadbalancer.server.port: '80'
     networks:
       srv: {}
     ports:
@@ -224,8 +192,9 @@ services:
     image: grafana/grafana:7.2.2
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:grafana.
-      traefik.port: '3000'
+      traefik.http.routers.grafana.middlewares: basic_auth@docker
+      traefik.http.routers.grafana.rule: Host(`grafana.`)
+      traefik.http.services.grafana.loadbalancer.server.port: '3000'
     networks:
       srv: {}
     restart: always
@@ -246,10 +215,9 @@ services:
       timeout: 10s
     image: tommoulard/hits
     labels:
-      traefik.docker.network: make-my-server_srv
       traefik.enable: "true"
-      traefik.frontend.rule: Host:hits.
-      traefik.port: '4000'
+      traefik.http.routers.hits.rule: Host(`hits.`)
+      traefik.http.services.hits.loadbalancer.server.port: '4000'
     networks:
       hits-internal: {}
       srv: {}
@@ -276,6 +244,41 @@ services:
     user: 1000:1000
     volumes:
     - /home/runner/work/make-my-server/make-my-server/hits/postgresql:/var/lib/postgresql/data:rw
+  hugo:
+    depends_on:
+      hugo-builder:
+        condition: service_started
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:80
+      timeout: 10s
+    image: nginx:stable-alpine
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.hugo.rule: Host(`hugo.`)
+      traefik.http.services.hugo.loadbalancer.server.port: '80'
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/hugo/nginx/conf:/etc/nginx/conf.d:rw
+    - /home/runner/work/make-my-server/make-my-server/hugo/nginx/logs:/var/log/nginx:rw
+  hugo-builder:
+    environment:
+      HUGO_BASEURL: https://hugo./
+      HUGO_REFRESH_TIME: '3600'
+      HUGO_THEME: hugo-theme-cactus-plus
+    image: jojomi/hugo:0.59
+    labels:
+      traefik.enable: "false"
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/hugo/nginx/conf/www:/output:rw
+    - /home/runner/work/make-my-server/make-my-server/hugo/blog:/src:rw
   jackett:
     environment:
       PGID: '1000'
@@ -292,9 +295,9 @@ services:
     image: linuxserver/jackett:v0.15.5-ls61
     labels:
       traefik.enable: "true"
-      traefik.frontend.auth.basic.users: ''
-      traefik.frontend.rule: Host:jackett.
-      traefik.port: '9117'
+      traefik.http.routers.jackett.middlewares: basic_auth@docker
+      traefik.http.routers.jackett.rule: Host(`jackett.`)
+      traefik.http.services.jackett.loadbalancer.server.port: '9117'
     networks:
       srv: {}
     restart: always
@@ -305,8 +308,8 @@ services:
     image: jellyfin/jellyfin
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:jellyfin.
-      traefik.port: '8096'
+      traefik.http.routers.jellyfin.rule: Host(`jellyfin.`)
+      traefik.http.services.jellyfin.loadbalancer.server.port: '8096'
     networks:
       srv: {}
     restart: always
@@ -325,9 +328,9 @@ services:
     image: jupyter/tensorflow-notebook:45f07a14b422
     labels:
       traefik.enable: "true"
-      traefik.frontend.auth.basic.users: ''
-      traefik.frontend.rule: Host:jupyter.
-      traefik.port: '8888'
+      traefik.http.routers.jupyter.middlewares: basic_auth@docker
+      traefik.http.routers.jupyter.rule: Host(`jupyter.`)
+      traefik.http.services.jupyter.loadbalancer.server.port: '8888'
     networks:
       srv: {}
     restart: always
@@ -338,9 +341,9 @@ services:
     image: docker.elastic.co/kibana/kibana:7.1.0
     labels:
       traefik.enable: "true"
-      traefik.frontend.auth.basic.users: ''
-      traefik.frontend.rule: Host:kibana.
-      traefik.port: '5601'
+      traefik.http.routers.kibana.middlewares: basic_auth@docker
+      traefik.http.routers.kibana.rule: Host(`kibana.`)
+      traefik.http.services.kibana.loadbalancer.server.port: '5601'
     links:
     - elasticsearch
     networks:
@@ -402,8 +405,8 @@ services:
     image: tootsuite/mastodon
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:mastodon.
-      traefik.port: '3000'
+      traefik.http.routers.mastodon.rule: Host(`mastodon.`)
+      traefik.http.services.mastodon.loadbalancer.server.port: '3000'
     networks:
       mastodon-internal: {}
       srv: {}
@@ -523,8 +526,8 @@ services:
     image: tootsuite/mastodon
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:api.mastodon.
-      traefik.port: '4000'
+      traefik.http.routers.mastodon-streaming.rule: Host(`mastodon-streaming.`)
+      traefik.http.services.mastodon-streaming.loadbalancer.server.port: '4000'
     networks:
       mastodon-internal: {}
       srv: {}
@@ -560,8 +563,9 @@ services:
     image: dalf/morty:latest
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:morty.
-      traefik.port: '3000'
+      traefik.http.routers.morty.middlewares: basic_auth@docker
+      traefik.http.routers.morty.rule: Host(`morty.`)
+      traefik.http.services.morty.loadbalancer.server.port: '3000'
     networks:
       srv: {}
     restart: always
@@ -587,8 +591,8 @@ services:
     image: nextcloud
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:cloud.
-      traefik.port: '80'
+      traefik.http.routers.nextcloud.rule: Host(`nextcloud.`)
+      traefik.http.services.nextcloud.loadbalancer.server.port: '80'
     links:
     - nextcloud-db
     networks:
@@ -630,8 +634,8 @@ services:
     image: nginx:stable-alpine
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: 'Host:'
-      traefik.port: '80'
+      traefik.http.routers.nginx.rule: Host(``)
+      traefik.http.services.nginx.loadbalancer.server.port: '80'
     networks:
       srv: {}
     restart: always
@@ -642,8 +646,9 @@ services:
     image: prom/node-exporter:v1.0.1
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:node_exporter.
-      traefik.port: '9100'
+      traefik.http.routers.node_exporter.middlewares: basic_auth@docker
+      traefik.http.routers.node_exporter.rule: Host(`node_exporter.`)
+      traefik.http.services.node_exporter.loadbalancer.server.port: '9100'
     networks:
       srv: {}
     restart: always
@@ -651,8 +656,8 @@ services:
     image: mkodockx/docker-pastebin:latest
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:paste.
-      traefik.port: '80'
+      traefik.http.routers.pastebin.rule: Host(`pastebin.`)
+      traefik.http.services.pastebin.loadbalancer.server.port: '80'
     networks:
       srv: {}
     restart: always
@@ -674,8 +679,8 @@ services:
     image: chocobozzz/peertube:production-buster
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:peertube.
-      traefik.port: '9000'
+      traefik.http.routers.peertube.rule: Host(`peertube.`)
+      traefik.http.services.peertube.loadbalancer.server.port: '9000'
     links:
     - peertube-db
     - peertube-redis
@@ -728,8 +733,9 @@ services:
     image: portainer/portainer
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:portainer.
-      traefik.port: '9000'
+      traefik.http.routers.portainer.middlewares: basic_auth@docker
+      traefik.http.routers.portainer.rule: Host(`portainer.`)
+      traefik.http.services.portainer.loadbalancer.server.port: '9000'
     networks:
       srv: {}
     restart: always
@@ -753,8 +759,9 @@ services:
     image: prom/prometheus:v2.22.0
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:prometheus.
-      traefik.port: '9090'
+      traefik.http.routers.prometheus.middlewares: basic_auth@docker
+      traefik.http.routers.prometheus.rule: Host(`prometheus.`)
+      traefik.http.services.prometheus.loadbalancer.server.port: '9090'
     networks:
       srv: {}
     restart: always
@@ -776,8 +783,8 @@ services:
     image: rocket.chat:latest
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:rocketchat.
-      traefik.port: '3000'
+      traefik.http.routers.rocketchat.rule: Host(`rocketchat.`)
+      traefik.http.services.rocketchat.loadbalancer.server.port: '3000'
     networks:
       rocketchat-internal: {}
       srv: {}
@@ -845,8 +852,8 @@ services:
     image: searx/searx:latest
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:searx.
-      traefik.port: '8080'
+      traefik.http.routers.searx.rule: Host(`searx.`)
+      traefik.http.services.searx.loadbalancer.server.port: '8080'
     links:
     - morty
     - searx-checker
@@ -882,8 +889,8 @@ services:
     image: sharelatex/sharelatex
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:latex.
-      traefik.port: '80'
+      traefik.http.routers.sharelatex.rule: Host(`sharelatex.`)
+      traefik.http.services.sharelatex.loadbalancer.server.port: '80'
     links:
     - sharelatex-mongo
     - sharelatex-redis
@@ -920,9 +927,9 @@ services:
     image: linuxserver/sonarr:2.0.0.5337-ls92
     labels:
       traefik.enable: "true"
-      traefik.frontend.auth.basic.users: ''
-      traefik.frontend.rule: Host:sonarr.
-      traefik.port: '8080'
+      traefik.http.routers.sonarr.middlewares: basic_auth@docker
+      traefik.http.routers.sonarr.rule: Host(`sonarr.`)
+      traefik.http.services.sonarr.loadbalancer.server.port: '8080'
     links:
     - jackett
     - transmission
@@ -945,8 +952,8 @@ services:
     image: gkiko/streama:v1.8.3
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:streama.
-      traefik.port: '8080'
+      traefik.http.routers.streama.rule: Host(`streama.`)
+      traefik.http.services.streama.loadbalancer.server.port: '8080'
     networks:
       srv: {}
     restart: always
@@ -956,13 +963,16 @@ services:
     - /home/runner/work/make-my-server/make-my-server/transmission/downloads:/data:rw
   theia:
     image: theiaide/theia
+    init: true
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:theia.
-      traefik.port: '3000'
+      traefik.http.routers.theia.middlewares: basic_auth@docker
+      traefik.http.routers.theia.rule: Host(`theia.`)
+      traefik.http.services.theia.loadbalancer.server.port: '3000'
     networks:
       srv: {}
     restart: always
+    user: 1000:1000
     volumes:
     - /home/runner:/home/project:cached
   tor-relay:
@@ -979,23 +989,48 @@ services:
     volumes:
     - /etc/localtime:/etc/localtime:rw
   traefik:
-    command: '--api --api.statistics --ping=true
-
-      '
+    command:
+    - --providers.docker
+    - --providers.docker.exposedbydefault=false
+    - --providers.docker.network=make-my-server_srv
+    - --entrypoints.web.address=:80
+    - --entrypoints.web.http.redirections.entrypoint.to=websecure
+    - --entrypoints.websecure.address=:443
+    - --certificatesresolvers.myresolver.acme.email=tom@moulard.org
+    - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
+    - --certificatesresolvers.myresolver.acme.httpchallenge=true
+    - --entrypoints.websecure.http.tls.certresolver=myresolver
+    - --accesslog.filepath=/logs/access.log
+    - --accesslog.format=json
+    - --log.filepath=/logs/traefik.log
+    - --log.format=json
+    - --metrics.prometheus
+    - --api.insecure
+    - --entrypoints.websecure.http.middlewares=compress@file
+    - --experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban
+    - --experimental.plugins.fail2ban.version=v0.6.0
+    - --global.checknewversion=false
+    - --global.sendanonymoususage=false
+    - --pilot.token=
+    - --ping
+    - --providers.file.directory=/dynamic_conf/
+    - --providers.file.watch=true
     healthcheck:
       interval: 10s
       retries: 5
       test:
       - CMD
-      - ./traefik
+      - traefik
       - healthcheck
+      - --ping
       timeout: 10s
-    image: traefik:1.7.12
+    image: traefik:2.4
     labels:
       traefik.enable: "true"
-      traefik.frontend.auth.basic.users: ''
-      traefik.frontend.rule: Host:traefik.
-      traefik.port: '8080'
+      traefik.http.middlewares.basic_auth.basicauth.users: ''
+      traefik.http.routers.traefik.middlewares: basic_auth@docker
+      traefik.http.routers.traefik.rule: Host(`traefik.`)
+      traefik.http.services.traefik.loadbalancer.server.port: '8080'
     networks:
       srv: {}
     ports:
@@ -1005,8 +1040,8 @@ services:
       target: 443
     restart: always
     volumes:
+    - /home/runner/work/make-my-server/make-my-server/traefik/dynamic_conf:/dynamic_conf:rw
     - /home/runner/work/make-my-server/make-my-server/traefik/logs:/logs:rw
-    - /home/runner/work/make-my-server/make-my-server/traefik/traefik.toml:/traefik.toml:rw
     - /var/run/docker.sock:/var/run/docker.sock:rw
   transmission:
     environment:
@@ -1024,9 +1059,9 @@ services:
     image: linuxserver/transmission:2.94-r1-ls12
     labels:
       traefik.enable: "true"
-      traefik.frontend.auth.basic.users: ''
-      traefik.frontend.rule: Host:transmission.
-      traefik.port: '9091'
+      traefik.http.routers.transmission.middlewares: basic_auth@docker
+      traefik.http.routers.transmission.rule: Host(`transmission.`)
+      traefik.http.services.transmission.loadbalancer.server.port: '9091'
     networks:
       srv: {}
     ports:
@@ -1078,8 +1113,8 @@ services:
     image: wordpress
     labels:
       traefik.enable: "true"
-      traefik.frontend.rule: Host:wordpress.
-      traefik.port: '80'
+      traefik.http.routers.wordpress.rule: Host(`wordpress.`)
+      traefik.http.services.wordpress.loadbalancer.server.port: '80'
     links:
     - wordpress-db
     networks:

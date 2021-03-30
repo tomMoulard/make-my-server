@@ -37,7 +37,6 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:kibana.${SITE}'
-      - 'traefik.port=5601'
-      - 'traefik.frontend.auth.basic.users=${USERS}'
-
+      - 'traefik.http.routers.kibana.rule=Host(`kibana.${SITE}`)'
+      - 'traefik.http.services.kibana.loadbalancer.server.port=5601'
+      - 'traefik.http.routers.kibana.middlewares=basic_auth@docker'

@@ -50,8 +50,8 @@ services:
       - ./mastodon/mastodon:/mastodon/public/system
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:mastodon.${SITE}'
-      - 'traefik.port=3000'
+      - 'traefik.http.routers.mastodon.rule=Host(`mastodon.${SITE}`)'
+      - 'traefik.http.services.mastodon.loadbalancer.server.port=3000'
 
   mastodon-streaming:
     image: tootsuite/mastodon
@@ -68,8 +68,8 @@ services:
       - mastodon-redis
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:api.mastodon.${SITE}'
-      - 'traefik.port=4000'
+      - 'traefik.http.routers.mastodon-streaming.rule=Host(`mastodon-streaming.${SITE}`)'
+      - 'traefik.http.services.mastodon-streaming.loadbalancer.server.port=4000'
 
   mastodon-sidekiq:
     image: tootsuite/mastodon

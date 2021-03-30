@@ -11,5 +11,6 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:portainer.${SITE}'
-      - 'traefik.port=9000'
+      - 'traefik.http.routers.portainer.rule=Host(`portainer.${SITE}`)'
+      - 'traefik.http.services.portainer.loadbalancer.server.port=9000'
+      - 'traefik.http.routers.portainer.middlewares=basic_auth@docker'

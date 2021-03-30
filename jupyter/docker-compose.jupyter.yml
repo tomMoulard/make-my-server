@@ -18,6 +18,6 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:jupyter.${SITE}'
-      - 'traefik.port=8888'
-      - 'traefik.frontend.auth.basic.users=${USERS}'
+      - 'traefik.http.routers.jupyter.rule=Host(`jupyter.${SITE}`)'
+      - 'traefik.http.services.jupyter.loadbalancer.server.port=8888'
+      - 'traefik.http.routers.jupyter.middlewares=basic_auth@docker'

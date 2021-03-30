@@ -5,10 +5,13 @@ services:
     image: theiaide/theia
     volumes:
       - '${HOME}:/home/project:cached'
+    init: true
     networks:
       - 'srv'
     restart: always
+    user: 1000:1000 # With this, you cannot install plugins but you can save files
     labels:
       - 'traefik.enable=true'
-      - 'traefik.frontend.rule=Host:theia.${SITE}'
-      - 'traefik.port=3000'
+      - 'traefik.http.routers.theia.middlewares=basic_auth@docker'
+      - 'traefik.http.routers.theia.rule=Host(`theia.${SITE}`)'
+      - 'traefik.http.services.theia.loadbalancer.server.port=3000'
