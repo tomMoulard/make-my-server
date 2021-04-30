@@ -25,7 +25,7 @@ services:
       # - '--log.level=DEBUG'
       - '--metrics.prometheus'
       # Misc
-      - '--api.insecure'
+      - '--api.dashboard'
       - '--entrypoints.websecure.http.middlewares=compress@file${TRAEFIK_PLUGINS}'
       - '--experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban'
       - '--experimental.plugins.fail2ban.version=v0.6.0'
@@ -42,15 +42,15 @@ services:
       - 'srv'
     restart: always
     healthcheck:
-      test: ['CMD', 'traefik', 'healthcheck', "--ping"]
+      test: ['CMD', 'traefik', 'healthcheck', '--ping']
       interval: 10s
       timeout: 10s
       retries: 5
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.traefik.rule=Host(`traefik.${SITE}`)'
+      - 'traefik.http.routers.traefik.service=api@internal'
       - 'traefik.http.routers.traefik.middlewares=basic_auth@docker'
-      - 'traefik.http.services.traefik.loadbalancer.server.port=8080'
       # Middleware definitions
       - 'traefik.http.middlewares.basic_auth.basicauth.users=${USERS}'
     volumes:
