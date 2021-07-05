@@ -1,5 +1,6 @@
 # Server configuration
 [![Docker](https://github.com/tomMoulard/make-my-server/workflows/Docker/badge.svg)](https://github.com/tomMoulard/make-my-server/actions)
+[![Discord](https://img.shields.io/discord/861623516142501898)](https://discord.gg/zQV6m9Jk6Z)
 
 ## Setup
 ```bash
