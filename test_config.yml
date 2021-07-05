@@ -1005,7 +1005,7 @@ services:
     - --log.filepath=/logs/traefik.log
     - --log.format=json
     - --metrics.prometheus
-    - --api.insecure
+    - --api.dashboard
     - --entrypoints.websecure.http.middlewares=compress@file
     - --experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban
     - --experimental.plugins.fail2ban.version=v0.6.0
@@ -1030,7 +1030,7 @@ services:
       traefik.http.middlewares.basic_auth.basicauth.users: ''
       traefik.http.routers.traefik.middlewares: basic_auth@docker
       traefik.http.routers.traefik.rule: Host(`traefik.`)
-      traefik.http.services.traefik.loadbalancer.server.port: '8080'
+      traefik.http.routers.traefik.service: api@internal
     networks:
       srv: {}
     ports:
