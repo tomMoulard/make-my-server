@@ -2,7 +2,7 @@ version: '2'
 
 services:
   traefik:
-    image: traefik:2.4
+    image: traefik:2.5
     command:
       # Provider
       - '--providers.docker'
