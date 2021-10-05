@@ -20,6 +20,16 @@ services:
       - 'traefik.http.routers.nextcloud.rule=Host(`nextcloud.${SITE}`)'
       - 'traefik.http.services.nextcloud.loadbalancer.server.port=80'
 
+      # https://docs.nextcloud.com/server/22/admin_manual/installation/harden_server.html
+      - 'traefik.http.middlewares.header-nextcloud.headers.stsincludesubdomains=true'
+      - 'traefik.http.middlewares.header-nextcloud.headers.stspreload=true'
+      - 'traefik.http.middlewares.header-nextcloud.headers.stsseconds=15552000'
+      - 'traefik.http.middlewares.header-nextcloud.headers.frameDeny=true'
+      - 'traefik.http.middlewares.header-nextcloud.headers.browserXssFilter=true'
+      - 'traefik.http.middlewares.header-nextcloud.headers.contentTypeNosniff=true'
+      - 'traefik.http.middlewares.header-nextcloud.headers.referrerPolicy=no-referrer'
+      - 'traefik.http.routers.nextcloud.middlewares=header-nextcloud'
+
   nextcloud-db:
     image: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
