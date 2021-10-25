@@ -24,7 +24,7 @@ services:
       - 'traefik.http.middlewares.header-nextcloud.headers.stsincludesubdomains=true'
       - 'traefik.http.middlewares.header-nextcloud.headers.stspreload=true'
       - 'traefik.http.middlewares.header-nextcloud.headers.stsseconds=15552000'
-      - 'traefik.http.middlewares.header-nextcloud.headers.frameDeny=true'
+      - 'traefik.http.middlewares.header-nextcloud.headers.customFrameOptionsValue=SAMEORIGIN'
       - 'traefik.http.middlewares.header-nextcloud.headers.browserXssFilter=true'
       - 'traefik.http.middlewares.header-nextcloud.headers.contentTypeNosniff=true'
       - 'traefik.http.middlewares.header-nextcloud.headers.referrerPolicy=no-referrer'
