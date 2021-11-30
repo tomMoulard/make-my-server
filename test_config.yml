@@ -777,7 +777,7 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:rw
     - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/rules:/etc/prometheus/rules:rw
-    - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/datas:/prometheus:rw
+    - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/data:/prometheus:rw
   rocketchat:
     depends_on:
       rocketchat-mongo:
