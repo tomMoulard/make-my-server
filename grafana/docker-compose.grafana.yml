@@ -41,7 +41,7 @@ services:
       - alertmanager
       - cadvisor
     volumes:
-      - './grafana/prometheus/datas:/prometheus'
+      - './grafana/prometheus/data:/prometheus'
       - './grafana/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml'
       - './grafana/prometheus/rules:/etc/prometheus/rules'
     labels:
