@@ -17,7 +17,6 @@ services:
       - './gitlab/data:/var/opt/gitlab'
     networks:
       - 'srv'
-    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.gitlab.rule=Host(`gitlab.${SITE}`)'
@@ -31,6 +30,5 @@ services:
       - '/var/run/docker.sock:/var/run/docker.sock'
     links:
       - gitlab
-    restart: always
     labels:
       - 'traefik.enable=false'

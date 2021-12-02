@@ -31,6 +31,5 @@ services:
     volumes:
       - ./hugo/blog:/src
       - ./hugo/nginx/conf/www:/output
-    restart: always
     labels:
       - 'traefik.enable=false'

@@ -36,7 +36,6 @@ services:
       - 27017
     volumes:
       - ./sharelatex/mongo:/data/db
-    restart: always
     labels:
       - 'traefik.enable=false'
 
@@ -47,6 +46,5 @@ services:
       - 6379
     volumes:
       - ./sharelatex/redis/data:/data
-    restart: always
     labels:
       - 'traefik.enable=false'

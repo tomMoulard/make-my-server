@@ -11,7 +11,7 @@ services:
       - 'PEERTUBE_WEBSERVER_PORT=443'
       - 'PEERTUBE_WEBSERVER_HTTPS=true'
       - 'PEERTUBE_ADMIN_EMAIL=admin@${SITE}'
-      - 'PEERTUBE_TRUST_PROXY=["127.0.0.1", "loopback", "172.18.0.0/16"]'
+      - 'PEERTUBE_TRUST_PROXY=["127.0.0.1", "loopback", "172.0.0.0/0"]'
     volumes:
       - ./peertube/data:/data
       - ./peertube/config:/config
