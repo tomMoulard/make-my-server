@@ -2,18 +2,18 @@ version: '2'
 
 services:
   traefik:
-    image: traefik:2.5
+    image: traefik:${TRAEFIK_IMAGE_VERSION:-v2.5}
     command:
       # Provider
       - '--providers.docker'
-      - '--providers.docker.exposedbydefault=false'
+      - '--providers.docker.exposedbydefault=${TRAEFIK_EXPOSED_BY_DEFAULT:-false}'
       - '--providers.docker.network=make-my-server_srv'
       # Entrypoints
-      - '--entrypoints.web.address=:80'
+      - '--entrypoints.web.address=:${TRAEFIK_WEB_ENTRYPOINT:-80}'
       - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
-      - '--entrypoints.websecure.address=:443'
+      - '--entrypoints.websecure.address=:${TRAEFIK_WEBSECURE_ENTRYPOINT:-443}'
       # Let's Encrypt
-      - '--certificatesresolvers.myresolver.acme.email=tom@moulard.org'
+      - '--certificatesresolvers.myresolver.acme.email=${ROOT_EMAIL:-changeme@changeme.org}'
       - '--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web'
       - '--certificatesresolvers.myresolver.acme.httpchallenge=true'
       - '--entrypoints.websecure.http.tls.certresolver=myresolver'
@@ -22,22 +22,22 @@ services:
       - '--accesslog.format=json'
       - '--log.filepath=/logs/traefik.log'
       - '--log.format=json'
-      # - '--log.level=DEBUG'
+      - '--log.level=${TRAEFIK_LOG_LEVEL:-ERROR}'
       - '--metrics.prometheus'
       # Misc
       - '--api.dashboard'
       - '--entrypoints.websecure.http.middlewares=compress@file${TRAEFIK_PLUGINS}'
       - '--experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban'
       - '--experimental.plugins.fail2ban.version=v0.6.0'
-      - '--global.checknewversion=false'
-      - '--global.sendanonymoususage=false'
+      - '--global.checknewversion=${TRAEFIK_CHECK_NEW_VERSION:-false}'
+      - '--global.sendanonymoususage=${TRAEFIK_SEND_ANONYMOUS_USAGE:-false}'
       - '--pilot.token=${TRAEFIK_PILOT_TOKEN}'
       - '--ping'
       - '--providers.file.directory=/dynamic_conf/'
       - '--providers.file.watch=true'
     ports:
-      - '80:80'
-      - '443:443'
+      - '${TRAEFIK_WEB_ENTRYPOINT:-80}:${TRAEFIK_WEB_ENTRYPOINT:-80}'
+      - '${TRAEFIK_WEBSECURE_ENTRYPOINT:-443}:${TRAEFIK_WEBSECURE_ENTRYPOINT:-443}'
     networks:
       - 'srv'
     restart: always
