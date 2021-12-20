@@ -18,16 +18,16 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.sharelatex.rule=Host(`sharelatex.${SITE}`)'
+      - 'traefik.http.routers.sharelatex.rule=Host(`sharelatex.${SITE:-localhost}`)'
       - 'traefik.http.services.sharelatex.loadbalancer.server.port=80'
     environment:
       SHARELATEX_MONGO_URL: mongodb://sharelatex-mongo/sharelatex
       SHARELATEX_REDIS_HOST: sharelatex-redis
       SHARELATEX_APP_NAME: ${USERNAME}'s ShareLaTeX
-      SHARELATEX_NAV_TITLE: ${SITE} - ShareLaTeX
-      SHARELATEX_SITE_URL: https://latex.${SITE}
+      SHARELATEX_NAV_TITLE: ${SITE:-localhost} - ShareLaTeX
+      SHARELATEX_SITE_URL: https://latex.${SITE:-localhost}
       SHARELATEX_HEADER_IMAGE_URL: http://somewhere.com/mylogo.png
-      SHARELATEX_ADMIN_EMAIL: ${EMAIL}
+      SHARELATEX_ADMIN_EMAIL: ${ROOT_EMAIL:-changeme@changeme.org}
 
   sharelatex-mongo:
     restart: always

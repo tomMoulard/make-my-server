@@ -4,10 +4,10 @@ services:
   gitlab:
     image: 'gitlab/gitlab-ce:latest'
     restart: always
-    hostname: 'gitlab.${SITE}'
+    hostname: 'gitlab.${SITE:-localhost}'
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://gitlab.${SITE}:80'
+        external_url 'http://gitlab.${SITE:-localhost}:80'
         gitlab_rails['gitlab_shell_ssh_port'] = 2224
     ports:
       - '2224:22'
@@ -19,7 +19,7 @@ services:
       - 'srv'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.gitlab.rule=Host(`gitlab.${SITE}`)'
+      - 'traefik.http.routers.gitlab.rule=Host(`gitlab.${SITE:-localhost}`)'
       - 'traefik.http.services.gitlab.loadbalancer.server.port=80'
 
   runner:

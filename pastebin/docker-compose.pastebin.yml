@@ -8,5 +8,5 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.pastebin.rule=Host(`pastebin.${SITE}`)'
+      - 'traefik.http.routers.pastebin.rule=Host(`pastebin.${SITE:-localhost}`)'
       - 'traefik.http.services.pastebin.loadbalancer.server.port=80'

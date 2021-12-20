@@ -26,12 +26,12 @@ services:
       - '--metrics.prometheus'
       # Misc
       - '--api.dashboard'
-      - '--entrypoints.websecure.http.middlewares=compress@file${TRAEFIK_PLUGINS}'
+      - '--entrypoints.websecure.http.middlewares=compress@file${TRAEFIK_PLUGINS:-}'
       - '--experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban'
       - '--experimental.plugins.fail2ban.version=v0.6.0'
       - '--global.checknewversion=${TRAEFIK_CHECK_NEW_VERSION:-false}'
       - '--global.sendanonymoususage=${TRAEFIK_SEND_ANONYMOUS_USAGE:-false}'
-      - '--pilot.token=${TRAEFIK_PILOT_TOKEN}'
+      - '--pilot.token=${TRAEFIK_PILOT_TOKEN:-}'
       - '--ping'
       - '--providers.file.directory=/dynamic_conf/'
       - '--providers.file.watch=true'
@@ -48,7 +48,7 @@ services:
       retries: 5
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.traefik.rule=Host(`traefik.${SITE}`)'
+      - 'traefik.http.routers.traefik.rule=Host(`traefik.${SITE:-localhost}`)'
       - 'traefik.http.routers.traefik.service=api@internal'
       - 'traefik.http.routers.traefik.middlewares=basic_auth@docker'
       # Middleware definitions

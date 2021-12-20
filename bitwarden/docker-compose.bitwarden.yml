@@ -14,5 +14,5 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.bitwarden.rule=Host(`bitwarden.${SITE}`)'
+      - 'traefik.http.routers.bitwarden.rule=Host(`bitwarden.${SITE:-localhost}`)'
       - 'traefik.http.services.bitwarden.loadbalancer.server.port=8080'

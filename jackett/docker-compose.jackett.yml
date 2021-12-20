@@ -6,7 +6,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - 'TZ=${TZ}'
+      - 'TZ=${TZ:-Europe/Paris}'
     volumes:
       - ./jackett/config:/config
       - ./jackett/downloads:/downloads
@@ -20,6 +20,6 @@ services:
       retries: 5
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.jackett.rule=Host(`jackett.${SITE}`)'
+      - 'traefik.http.routers.jackett.rule=Host(`jackett.${SITE:-localhost}`)'
       - 'traefik.http.services.jackett.loadbalancer.server.port=9117'
       - 'traefik.http.routers.jackett.middlewares=basic_auth@docker'

@@ -6,7 +6,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - 'TZ=${TZ}'
+      - 'TZ=${TZ:-Europe/Paris}'
     volumes:
       - ./sonarr/config:/config
       - ./sonarr/downloads:/downloads
@@ -19,6 +19,6 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.sonarr.rule=Host(`sonarr.${SITE}`)'
+      - 'traefik.http.routers.sonarr.rule=Host(`sonarr.${SITE:-localhost}`)'
       - 'traefik.http.services.sonarr.loadbalancer.server.port=8080'
       - 'traefik.http.routers.sonarr.middlewares=basic_auth@docker'

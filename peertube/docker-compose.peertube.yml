@@ -7,10 +7,10 @@ services:
       - 'PEERTUBE_DB_USERNAME=peertube'
       - 'PEERTUBE_DB_PASSWORD=${USERS}'
       - 'PEERTUBE_DB_HOSTNAME=peertube-db'
-      - 'PEERTUBE_WEBSERVER_HOSTNAME=peertube.${SITE}'
+      - 'PEERTUBE_WEBSERVER_HOSTNAME=peertube.${SITE:-localhost}'
       - 'PEERTUBE_WEBSERVER_PORT=443'
       - 'PEERTUBE_WEBSERVER_HTTPS=true'
-      - 'PEERTUBE_ADMIN_EMAIL=admin@${SITE}'
+      - 'PEERTUBE_ADMIN_EMAIL=${ROOT_EMAIL:-changeme@changeme.org}'
       - 'PEERTUBE_TRUST_PROXY=["127.0.0.1", "loopback", "172.0.0.0/0"]'
     volumes:
       - ./peertube/data:/data
@@ -26,7 +26,7 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.peertube.rule=Host(`peertube.${SITE}`)'
+      - 'traefik.http.routers.peertube.rule=Host(`peertube.${SITE:-localhost}`)'
       - 'traefik.http.services.peertube.loadbalancer.server.port=9000'
 
   peertube-db: # peertube-db

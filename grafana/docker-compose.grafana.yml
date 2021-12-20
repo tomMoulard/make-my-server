@@ -13,7 +13,7 @@ services:
       - prometheus
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.grafana.rule=Host(`grafana.${SITE}`)'
+      - 'traefik.http.routers.grafana.rule=Host(`grafana.${SITE:-localhost}`)'
       - 'traefik.http.services.grafana.loadbalancer.server.port=3000'
       - 'traefik.http.routers.grafana.middlewares=basic_auth@docker'
     environment:
@@ -46,7 +46,7 @@ services:
       - './grafana/prometheus/rules:/etc/prometheus/rules'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.prometheus.rule=Host(`prometheus.${SITE}`)'
+      - 'traefik.http.routers.prometheus.rule=Host(`prometheus.${SITE:-localhost}`)'
       - 'traefik.http.services.prometheus.loadbalancer.server.port=9090'
       - 'traefik.http.routers.prometheus.middlewares=basic_auth@docker'
 
@@ -55,7 +55,7 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.node_exporter.rule=Host(`node_exporter.${SITE}`)'
+      - 'traefik.http.routers.node_exporter.rule=Host(`node_exporter.${SITE:-localhost}`)'
       - 'traefik.http.services.node_exporter.loadbalancer.server.port=9100'
       - 'traefik.http.routers.node_exporter.middlewares=basic_auth@docker'
     networks:
@@ -67,7 +67,7 @@ services:
       - 'srv'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.alertmanager.rule=Host(`alertmanager.${SITE}`)'
+      - 'traefik.http.routers.alertmanager.rule=Host(`alertmanager.${SITE:-localhost}`)'
       - 'traefik.http.services.alertmanager.loadbalancer.server.port=9093'
       - 'traefik.http.routers.alertmanager.middlewares=basic_auth@docker'
     restart: always
@@ -84,6 +84,6 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.cadvisor.rule=Host(`cadvisor.${SITE}`)'
+      - 'traefik.http.routers.cadvisor.rule=Host(`cadvisor.${SITE:-localhost}`)'
       - 'traefik.http.services.cadvisor.loadbalancer.server.port=8080'
       - 'traefik.http.routers.cadvisor.middlewares=basic_auth@docker'

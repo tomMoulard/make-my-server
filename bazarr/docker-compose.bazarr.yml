@@ -6,7 +6,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - 'TZ=${TZ}'
+      - 'TZ=${TZ:-Europe/Paris}'
     volumes:
       - ./bazarr/config:/config
       - ./bazarr/movies:/movies
@@ -20,6 +20,6 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.bazarr.rule=Host(`bazarr.${SITE}`)'
+      - 'traefik.http.routers.bazarr.rule=Host(`bazarr.${SITE:-localhost}`)'
       - 'traefik.http.services.bazarr.loadbalancer.server.port=8080'
       - 'traefik.http.routers.bazarr.middlewares=basic_auth@docker'

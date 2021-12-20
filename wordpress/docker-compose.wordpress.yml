@@ -24,7 +24,7 @@ services:
       retries: 5
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.wordpress.rule=Host(`wordpress.${SITE}`)'
+      - 'traefik.http.routers.wordpress.rule=Host(`wordpress.${SITE:-localhost}`)'
       - 'traefik.http.services.wordpress.loadbalancer.server.port=80'
 
   wordpress-db:

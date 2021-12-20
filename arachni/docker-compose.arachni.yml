@@ -8,6 +8,6 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.arachni.rule=Host(`arachni.${SITE}`)'
+      - 'traefik.http.routers.arachni.rule=Host(`arachni.${SITE:-localhost}`)'
       - 'traefik.http.services.arachni.loadbalancer.server.port=9292'
       - 'traefik.http.routers.arachni.middlewares=basic_auth@docker'

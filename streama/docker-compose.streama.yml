@@ -17,5 +17,5 @@ services:
       retries: 5
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.streama.rule=Host(`streama.${SITE}`)'
+      - 'traefik.http.routers.streama.rule=Host(`streama.${SITE:-localhost}`)'
       - 'traefik.http.services.streama.loadbalancer.server.port=8080'
