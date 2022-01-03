@@ -1022,7 +1022,7 @@ services:
       - healthcheck
       - --ping
       timeout: 10s
-    image: traefik:v2.5
+    image: traefik:v2.6
     labels:
       traefik.enable: "true"
       traefik.http.middlewares.basic_auth.basicauth.users: ''
