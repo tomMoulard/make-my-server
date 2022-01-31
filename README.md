@@ -69,7 +69,7 @@ Configuration files are: `docker-compose.yml`, `nginx.conf`
 
 To set the password:
 ```bash
-echo "USERS=$USER:$(openssl passwd -apr1)" >> .env
+echo "USERS=$(htpasswd -nB $USER)" >> .env
 ```
 
 You can add a new set of credentials by editing the .env file like
