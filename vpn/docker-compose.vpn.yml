@@ -11,7 +11,7 @@ services:
       - 'VPN_ADDL_USERS=' # space separated values
       - 'VPN_ADDL_PASSWORDS=' # space separated values
     ports:
-      - '500:500'
+      - '500:500/udp'
       - '4500:4500/udp'
     restart: always
     volumes:
