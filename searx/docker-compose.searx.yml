@@ -14,7 +14,7 @@ services:
     environment:
       - 'BIND_ADDRESS=0.0.0.0:8080'
       - 'BASE_URL=https://searx.${SITE:-localhost}/'
-      - 'MORTY_URL=http://morty/'
+      - 'MORTY_URL=https://morty.${SITE:-localhost}/'
       - 'MORTY_KEY=${MORTY_KEY:-VGhpcyBrZXkgaXMgTk9UIHNlY3VyZQ==}'
     depends_on:
       - morty
