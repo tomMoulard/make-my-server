@@ -24,8 +24,6 @@ test ()
     echo -e "[${GREEN}V${WHITE}] $@"
 }
 
-# set -x #debug
-
 test dc config -q
 
 file=$(mktemp)
@@ -36,7 +34,7 @@ rm $file
 # Creating a patch to fix test_config.yml
 dc config > test_config.yml
 
-git diff > patch.patch
+git diff | tee patch.patch
 
 [ $errors -gt 0 ] && echo "There were $errors errors found" && exit 1
 
