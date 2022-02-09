@@ -1082,7 +1082,8 @@ services:
       VPN_USER: ''
     image: hwdsl2/ipsec-vpn-server:latest
     ports:
-    - published: 500
+    - protocol: udp
+      published: 500
       target: 500
     - protocol: udp
       published: 4500
