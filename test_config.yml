@@ -292,7 +292,7 @@ services:
       - curl
       - 0.0.0.0:9117/UI/Login?ReturnUrl=%2FUI%2FDashboard
       timeout: 10s
-    image: linuxserver/jackett:v0.15.5-ls61
+    image: linuxserver/jackett:v0.20.567-ls56
     labels:
       traefik.enable: "true"
       traefik.http.routers.jackett.middlewares: basic_auth@docker

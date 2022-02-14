@@ -2,7 +2,7 @@ version: '2'
 
 services:
   jackett:
-    image: linuxserver/jackett:v0.15.5-ls61
+    image: linuxserver/jackett:v0.20.567-ls56
     environment:
       - PUID=1000
       - PGID=1000
