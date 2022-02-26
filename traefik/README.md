@@ -17,9 +17,9 @@ You can add this to your `.env` file:
 echo "TRAEFIK_PiLOT_TOKEN=$MY_TOKEN" >> .env
 ```
 
-Once you have registered your instance, you can provide use plugins by setting the `TRAEFIK_PLUGIN` variable:
+Once you have registered your instance, you can provide use plugins by setting the `TRAEFIK_PLUGINS` variable:
 ```bash
-echo 'TRAEFIK_PLUGIN=",fail2ban@file"' >> .env
+echo 'TRAEFIK_PLUGINS=,fail2ban@file' >> .env
 ```
 
 ## Add a Router/Service using the file provider
