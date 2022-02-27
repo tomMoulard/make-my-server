@@ -79,7 +79,7 @@ USERS=toto:pass,tata:pass, ...
 
 The `.env.default` is generated using this command:
 ```bash
-grep '${' **/docker-compose.*.yml | sed "s/.*\${\(.*\)}.*/\1/g" | cut -d":" -f 1 | sort -u | xargs -I % echo "%=" >> .env.default
+grep '${' **/docker-compose.*.yml | sed "s/.*\${\(.*\)}.*/\1/g" | cut -d":" -f 1 | sort -u | sort | xargs -I % echo "%=" >> .env.default
 ```
 
 ### For local developments

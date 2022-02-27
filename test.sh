@@ -31,7 +31,7 @@ dc config > $file 2>$log_file
 test diff test_config.yml $file
 mv $file test_config.yml
 
-grep '${' **/docker-compose.*.yml | sed "s/.*\${\(.*\)}.*/\1/g" | cut -d":" -f 1 | sort -u | xargs -I % echo "%=" >> .env.generated
+grep '${' **/docker-compose.*.yml | sed "s/.*\${\(.*\)}.*/\1/g" | cut -d":" -f 1 | sort -u | sort | xargs -I % echo "%=" >> .env.generated
 test diff .env.default .env.generated
 mv .env.generated .env.default
 
