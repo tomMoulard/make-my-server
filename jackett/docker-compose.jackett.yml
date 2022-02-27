@@ -2,11 +2,11 @@ version: '2'
 
 services:
   jackett:
-    image: linuxserver/jackett:v0.20.567-ls56
+    image: linuxserver/jackett:${JACKETT_IMAGE_VERSION:-v0.20.567-ls56}
     environment:
-      - PUID=1000
-      - PGID=1000
-      - 'TZ=${TZ:-Europe/Paris}'
+      PUID: ${JACKETT_PUID:-1000}
+      PGID: ${JACKETT_GPID:-1000}
+      TZ: ${TZ:-Europe/Paris}
     volumes:
       - ./jackett/config:/config
       - ./jackett/downloads:/downloads
