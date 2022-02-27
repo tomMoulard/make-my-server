@@ -6,11 +6,11 @@ services:
     privileged: true
     restart: always
     environment:
-      VPN_IPSEC_PSK: ${VPN_IPSEC_PSK:-VPN_IPSEC_PSK}
-      VPN_USER: ${VPN_USER:-VPN_USER}
-      VPN_PASSWORD: ${VPN_PASSWORD:-VPN_PASSWORD}
-      VPN_ADDL_USERS: ${VPN_ADDL_USERS:-VPN_ADDL_USERS} # space separated values
-      VPN_ADDL_PASSWORDS: ${VPN_ADDL_PASSWORDS:-VPN_ADDL_PASSWORDS} # space separated values
+      VPN_IPSEC_PSK: ${VPN_IPSEC_PSK}
+      VPN_USER: ${VPN_USER}
+      VPN_PASSWORD: ${VPN_PASSWORD}
+      VPN_ADDL_USERS: ${VPN_ADDL_USERS} # space separated values
+      VPN_ADDL_PASSWORDS: ${VPN_ADDL_PASSWORDS} # space separated values
     ports:
       - '500:500/udp'
       - '4500:4500/udp'

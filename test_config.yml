@@ -137,6 +137,8 @@ services:
       cluster.name: docker-cluster
       discovery.type: single-node
     image: docker.elastic.co/elasticsearch/elasticsearch:7.1.0
+    labels:
+      traefik.enable: "false"
     restart: always
     ulimits:
       memlock:
@@ -353,6 +355,8 @@ services:
     - /home/runner/work/make-my-server/make-my-server/elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:rw
   logstash:
     image: docker.elastic.co/logstash/logstash:7.1.0
+    labels:
+      traefik.enable: "false"
     links:
     - elasticsearch
     restart: always
