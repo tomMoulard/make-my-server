@@ -77,6 +77,11 @@ You can add a new set of credentials by editing the .env file like
 USERS=toto:pass,tata:pass, ...
 ```
 
+The `.env.default` is generated using this command:
+```bash
+grep '${' **/docker-compose.*.yml | sed "s/.*\${\(.*\)}.*/\1/g" | cut -d":" -f 1 | sort -u | xargs -I % echo "%=" >> .env.default
+```
+
 ### For local developments
 Edit the file `/etc/hosts` to provide the reverse proxy with good URLs.
 

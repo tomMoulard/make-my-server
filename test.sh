@@ -29,14 +29,14 @@ test dc config -q
 file=$(mktemp)
 dc config > $file 2>$log_file
 test diff test_config.yml $file
-rm $file
+mv $file test_config.yml
 
-# Creating a patch to fix test_config.yml
-dc config > test_config.yml
+grep '${' **/docker-compose.*.yml | sed "s/.*\${\(.*\)}.*/\1/g" | cut -d":" -f 1 | sort -u | xargs -I % echo "%=" >> .env.generated
+test diff .env.default .env.generated
+mv .env.generated .env.default
 
 git diff | tee patch.patch
 
 [ $errors -gt 0 ] && echo "There were $errors errors found" && exit 1
 
 exit 0
-
