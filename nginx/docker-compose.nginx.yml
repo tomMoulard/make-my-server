@@ -2,7 +2,7 @@ version: '2'
 
 services:
   nginx:
-    image: nginx:stable-alpine
+    image: nginx:${NGINX_IMAGE_VERSION:-stable-alpine}
     volumes:
       - './nginx/conf:/etc/nginx/conf.d'
       - './nginx/logs:/var/log/nginx/'
