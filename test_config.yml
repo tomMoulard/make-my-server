@@ -977,6 +977,8 @@ services:
     volumes:
     - /home/runner:/home/project:cached
   tor-relay:
+    build:
+      context: https://github.com/jessfraz/dockerfiles.git#:tor-relay
     command: -f /etc/tor/torrc.middle
     image: jess/tor-relay
     labels:
