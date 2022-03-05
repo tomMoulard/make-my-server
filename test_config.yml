@@ -999,6 +999,7 @@ services:
     restart: always
     volumes:
     - /etc/localtime:/etc/localtime:rw
+    - /home/runner/work/make-my-server/make-my-server/tor-relay/keys:/var/lib/tor/.tor/keys:rw
   traefik:
     command:
     - --providers.docker
