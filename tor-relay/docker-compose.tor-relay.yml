@@ -6,6 +6,7 @@ version: '2'
 services:
   tor-relay:
     image: jess/tor-relay
+    build: https://github.com/jessfraz/dockerfiles.git#:tor-relay
     # Choose one of the bellow to set the type of node
     # command: -f /etc/tor/torrc.bridge
     command: -f /etc/tor/torrc.middle
