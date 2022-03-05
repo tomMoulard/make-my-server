@@ -979,7 +979,15 @@ services:
   tor-relay:
     build:
       context: https://github.com/jessfraz/dockerfiles.git#:tor-relay
-    command: -f /etc/tor/torrc.middle
+    environment:
+      CONTACT_EMAIL: changeme@changeme.org
+      CONTACT_GPG_FINGERPRINT: ''
+      CONTACT_NAME: ''
+      RELAY_BANDWIDTH_BURST: 200 KBytes
+      RELAY_BANDWIDTH_RATE: 100 KBytes
+      RELAY_NICKNAME: hacktheplanet
+      RELAY_PORT: '9001'
+      RELAY_TYPE: middle
     image: jess/tor-relay
     labels:
       traefik.enable: "false"
