@@ -19,6 +19,7 @@ services:
       - 'RELAY_PORT=9001'
     volumes:
       - '/etc/localtime:/etc/localtime'
+      # - './tor-relay/keys:/var/lib/tor/.tor/keys/'
     networks:
       - 'srv'
     ports:
