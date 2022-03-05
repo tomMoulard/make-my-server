@@ -7,10 +7,16 @@ services:
   tor-relay:
     image: jess/tor-relay
     build: https://github.com/jessfraz/dockerfiles.git#:tor-relay
-    # Choose one of the bellow to set the type of node
-    # command: -f /etc/tor/torrc.bridge
-    command: -f /etc/tor/torrc.middle
-    # command: -f /etc/tor/torrc.exit
+    environment:
+      # see https://github.com/jessfraz/dockerfiles/tree/master/tor-relay for further information about the values 
+      - 'RELAY_TYPE=${TOR_RELAY_TYPE:-middle}' # possible values are bridge, middle, or exit
+      - 'RELAY_NICKNAME=${TOR_RELAY_NICKNAME:-hacktheplanet}'
+      - 'CONTACT_GPG_FINGERPRINT=${TOR_CONTACT_GPG_FINGERPRINT:-none}'
+      - 'CONTACT_NAME=${TOR_CONTACT_NAME:-none}'
+      - 'CONTACT_EMAIL=${TOR_CONTACT_EMAIL:-none}'
+      - 'RELAY_BANDWIDTH_RATE=${TOR_RELAY_BANDWIDTH_RATE:-100 KBytes}'
+      - 'RELAY_BANDWIDTH_BURST=${TOR_RELAY_BANDWIDTH_BURST:-200 KBytes}'
+      - 'RELAY_PORT=9001'
     volumes:
       - '/etc/localtime:/etc/localtime'
     networks:
