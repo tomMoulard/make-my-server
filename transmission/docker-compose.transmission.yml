@@ -2,11 +2,12 @@ version: '2'
 
 services:
   transmission:
-    image: linuxserver/transmission:2.94-r1-ls12
+    image: linuxserver/transmission:3.00-r5-ls115
     environment:
-      - 'PGID=1000'
-      - 'PUID=1000'
-      - 'TZ=${TZ:-Europe/Paris}'
+      PGID: ${TRANSMISSION_PGID:-1000}
+      PUID: ${TRANSMISSION_PUID:-1000}
+      TZ: ${TZ:-Europe/Paris}
+      TRANSMISSION_WEB_HOME: ${TRANSMISSION_WEB_HOME:-/flood-for-transmission/}
     ports:
       - '51413:51413'
       - '51413:51413/udp'
@@ -23,7 +24,7 @@ services:
       timeout: 10s
       retries: 5
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.transmission.rule=Host(`transmission.${SITE:-localhost}`)'
-      - 'traefik.http.services.transmission.loadbalancer.server.port=9091'
-      - 'traefik.http.routers.transmission.middlewares=basic_auth@docker'
+      traefik.enable: true
+      traefik.http.routers.transmission.rule: Host(`transmission.${SITE:-localhost}`)
+      traefik.http.services.transmission.loadbalancer.server.port: 9091
+      traefik.http.routers.transmission.middlewares: basic_auth@docker

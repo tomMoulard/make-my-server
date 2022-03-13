@@ -1060,6 +1060,7 @@ services:
     environment:
       PGID: '1000'
       PUID: '1000'
+      TRANSMISSION_WEB_HOME: /flood-for-transmission/
       TZ: Europe/Paris
     healthcheck:
       interval: 10s
@@ -1069,9 +1070,9 @@ services:
       - curl
       - 0.0.0.0:9091/transmission/web/
       timeout: 10s
-    image: linuxserver/transmission:2.94-r1-ls12
+    image: linuxserver/transmission:3.00-r5-ls115
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.transmission.middlewares: basic_auth@docker
       traefik.http.routers.transmission.rule: Host(`transmission.localhost`)
       traefik.http.services.transmission.loadbalancer.server.port: '9091'
