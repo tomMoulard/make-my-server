@@ -11,7 +11,7 @@ services:
       # see https://github.com/jessfraz/dockerfiles/tree/master/tor-relay for further information about the values
       - 'RELAY_TYPE=${TOR_RELAY_TYPE:-middle}' # possible values are bridge, middle, or exit
       - 'RELAY_NICKNAME=${TOR_RELAY_NICKNAME:-hacktheplanet}'
-      - 'CONTACT_GPG_FINGERPRINT=${TOR_CONTACT_GPG_FINGERPRINT}'
+      - 'CONTACT_GPG_FINGERPRINT=${TOR_CONTACT_GPG_FINGERPRINT:-}'
       - 'CONTACT_NAME=${USERNAME}'
       - 'CONTACT_EMAIL=${ROOT_EMAIL:-changeme@changeme.org}'
       - 'RELAY_BANDWIDTH_RATE=${TOR_RELAY_BANDWIDTH_RATE:-100 KBytes}'
