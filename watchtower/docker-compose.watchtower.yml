@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  watchtower:
+    image: containrrr/watchtower:${WATCHTOWER_IMAGE_VERSION:-latest}
+    environment:
+      WATCHTOWER_CLEANUP: true
+      # WATCHTOWER_POLL_INTERVAL: 86400 # run every 24h
+      WATCHTOWER_ROLLING_RESTART: true
+      WATCHTOWER_SCHEDULE: 0 0 2 * * * # run at 2am everyday
+    restart: always
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'

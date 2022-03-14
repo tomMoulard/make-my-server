@@ -1108,6 +1108,21 @@ services:
     restart: always
     volumes:
     - /lib/modules:/lib/modules:ro
+  watchtower:
+    environment:
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_ROLLING_RESTART: "true"
+      WATCHTOWER_SCHEDULE: 0 0 2 * * *
+    image: containrrr/watchtower:latest
+    networks:
+      default: null
+    restart: always
+    volumes:
+    - type: bind
+      source: /var/run/docker.sock
+      target: /var/run/docker.sock
+      bind:
+        create_host_path: true
   wordpress:
     depends_on:
       wordpress-db:
