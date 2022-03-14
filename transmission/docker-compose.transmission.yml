@@ -2,7 +2,7 @@ version: '2'
 
 services:
   transmission:
-    image: linuxserver/transmission:3.00-r5-ls115
+    image: linuxserver/transmission:${TRANSMISSION_IMAGE_VERSION:-3.00-r5-ls115}
     environment:
       PGID: ${TRANSMISSION_PGID:-1000}
       PUID: ${TRANSMISSION_PUID:-1000}
