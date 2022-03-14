@@ -18,6 +18,7 @@ test ()
     rt=$?
     if [[ $rt -ne 0 ]]; then
         echo -e "[${RED}X${WHITE}] $@: $rt"
+        echo "$tmp"
         ((errors += 1))
         return
     fi
