@@ -14,6 +14,32 @@ The original ownCloud developer Frank Karlitschek forked ownCloud and created
 Nextcloud, which continues to be actively developed by Karlitschek and other
 members of the original ownCloud team.
 
+## Setup
+
+### Cron
+
+Ajax is the default, byt cron is the best
+
+To setup cron, add this line to your crontab:
+```
+*/5   *    *   *     *           docker exec -u www-data make-my-server-nextcloud-1 php -f cron.php
+```
+
+Which should lead to:
+```bash
+$ crontab -l
+...
+#min hour day Month Day_Of_Week Command
+*/5   *    *   *     *           docker exec -u www-data make-my-server-nextcloud-1 php -f cron.php
+```
+
+### Database
+
+If you forgot to install nextcloud with its dedicated database, you can run this command to migrate from anything to the mariadb instance:
+```
+docker-compose exec -u www-data nextcloud php occ db:convert-type --all-apps --port 3306 --password nextcloud mysql nextcloud nextcloud-db nextcloud
+```
+
 ## Upgrade
 How to upgrade your Nextcloud instance:
 ```bash
