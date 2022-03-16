@@ -598,22 +598,20 @@ services:
       timeout: 10s
     image: nextcloud:latest
     labels:
-      traefik.enable: "true"
-      traefik.http.middlewares.header-nextcloud.headers.browserXssFilter: "true"
-      traefik.http.middlewares.header-nextcloud.headers.contentTypeNosniff: "true"
+      traefik.enable: "True"
+      traefik.http.middlewares.header-nextcloud.headers.browserXssFilter: "True"
+      traefik.http.middlewares.header-nextcloud.headers.contentTypeNosniff: "True"
       traefik.http.middlewares.header-nextcloud.headers.customFrameOptionsValue: SAMEORIGIN
       traefik.http.middlewares.header-nextcloud.headers.referrerPolicy: no-referrer
-      traefik.http.middlewares.header-nextcloud.headers.stsincludesubdomains: "true"
-      traefik.http.middlewares.header-nextcloud.headers.stspreload: "true"
-      traefik.http.middlewares.header-nextcloud.headers.stsseconds: "15552000"
-      traefik.http.middlewares.redirect-dav-nextcloud.redirectRegex.permanent: "true"
+      traefik.http.middlewares.header-nextcloud.headers.stsincludesubdomains: "True"
+      traefik.http.middlewares.header-nextcloud.headers.stspreload: "True"
+      traefik.http.middlewares.header-nextcloud.headers.stsseconds: '15552000'
+      traefik.http.middlewares.redirect-dav-nextcloud.redirectRegex.permanent: "True"
       traefik.http.middlewares.redirect-dav-nextcloud.redirectRegex.regex: https://nextcloud.localhost/.well-known/(card|cal)dav
       traefik.http.middlewares.redirect-dav-nextcloud.redirectRegex.replacement: https://nextcloud.localhost/remote.php/dav/
       traefik.http.routers.nextcloud.middlewares: header-nextcloud,redirect-dav-nextcloud
       traefik.http.routers.nextcloud.rule: Host(`nextcloud.localhost`)
-      traefik.http.services.nextcloud.loadbalancer.server.port: "80"
-    links:
-    - nextcloud-db
+      traefik.http.services.nextcloud.loadbalancer.server.port: '80'
     networks:
       nextcloud-internal: {}
       srv: {}
@@ -638,7 +636,7 @@ services:
       timeout: 10s
     image: mariadb
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     networks:
       nextcloud-internal: {}
     restart: always
