@@ -52,3 +52,38 @@ To remove maintenance mode:
 ```bash
 docker-compose exec -u www-data nextcloud php occ maintenance:mode --off
 ```
+
+## Misc
+
+### Re apply the coniguration
+
+If you want to re apply the configuration of nextcloud, you can always run this:
+```bash
+docker-compose -u www-data exec nextcloud php occ maintenance:repair
+```
+
+### php-imagick
+
+To fix this issue:
+```
+Module php-imagick in this instance has no SVG support. For better compatibility it is recommended to install it.
+```
+
+Run:
+
+```bash
+docker-compose exec nextcloud apt -y install libmagickcore-6.q16-6-extra
+```
+
+### default_phone_region
+
+To fix this issue:
+```
+ERROR: Can not validate phone numbers without `default_phone_region` being set in the config file
+```
+
+Run:
+
+```bash
+docker-compose -u www-data exec nextcloud php occ config:system:set default_phone_region --type string --value="FR"
+```

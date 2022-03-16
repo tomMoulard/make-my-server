@@ -2,6 +2,7 @@ networks:
   codi-internal: {}
   hits-internal: {}
   mastodon-internal: {}
+  nextcloud-internal: {}
   rocketchat-internal: {}
   srv: {}
 services:
@@ -584,6 +585,9 @@ services:
     - /home/runner/work/make-my-server/make-my-server/musicbot/conf:/musicBot/conf:rw
     - /home/runner/work/make-my-server/make-my-server/musicbot/playlists:/musicBot/playlists:rw
   nextcloud:
+    depends_on:
+      nextcloud-db:
+        condition: service_started
     healthcheck:
       interval: 10s
       retries: 5
@@ -592,7 +596,7 @@ services:
       - curl
       - 0.0.0.0:80
       timeout: 10s
-    image: nextcloud
+    image: nextcloud:latest
     labels:
       traefik.enable: "true"
       traefik.http.middlewares.header-nextcloud.headers.browserXssFilter: "true"
@@ -601,13 +605,17 @@ services:
       traefik.http.middlewares.header-nextcloud.headers.referrerPolicy: no-referrer
       traefik.http.middlewares.header-nextcloud.headers.stsincludesubdomains: "true"
       traefik.http.middlewares.header-nextcloud.headers.stspreload: "true"
-      traefik.http.middlewares.header-nextcloud.headers.stsseconds: '15552000'
-      traefik.http.routers.nextcloud.middlewares: header-nextcloud
+      traefik.http.middlewares.header-nextcloud.headers.stsseconds: "15552000"
+      traefik.http.middlewares.redirect-dav-nextcloud.redirectRegex.permanent: "true"
+      traefik.http.middlewares.redirect-dav-nextcloud.redirectRegex.regex: https://nextcloud.localhost/.well-known/(card|cal)dav
+      traefik.http.middlewares.redirect-dav-nextcloud.redirectRegex.replacement: https://nextcloud.localhost/remote.php/dav/
+      traefik.http.routers.nextcloud.middlewares: header-nextcloud,redirect-dav-nextcloud
       traefik.http.routers.nextcloud.rule: Host(`nextcloud.localhost`)
-      traefik.http.services.nextcloud.loadbalancer.server.port: '80'
+      traefik.http.services.nextcloud.loadbalancer.server.port: "80"
     links:
     - nextcloud-db
     networks:
+      nextcloud-internal: {}
       srv: {}
     restart: always
     volumes:
@@ -616,7 +624,7 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     environment:
       MYSQL_DATABASE: nextcloud
-      MYSQL_PASSWORD: ''
+      MYSQL_PASSWORD: nextcloud
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_USER: nextcloud
     healthcheck:
@@ -631,6 +639,8 @@ services:
     image: mariadb
     labels:
       traefik.enable: "false"
+    networks:
+      nextcloud-internal: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/nextcloud/db:/var/lib/mysql:rw
