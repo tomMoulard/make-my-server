@@ -1041,6 +1041,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.middlewares.basic_auth.basicauth.users: ''
+      traefik.http.middlewares.basic_auth.basicauth.removeHeader: true
       traefik.http.routers.traefik.middlewares: basic_auth@docker
       traefik.http.routers.traefik.rule: Host(`traefik.localhost`)
       traefik.http.routers.traefik.service: api@internal

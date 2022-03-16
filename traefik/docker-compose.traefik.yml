@@ -53,6 +53,7 @@ services:
       - 'traefik.http.routers.traefik.middlewares=basic_auth@docker'
       # Middleware definitions
       - 'traefik.http.middlewares.basic_auth.basicauth.users=${USERS}'
+      - 'traefik.http.middlewares.basic_auth.basicauth.removeHeader=true'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './traefik/logs:/logs'
