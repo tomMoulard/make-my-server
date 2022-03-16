@@ -1019,7 +1019,7 @@ services:
     - --log.level=ERROR
     - --metrics.prometheus
     - --api.dashboard
-    - --entrypoints.websecure.http.middlewares=compress@file
+    - --entrypoints.websecure.http.middlewares=compress@file,headers@file
     - --experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban
     - --experimental.plugins.fail2ban.version=v0.6.0
     - --global.checknewversion=false

@@ -26,7 +26,7 @@ services:
       - '--metrics.prometheus'
       # Misc
       - '--api.dashboard'
-      - '--entrypoints.websecure.http.middlewares=compress@file${TRAEFIK_PLUGINS:-}'
+      - '--entrypoints.websecure.http.middlewares=compress@file,headers@file${TRAEFIK_PLUGINS:-}'
       - '--experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban'
       - '--experimental.plugins.fail2ban.version=v0.6.0'
       - '--global.checknewversion=${TRAEFIK_CHECK_NEW_VERSION:-false}'
