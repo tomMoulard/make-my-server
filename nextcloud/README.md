@@ -59,7 +59,7 @@ docker-compose exec -u www-data nextcloud php occ maintenance:mode --off
 
 If you want to re apply the configuration of nextcloud, you can always run this:
 ```bash
-docker-compose -u www-data exec nextcloud php occ maintenance:repair
+docker-compose exec -u www-data nextcloud php occ maintenance:repair
 ```
 
 ### php-imagick
