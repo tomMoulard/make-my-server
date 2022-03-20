@@ -1117,6 +1117,17 @@ services:
     restart: always
     volumes:
     - /lib/modules:/lib/modules:ro
+  watchtower:
+    environment:
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_ROLLING_RESTART: "true"
+      WATCHTOWER_SCHEDULE: '''0 0 2 * * *'''
+    image: containrrr/watchtower:latest
+    labels:
+      traefik.enable: "False"
+    restart: always
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:rw
   wordpress:
     depends_on:
       wordpress-db:
