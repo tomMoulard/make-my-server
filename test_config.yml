@@ -1045,7 +1045,7 @@ services:
       - healthcheck
       - --ping
       timeout: 10s
-    image: traefik:v2.6
+    image: traefik:v2.7
     labels:
       traefik.enable: "true"
       traefik.http.middlewares.basic_auth.basicauth.removeHeader: "true"
