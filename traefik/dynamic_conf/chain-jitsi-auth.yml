@@ -13,7 +13,7 @@ http:
         stsIncludeSubdomains: true
         stsPreload: true
         forceSTSHeader: true
-        customFrameOptionsValue: "allow-from https:YOUR_URL"
+        customFrameOptionsValue: "allow-from https:meet.${SITE:-localhost}"
         contentTypeNosniff: true
         browserXssFilter: true
         referrerPolicy: "same-origin"

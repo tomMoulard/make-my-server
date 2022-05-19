@@ -2,14 +2,12 @@ version: '3'
 
 services:
     web:
-        image: jitsi/web:latest
-        restart: ${RESTART_POLICY}
-        ports:
-            - '${HTTP_PORT}:80'
+        image: jitsi/web:${JITSI_IMAGE_VERSION:-latest}
+        restart: always
         volumes:
-            - ${CONFIG}/web:/config:Z
-            - ${CONFIG}/web/crontabs:/var/spool/cron/crontabs:Z
-            - ${CONFIG}/transcripts:/usr/share/jitsi-meet/transcripts:Z
+            - ./jitsi/web/config:/config:Z
+            - ./jitsi/web/crontabs:/var/spool/cron/crontabs:Z
+            - ./jitsi/transcripts:/usr/share/jitsi-meet/transcripts:Z
         environment:
             - AMPLITUDE_ID
             - ANALYTICS_SCRIPT_URLS
@@ -134,11 +132,11 @@ services:
             - 'traefik.http.services.jitsi.loadbalancer.server.port=80'
 
     prosody:
-        image: jitsi/prosody:latest
-        restart: ${RESTART_POLICY}
+        image: jitsi/prosody:${JITSI_IMAGE_VERSION:-latest}
+        restart: always
         volumes:
-            - ${CONFIG}/prosody/config:/config:Z
-            - ${CONFIG}/prosody/prosody-plugins-custom:/prosody-plugins-custom:Z
+            - ./jitsi/prosody/config:/config:Z
+            - ./jitsi/prosody/prosody-plugins-custom:/prosody-plugins-custom:Z
         environment:
             - AUTH_TYPE
             - DISABLE_POLLS
@@ -212,14 +210,14 @@ services:
             - 'traefik.enable=true'
             - 'traefik.http.routers.jitsi-prosody-ws.entrypoints=websecure'
             - 'traefik.http.routers.jitsi-prosody-ws.rule=Host(`$XMPP_DOMAIN`) && Path(`/xmpp-websocket`)'
-            - 'traefik.http.routers.jitsi-prosody-ws.middlewares=chain-jitsi-auth@file'
+            - 'traefik.http.routers.jitsi-prosody-ws.middlewares=middlewares-secure-headers-jitsi@file'
             - 'traefik.http.services.jitsi-prosody-ws.loadbalancer.server.port=5280'
 
     jicofo:
-        image: jitsi/jicofo:latest
-        restart: ${RESTART_POLICY}
+        image: jitsi/jicofo:${JITSI_IMAGE_VERSION:-latest}
+        restart: always
         volumes:
-            - ${CONFIG}/jicofo:/config:Z
+            - ./jitsi/jicofo:/config:Z
         environment:
             - AUTH_TYPE
             - BRIDGE_AVG_PARTICIPANT_STRESS
@@ -266,13 +264,13 @@ services:
             srv:
 
     jvb:
-        image: jitsi/jvb:latest
-        restart: ${RESTART_POLICY}
+        image: jitsi/jvb:${JITSI_IMAGE_VERSION:-latest}
+        restart: always
         ports:
             - '${JVB_PORT}:${JVB_PORT}/udp'
             - '8080:8080'
         volumes:
-            - ${CONFIG}/jvb:/config:Z
+            - ./jitsi/jvb:/config:Z
         environment:
             - DOCKER_HOST_ADDRESS
             - ENABLE_COLIBRI_WEBSOCKET
