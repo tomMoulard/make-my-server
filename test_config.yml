@@ -316,7 +316,6 @@ services:
     networks:
       srv: {}
     restart: always
-    user: 1000:1000
     volumes:
     - /home/runner/work/make-my-server/make-my-server/jellyfin/cache:/cache:rw
     - /home/runner/work/make-my-server/make-my-server/jellyfin/config:/config:rw
