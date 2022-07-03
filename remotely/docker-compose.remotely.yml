@@ -1,0 +1,15 @@
+version: "2"
+
+services:
+  remotely:
+    image: translucency/remotely:${REMOTELY_IMAGE_VERSION:-latest}
+    build: https://github.com/immense/remotely.git#:Server
+    volumes:
+      - './remotely/remotely-data:/remotely-data'
+    networks:
+      - srv
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.remotely.rule=Host(`remotely.${SITE:-localhost}`)'
+      - 'traefik.http.services.remotely.loadbalancer.server.port=5000'
