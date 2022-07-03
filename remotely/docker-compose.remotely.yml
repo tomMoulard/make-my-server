@@ -2,7 +2,7 @@ version: "2"
 
 services:
   remotely:
-    image: translucency/remotely:latest
+    image: translucency/remotely:${REMOTELY_IMAGE_VERSION:-latest}
     build: https://github.com/immense/remotely.git#:Server
     volumes:
       - './remotely/remotely-data:/remotely-data'
