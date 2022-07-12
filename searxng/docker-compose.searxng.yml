@@ -14,6 +14,7 @@ services:
       test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:8080/healthz || exit 1"]
     restart: always
     networks:
+      - 'srv'
       - 'searxng-internal'
     environment:
       - LIMITER=true
