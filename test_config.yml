@@ -565,6 +565,23 @@ services:
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/minecraft/ftb-data:/minecraft:rw
+  mumble:
+    environment:
+      MUMBLE_SUPERUSER_PASSWORD: CHANGE_ME
+    image: mumblevoip/mumble-server:latest
+    labels:
+      traefik.enable: "false"
+    networks:
+      srv: {}
+    ports:
+    - published: 64738
+      target: 64738
+    - protocol: udp
+      published: 64738
+      target: 64738
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/mumble/data:/data:rw
   musicbot:
     image: raiponce/musicbot:0.2.10
     labels:
@@ -781,6 +798,19 @@ services:
     - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:rw
     - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/rules:/etc/prometheus/rules:rw
     - /home/runner/work/make-my-server/make-my-server/grafana/prometheus/data:/prometheus:rw
+  remotely:
+    build:
+      context: https://github.com/immense/remotely.git#:Server
+    image: translucency/remotely:latest
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.remotely.rule: Host(`remotely.localhost`)
+      traefik.http.services.remotely.loadbalancer.server.port: '5000'
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/remotely/remotely-data:/remotely-data:rw
   rocketchat:
     depends_on:
       rocketchat-mongo:
