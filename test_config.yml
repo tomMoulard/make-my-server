@@ -887,7 +887,7 @@ services:
     cap_drop:
     - ALL
     depends_on:
-      searxng-redis::
+      searxng-redis:
         condition: service_started
     environment:
       IMAGE_PROXY: "true"
@@ -904,8 +904,8 @@ services:
       traefik.http.routers.searxng.rule: Host(`searx.localhost`)
       traefik.http.services.searxng.loadbalancer.server.port: '8080'
     networks:
-      srv: {}
       searxng-internal: {}
+      srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/searxng/searxng:/etc/searxng:rw
