@@ -903,7 +903,10 @@ services:
   searxng-redis:
     command: redis-server --save "" --appendonly "no"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test:
+      - CMD
+      - redis-cli
+      - ping
     image: redis:alpine
     labels:
       traefik.enable: "false"
