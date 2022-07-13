@@ -4,7 +4,6 @@ networks:
   mastodon-internal: {}
   nextcloud-internal: {}
   rocketchat-internal: {}
-  searxng-internal: {}
   srv: {}
 services:
   alertmanager:
@@ -879,13 +878,6 @@ services:
     - /home/runner/work/make-my-server/make-my-server/gitlab/runner:/etc/gitlab-runner:rw
     - /var/run/docker.sock:/var/run/docker.sock:rw
   searxng:
-    cap_add:
-    - CHOWN
-    - DAC_OVERRIDE
-    - SETGID
-    - SETUID
-    cap_drop:
-    - ALL
     depends_on:
       searxng-redis:
         condition: service_started
@@ -904,19 +896,14 @@ services:
       traefik.http.routers.searxng.rule: Host(`searx.localhost`)
       traefik.http.services.searxng.loadbalancer.server.port: '8080'
     networks:
-      searxng-internal: {}
       srv: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/searxng/searxng:/etc/searxng:rw
   searxng-redis:
-    cap_add:
-    - DAC_OVERRIDE
-    - SETGID
-    - SETUID
-    cap_drop:
-    - ALL
     command: redis-server --save "" --appendonly "no"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
     image: redis:alpine
     labels:
       traefik.enable: "false"

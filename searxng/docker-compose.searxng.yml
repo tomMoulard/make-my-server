@@ -1,8 +1,5 @@
 version: '2'
 
-networks:
-  searxng-internal:
-
 services:
   searxng:
     image: searxng/searxng:${SEARXNG_IMAGE_VERSION:-latest}
@@ -13,9 +10,6 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:8080/healthz || exit 1"]
     restart: always
-    networks:
-      - 'srv'
-      - 'searxng-internal'
     environment:
       - LIMITER=true
       - REDIS_URL=redis://searxng-redis:6379/0
@@ -23,13 +17,6 @@ services:
       - SEARXNG_BASE_URL=https://searx.${SITE:-localhost}/'
     depends_on:
       - searxng-redis
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-      - DAC_OVERRIDE
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.searxng.rule=Host(`searx.${SITE:-localhost}`)'
@@ -38,14 +25,10 @@ services:
   searxng-redis:
     image: redis:alpine
     restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
     command: redis-server --save "" --appendonly "no"
     tmpfs:
       - /var/lib/redis
-    cap_drop:
-      - ALL
-    cap_add:
-      - SETGID
-      - SETUID
-      - DAC_OVERRIDE
     labels:
       - 'traefik.enable=false'
