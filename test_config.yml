@@ -907,7 +907,7 @@ services:
       - CMD
       - redis-cli
       - ping
-    image: redis:alpine
+    image: redis:6.0-alpine
     labels:
       traefik.enable: "false"
     restart: always
