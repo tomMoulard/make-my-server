@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  searxng:
+    image: searxng/searxng:${SEARXNG_IMAGE_VERSION:-latest}
+    volumes:
+      - './searxng/searxng/:/etc/searxng:rw'
+    networks:
+      - 'srv'
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:8080/healthz || exit 1"]
+    restart: always
+    environment:
+      - LIMITER=true
+      - REDIS_URL=redis://searxng-redis:6379/0
+      - IMAGE_PROXY=true
+      - SEARXNG_BASE_URL=https://searx.${SITE:-localhost}/'
+    depends_on:
+      - searxng-redis
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.searxng.rule=Host(`searx.${SITE:-localhost}`)'
+      - 'traefik.http.services.searxng.loadbalancer.server.port=8080'
+
+  searxng-redis:
+    image: redis:6.0-alpine
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    command: redis-server --save "" --appendonly "no"
+    tmpfs:
+      - /var/lib/redis
+    labels:
+      - 'traefik.enable=false'

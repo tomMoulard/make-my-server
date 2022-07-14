@@ -564,19 +564,6 @@ services:
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/minecraft/ftb-data:/minecraft:rw
-  morty:
-    command: -listen 0.0.0.0:3000 -timeout 6 -ipv6
-    environment:
-      MORTY_KEY: VGhpcyBrZXkgaXMgTk9UIHNlY3VyZQ==
-    image: dalf/morty:latest
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.morty.middlewares: basic_auth@docker
-      traefik.http.routers.morty.rule: Host(`morty.localhost`)
-      traefik.http.services.morty.loadbalancer.server.port: '3000'
-    networks:
-      srv: {}
-    restart: always
   mumble:
     environment:
       MUMBLE_SUPERUSER_PASSWORD: CHANGE_ME
@@ -890,30 +877,42 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/gitlab/runner:/etc/gitlab-runner:rw
     - /var/run/docker.sock:/var/run/docker.sock:rw
-  searx:
-    command: -f
+  searxng:
     depends_on:
-      morty:
+      searxng-redis:
         condition: service_started
     environment:
-      BASE_URL: https://searx.localhost/
-      BIND_ADDRESS: 0.0.0.0:8080
-      MORTY_KEY: VGhpcyBrZXkgaXMgTk9UIHNlY3VyZQ==
-      MORTY_URL: http://morty/
+      IMAGE_PROXY: "true"
+      LIMITER: "true"
+      REDIS_URL: redis://searxng-redis:6379/0
+      SEARXNG_BASE_URL: https://searx.localhost/'
     healthcheck:
       test:
       - CMD-SHELL
       - wget -q --spider --proxy=off localhost:8080/healthz || exit 1
-    image: searx/searx:latest
+    image: searxng/searxng:latest
     labels:
       traefik.enable: "true"
-      traefik.http.routers.searx.rule: Host(`searx.localhost`)
-      traefik.http.services.searx.loadbalancer.server.port: '8080'
+      traefik.http.routers.searxng.rule: Host(`searx.localhost`)
+      traefik.http.services.searxng.loadbalancer.server.port: '8080'
     networks:
       srv: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/searx/searx:/etc/searx:rw
+    - /home/runner/work/make-my-server/make-my-server/searxng/searxng:/etc/searxng:rw
+  searxng-redis:
+    command: redis-server --save "" --appendonly "no"
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - ping
+    image: redis:6.0-alpine
+    labels:
+      traefik.enable: "false"
+    restart: always
+    tmpfs:
+    - /var/lib/redis
   sharelatex:
     depends_on:
       sharelatex-mongo:
