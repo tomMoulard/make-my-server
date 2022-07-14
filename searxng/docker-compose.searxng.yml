@@ -23,7 +23,7 @@ services:
       - 'traefik.http.services.searxng.loadbalancer.server.port=8080'
 
   searxng-redis:
-    image: redis:alpine
+    image: redis:6.0-alpine
     restart: always
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
