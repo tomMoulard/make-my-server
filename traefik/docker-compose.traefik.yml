@@ -17,6 +17,9 @@ services:
       - '--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web'
       - '--certificatesresolvers.myresolver.acme.httpchallenge=true'
       - '--entrypoints.websecure.http.tls.certresolver=myresolver'
+      # HTTP/3
+      - '--experimental.http3=true'
+      - '--entrypoints.websecure.http3'
       # Logs
       - '--accesslog.filepath=/logs/access.log'
       - '--accesslog.format=json'
