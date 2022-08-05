@@ -26,7 +26,10 @@ services:
       - '--log.filepath=/logs/traefik.log'
       - '--log.format=json'
       - '--log.level=${TRAEFIK_LOG_LEVEL:-ERROR}'
-      - '--metrics.prometheus'
+      - '--metrics.prometheus.addrouterslabels'
+      # hub
+      - '--experimental.hub=true'
+      - '--hub.tls.insecure=true' # TODO: reaplace with TLS certs for mTLS conn between Traefik and the hub agent. It requires to generate credentials.
       # Misc
       - '--api.dashboard'
       - '--entrypoints.websecure.http.middlewares=compress@file,headers@file${TRAEFIK_PLUGINS:-}'
@@ -61,3 +64,16 @@ services:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './traefik/logs:/logs'
       - './traefik/dynamic_conf:/dynamic_conf'
+
+  hub-agent:
+    image: ghcr.io/traefik/hub-agent-traefik:${TRAEFIK_HUB_IMAGE_VERSION:-v0.7.2}
+    command:
+      - 'run'
+      - '--hub.token=${TRAEFIK_HUB_TOKEN}'
+      - '--auth-server.advertise-url=http://hub-agent'
+      - '--traefik.host=traefik'
+      - '--traefik.tls.insecure=true'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+      - 'srv'
