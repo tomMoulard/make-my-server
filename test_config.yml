@@ -849,11 +849,19 @@ services:
     - /home/runner/work/make-my-server/make-my-server/rocketchat/scripts:/home/hubot/scripts:rw
   rocketchat-mongo:
     command: mongod --smallfiles --oplogSize 128 --replSet rs01
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test: 'CMD echo ''db.runCommand("ping").ok'' | mongo localhost:27017/test --quiet
+
+        '
+      timeout: 10s
     image: mongo:4.0
     labels:
       traefik.enable: "false"
     networks:
       rocketchat-internal: {}
+    restart: unless-stopped
     volumes:
     - /home/runner/work/make-my-server/make-my-server/rocketchat/db:/data/db:rw
   rocketchat-mongo-replica:

@@ -7,6 +7,13 @@ services:
   rocketchat-mongo:
     image: mongo:4.0
     command: mongod --smallfiles --oplogSize 128 --replSet rs01
+    restart: unless-stopped
+    healthcheck:
+      test: >
+        CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
     volumes:
       - './rocketchat/db/:/data/db'
     networks:
