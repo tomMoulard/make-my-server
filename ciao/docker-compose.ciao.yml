@@ -1,0 +1,17 @@
+version: '2'
+
+services:
+  ciao:
+    image: brotandgames/ciao:${CIAO_IMAGE_VERSION:-latest}
+    volumes:
+      - './ciao/data:/app/db/sqlite/'
+    networks:
+      - 'srv'
+    restart: always
+    environment:
+      - PROMETHEUS_ENABLED: true
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.ciao.rule=Host(`ciao.${SITE:-localhost}`)'
+      - 'traefik.http.services.ciao.loadbalancer.server.port=3000'
+      - 'traefik.http.routers.ciao.middlewares=basic_auth@docker'
