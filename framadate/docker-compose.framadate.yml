@@ -4,14 +4,22 @@ networks:
   framadate-internal:
 
 services:
-    framadate-db:
+  framadate-db:
         image: mysql:5.7
+        volumes:
+          - './framadate/db:/var/lib/mysql'
+
         environment:
           MYSQL_ROOT_PASSWORD: ${FRAMADATE_MYSQL_ROOT_PASSWORD:-pass}
           MYSQL_PASSWORD: ${FRAMADATE_MYSQL_PASSWORD:-framadate}
           MYSQL_DATABASE: ${FRAMADATE_MYSQL_DATABASE:-framadate}
           MYSQL_USER: ${FRAMADATE_MYSQL_USER:-framadate}
         restart: always
+        healthcheck:
+          test: ['CMD', 'mysqlcheck', '--all-databases', '-ppass']
+          interval: 10s
+          timeout: 10s
+          retries: 5
         networks:
           - 'framadate-internal'
         labels:
