@@ -4,12 +4,13 @@ services:
   ciao:
     image: brotandgames/ciao:${CIAO_IMAGE_VERSION:-latest}
     volumes:
-      - './ciao/data:/app/db/sqlite/'
+      - './ciao/db:/app/db/sqlite/'
     networks:
       - 'srv'
     restart: always
     environment:
-      - PROMETHEUS_ENABLED: true
+      PROMETHEUS_ENABLED: ${CIAO_PROMETHEUS_ENABLED:-false}
+      TIME_ZONE: ${TZ:-Europe/Paris}
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.ciao.rule=Host(`ciao.${SITE:-localhost}`)'
