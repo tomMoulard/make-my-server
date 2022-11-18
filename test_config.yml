@@ -1,5 +1,6 @@
 networks:
   codi-internal: {}
+  framadate-internal: {}
   hits-internal: {}
   mastodon-internal: {}
   nextcloud-internal: {}
@@ -173,6 +174,58 @@ services:
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/factorio:/factorio:rw
+  framadate:
+    depends_on:
+      framadate-db:
+        condition: service_started
+    environment:
+      ADMIN_PASSWORD: pass
+      APP_NAME: Framadate
+      APP_URL: framadate.localhost
+      DEFAULT_POLL_DURATION: 365
+      MARKDOWN_EDITOR_BY_DEFAULT: "true"
+      MYSQL_DATABASE: framadate
+      MYSQL_PASSWORD: framadate
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_USER: framadate
+      PROVIDE_FORK_AWESOME: "true"
+      SERVERNAME: framadate.localhost
+      SHOW_CULTIVATE_YOUR_GARDEN: "true"
+      SHOW_THE_SOFTWARE: "true"
+      SHOW_WHAT_IS_THAT: "true"
+      USER_CAN_ADD_IMG_OR_LINK: "true"
+    image: xgaia/framadate:latest
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.framadate.rule: Host(`framadate.localhost`)
+      traefik.http.services.framadate.loadbalancer.server.port: '80'
+    networks:
+      framadate-internal: {}
+      srv: {}
+    restart: always
+  framadate-db:
+    environment:
+      MYSQL_DATABASE: framadate
+      MYSQL_PASSWORD: framadate
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_USER: framadate
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+      - CMD
+      - mysqlcheck
+      - --all-databases
+      - -ppass
+      timeout: 10s
+    image: mysql:5.7
+    labels:
+      traefik.enable: "false"
+    networks:
+      framadate-internal: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/framadate/db:/var/lib/mysql:rw
   gitlab:
     environment:
       GITLAB_OMNIBUS_CONFIG: 'external_url ''http://gitlab.localhost:80''
