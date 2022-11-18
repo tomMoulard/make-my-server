@@ -1,0 +1,54 @@
+version: '2'
+
+networks:
+  framadate-internal:
+
+services:
+  framadate-db:
+    image: mysql:5.7
+    volumes:
+      - './framadate/db:/var/lib/mysql'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${FRAMADATE_MYSQL_ROOT_PASSWORD:-pass}
+      MYSQL_PASSWORD: ${FRAMADATE_MYSQL_PASSWORD:-framadate}
+      MYSQL_DATABASE: ${FRAMADATE_MYSQL_DATABASE:-framadate}
+      MYSQL_USER: ${FRAMADATE_MYSQL_USER:-framadate}
+    restart: always
+    healthcheck:
+      test: ['CMD', 'mysqlcheck', '--all-databases', '-ppass']
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - 'framadate-internal'
+    labels:
+      - 'traefik.enable=false'
+
+  framadate:
+    image: xgaia/framadate:${FRAMADATE_IMAGE_VERSION:-latest}
+    depends_on:
+      - framadate-db
+    environment:
+      APP_URL: framadate.${SITE:-localhost}
+      SERVERNAME: framadate.${SITE:-localhost}
+      ADMIN_PASSWORD: ${FRAMADATE_ADMIN_PASSWORD:-pass}
+      APP_NAME: Framadate
+      MYSQL_ROOT_PASSWORD: ${FRAMADATE_MYSQL_ROOT_PASSWORD:-pass}
+      MYSQL_PASSWORD: ${FRAMADATE_MYSQL_PASSWORD:-framadate}
+      MYSQL_DATABASE: ${FRAMADATE_MYSQL_DATABASE:-framadate}
+      MYSQL_USER: ${FRAMADATE_MYSQL_USER:-framadate}
+      SHOW_WHAT_IS_THAT: "true"
+      SHOW_THE_SOFTWARE: "true"
+      SHOW_CULTIVATE_YOUR_GARDEN: "true"
+      DEFAULT_POLL_DURATION: 365
+      USER_CAN_ADD_IMG_OR_LINK: "true"
+      MARKDOWN_EDITOR_BY_DEFAULT: "true"
+      PROVIDE_FORK_AWESOME: "true"
+    restart: always
+    networks:
+      - 'srv'
+      - 'framadate-internal'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.framadate.rule=Host(`framadate.${SITE:-localhost}`)'
+      - 'traefik.http.services.framadate.loadbalancer.server.port=80'
