@@ -5,8 +5,17 @@ services:
     image: vaultwarden/server:latest
     user: nobody
     environment:
-      - ROCKET_PORT=8080
       - ADMIN_TOKEN=${USERS}
+      # to enable U2F and FIDO2 WebAuthn authentication
+      - DOMAIN=https://bitwarden.${SITE:-localhost}
+      - PASSWORD_ITERATIONS=500000
+      - ROCKET_PORT=8080
+      # whether users are allowed to create Bitwarden Sends/
+      - SENDS_ALLOWED="true"
+      - SIGNUPS_ALLOWED="true"
+      # if new users need to verify their email address upon registration
+      - SIGNUPS_VERIFY="false"
+      - TZ=${TZ:-Europe/Paris}
     volumes:
       - ./bitwarden/data:/data
     networks:
