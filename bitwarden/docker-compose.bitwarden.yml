@@ -14,5 +14,7 @@ services:
     restart: always
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.bitwarden.rule=Host(`bitwarden.${SITE:-localhost}`)'
+      - 'traefik.http.routers.bitwarden-user.rule=Host(`bitwarden.${SITE:-localhost}`) && !PathPrefix(`/admin`)'
+      - 'traefik.http.routers.bitwarden-admin.rule=Host(`bitwarden.${SITE:-localhost}`) && PathPrefix(`/admin`)'
+      - 'traefik.http.routers.bitwarden-admin.middlewares=basic_auth@docker'
       - 'traefik.http.services.bitwarden.loadbalancer.server.port=8080'
