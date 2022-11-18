@@ -78,6 +78,21 @@ services:
     - /sys:/sys:ro
     - /var/lib/docker:/var/lib/docker:ro
     - /var/run:/var/run:rw
+  ciao:
+    environment:
+      PROMETHEUS_ENABLED: "false"
+      TIME_ZONE: Europe/Paris
+    image: brotandgames/ciao:latest
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.ciao.middlewares: basic_auth@docker
+      traefik.http.routers.ciao.rule: Host(`ciao.localhost`)
+      traefik.http.services.ciao.loadbalancer.server.port: '3000'
+    networks:
+      srv: {}
+    restart: always
+    volumes:
+    - /home/runner/work/make-my-server/make-my-server/ciao/db:/app/db/sqlite:rw
   codimd:
     depends_on:
       codimd-db:
