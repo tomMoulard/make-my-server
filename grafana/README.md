@@ -7,4 +7,10 @@ capabilities is also available. It is expandable through a plug-in system.
 End users can create complex monitoring dashboards using interactive query
 builders.
 
-You'll find a good Grafana dashboard in the file `./grafana/grafana-dashboard.json`
+Suggested grafana dashboards:
+
+| ID  | Description                         | URL                                        |
+|-----|-------------------------------------|--------------------------------------------|
+|17346|Traefik Official Standalone Dashboard|https://grafana.com/grafana/dashboards/17346|
+| 1860|Node Exporter Full                   |https://grafana.com/grafana/dashboards/1860 |
+|  893|Docker and system monitoring         |https://grafana.com/grafana/dashboards/893  |

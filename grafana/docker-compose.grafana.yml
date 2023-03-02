@@ -73,12 +73,15 @@ services:
     restart: always
 
   cadvisor:
-    image: gcr.io/google-containers/cadvisor:v0.36.0
+    image: gcr.io/cadvisor/cadvisor:latest
     volumes:
-    - '/:/rootfs:ro'
-    - '/var/run:/var/run:rw'
-    - '/sys:/sys:ro'
-    - '/var/lib/docker/:/var/lib/docker:ro'
+      - '/:/rootfs:ro'
+      - '/var/run:/var/run:ro'
+      - '/sys:/sys:ro'
+      - '/var/lib/docker/:/var/lib/docker:ro'
+    devices:
+      - '/dev/kmsg:/dev/kmsg'
+    privileged: true
     networks:
       - 'srv'
     restart: always
