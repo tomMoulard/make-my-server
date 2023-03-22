@@ -52,11 +52,19 @@ services:
   bitwarden:
     environment:
       ADMIN_TOKEN: ''
+      DOMAIN: https://bitwarden.localhost
+      PASSWORD_ITERATIONS: '500000'
       ROCKET_PORT: '8080'
+      SENDS_ALLOWED: '"true"'
+      SIGNUPS_ALLOWED: '"true"'
+      SIGNUPS_VERIFY: '"false"'
+      TZ: Europe/Paris
     image: vaultwarden/server:latest
     labels:
       traefik.enable: "true"
-      traefik.http.routers.bitwarden.rule: Host(`bitwarden.localhost`)
+      traefik.http.routers.bitwarden-admin.middlewares: basic_auth@docker
+      traefik.http.routers.bitwarden-admin.rule: Host(`bitwarden.localhost`) && PathPrefix(`/admin`)
+      traefik.http.routers.bitwarden-user.rule: Host(`bitwarden.localhost`) && !PathPrefix(`/admin`)
       traefik.http.services.bitwarden.loadbalancer.server.port: '8080'
     networks:
       srv: {}
