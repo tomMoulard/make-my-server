@@ -5,6 +5,7 @@ networks:
   mastodon-internal: {}
   nextcloud-internal: {}
   rocketchat-internal: {}
+  sharelatex-internal: {}
   srv: {}
 services:
   alertmanager:
@@ -1007,46 +1008,45 @@ services:
       sharelatex-redis:
         condition: service_started
     environment:
+      REDIS_HOST: sharelatex-redis
       SHARELATEX_ADMIN_EMAIL: changeme@changeme.org
       SHARELATEX_APP_NAME: '''s ShareLaTeX'
-      SHARELATEX_HEADER_IMAGE_URL: http://somewhere.com/mylogo.png
       SHARELATEX_MONGO_URL: mongodb://sharelatex-mongo/sharelatex
       SHARELATEX_NAV_TITLE: localhost - ShareLaTeX
       SHARELATEX_REDIS_HOST: sharelatex-redis
       SHARELATEX_SITE_URL: https://latex.localhost
     image: sharelatex/sharelatex
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.sharelatex.rule: Host(`sharelatex.localhost`)
       traefik.http.services.sharelatex.loadbalancer.server.port: '80'
     links:
     - sharelatex-mongo
     - sharelatex-redis
     networks:
+      sharelatex-internal: {}
       srv: {}
-    privileged: true
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/sharelatex/data:/var/lib/sharelatex:rw
-    - /var/run/docker.sock:/var/run/docker.sock:rw
   sharelatex-mongo:
-    expose:
-    - '27017'
     image: mongo
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
+    networks:
+      sharelatex-internal: {}
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/sharelatex/mongo:/data/db:rw
   sharelatex-redis:
-    expose:
-    - '6379'
     image: redis
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
+    networks:
+      sharelatex-internal: {}
     restart: always
     volumes:
-    - /home/runner/work/make-my-server/make-my-server/sharelatex/redis/data:/data:rw
+    - /home/runner/work/make-my-server/make-my-server/sharelatex/redis:/data:rw
   sonarr:
     environment:
       PGID: '1000'
