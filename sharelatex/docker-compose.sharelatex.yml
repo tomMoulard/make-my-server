@@ -9,9 +9,8 @@ services:
     depends_on:
       - sharelatex-mongo
       - sharelatex-redis
-    links:
-      - sharelatex-mongo
-      - sharelatex-redis
+    healthcheck:
+      test: ['CMD', 'curl', '0.0.0.0:80']
     volumes:
       - ./sharelatex/data:/var/lib/sharelatex
     networks:
@@ -37,6 +36,8 @@ services:
     image: mongo
     networks:
       - sharelatex-internal
+    healthcheck:
+      test: CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
     volumes:
       - ./sharelatex/mongo:/data/db
     labels:
@@ -47,6 +48,8 @@ services:
     image: redis
     networks:
       - sharelatex-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
     volumes:
       - ./sharelatex/redis:/data
     labels:
