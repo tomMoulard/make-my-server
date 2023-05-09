@@ -1015,14 +1015,16 @@ services:
       SHARELATEX_NAV_TITLE: localhost - ShareLaTeX
       SHARELATEX_REDIS_HOST: sharelatex-redis
       SHARELATEX_SITE_URL: https://latex.localhost
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:80
     image: sharelatex/sharelatex
     labels:
       traefik.enable: "True"
       traefik.http.routers.sharelatex.rule: Host(`sharelatex.localhost`)
       traefik.http.services.sharelatex.loadbalancer.server.port: '80'
-    links:
-    - sharelatex-mongo
-    - sharelatex-redis
     networks:
       sharelatex-internal: {}
       srv: {}
@@ -1030,6 +1032,8 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/sharelatex/data:/var/lib/sharelatex:rw
   sharelatex-mongo:
+    healthcheck:
+      test: CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
     image: mongo
     labels:
       traefik.enable: "False"
@@ -1039,6 +1043,11 @@ services:
     volumes:
     - /home/runner/work/make-my-server/make-my-server/sharelatex/mongo:/data/db:rw
   sharelatex-redis:
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - ping
     image: redis
     labels:
       traefik.enable: "False"
