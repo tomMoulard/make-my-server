@@ -23,7 +23,7 @@ services:
 
   rocketchat-mongo-replica:
     image: mongo:4.0
-    command: 'mongo rocketchat-mongo/rocketchat --eval "rs.initiate({ _id: ''rs01'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"'
+    command: 'mongo rocketchat-mongo/rocketchat --eval "rs.initiate({ _id: ''rs01'', members: [ { _id: 0, host: ''rocketchat-mongo:27017'' } ]})"'
     networks:
       - 'rocketchat-internal'
     depends_on:

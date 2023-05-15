@@ -10,6 +10,8 @@ services:
     volumes:
       - ./jackett/config:/config
       - ./jackett/downloads:/downloads
+    dns:
+      - 1.1.1.1
     networks:
       - 'srv'
     restart: always

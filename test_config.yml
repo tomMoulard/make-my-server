@@ -9,6 +9,10 @@ networks:
   srv: {}
 services:
   alertmanager:
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q --spider --proxy=off localhost:9093/metrics || exit 1
     image: prom/alertmanager:v0.21.0
     labels:
       traefik.enable: "true"
@@ -266,12 +270,20 @@ services:
       prometheus:
         condition: service_started
     environment:
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
       GF_AUTH_BASIC_ENABLED: "false"
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_AUTH_DISABLE_SIGNOUT_MENU: "true"
       GF_INSTALL_PLUGINS: grafana-piechart-panel
       GF_METRICS_ENABLED: "true"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:3000/healthz
     image: grafana/grafana:7.2.2
     labels:
       traefik.enable: "true"
@@ -363,6 +375,8 @@ services:
     - /home/runner/work/make-my-server/make-my-server/hugo/nginx/conf/www:/output:rw
     - /home/runner/work/make-my-server/make-my-server/hugo/blog:/src:rw
   jackett:
+    dns:
+    - 1.1.1.1
     environment:
       PGID: '1000'
       PUID: '1000'
@@ -750,6 +764,10 @@ services:
     - /home/runner/work/make-my-server/make-my-server/nginx/conf:/etc/nginx/conf.d:rw
     - /home/runner/work/make-my-server/make-my-server/nginx/logs:/var/log/nginx:rw
   node_exporter:
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q --spider --proxy=off localhost:9100/metrics || exit 1
     image: prom/node-exporter:v1.0.1
     labels:
       traefik.enable: "true"
@@ -863,6 +881,10 @@ services:
         condition: service_started
       node_exporter:
         condition: service_started
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q --spider --proxy=off localhost:9090 || exit 1
     image: prom/prometheus:v2.22.0
     labels:
       traefik.enable: "true"
@@ -946,7 +968,7 @@ services:
     - /home/runner/work/make-my-server/make-my-server/rocketchat/db:/data/db:rw
   rocketchat-mongo-replica:
     command: 'mongo rocketchat-mongo/rocketchat --eval "rs.initiate({ _id: ''rs01'',
-      members: [ { _id: 0, host: ''localhost:27017'' } ]})"'
+      members: [ { _id: 0, host: ''rocketchat-mongo:27017'' } ]})"'
     depends_on:
       rocketchat-mongo:
         condition: service_started
@@ -1148,22 +1170,25 @@ services:
     - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
     - --certificatesresolvers.myresolver.acme.httpchallenge=true
     - --entrypoints.websecure.http.tls.certresolver=myresolver
+    - --experimental.http3=true
+    - --entrypoints.websecure.http3
     - --accesslog.filepath=/logs/access.log
     - --accesslog.format=json
     - --log.filepath=/logs/traefik.log
     - --log.format=json
     - --log.level=ERROR
-    - --metrics.prometheus
+    - --metrics.prometheus.addrouterslabel
     - --api.dashboard
     - --entrypoints.websecure.http.middlewares=compress@file,headers@file
     - --experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban
     - --experimental.plugins.fail2ban.version=v0.6.0
     - --global.checknewversion=false
     - --global.sendanonymoususage=false
-    - --pilot.token=
     - --ping
     - --providers.file.directory=/dynamic_conf/
     - --providers.file.watch=true
+    environment:
+      TZ: Europe/Paris
     healthcheck:
       interval: 10s
       retries: 5
@@ -1173,7 +1198,7 @@ services:
       - healthcheck
       - --ping
       timeout: 10s
-    image: traefik:v2.7
+    image: traefik:v2.10
     labels:
       traefik.enable: "true"
       traefik.http.middlewares.basic_auth.basicauth.removeHeader: "true"
