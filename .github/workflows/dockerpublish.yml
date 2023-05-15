@@ -39,6 +39,9 @@ jobs:
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+      - name: Export logs
+        if: ${{ failure() }}
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs
   Health-checks-nginx:
     runs-on: ubuntu-latest
     env:
@@ -58,6 +61,9 @@ jobs:
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+      - name: Export logs
+        if: ${{ failure() }}
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs
   Health-checks-hugo:
     runs-on: ubuntu-latest
     env:
@@ -77,6 +83,9 @@ jobs:
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+      - name: Export logs
+        if: ${{ failure() }}
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs
   Health-checks-peertube:
     runs-on: ubuntu-latest
     env:
@@ -96,6 +105,9 @@ jobs:
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+      - name: Export logs
+        if: ${{ failure() }}
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs
   Health-checks-transmission:
     runs-on: ubuntu-latest
     env:
@@ -115,6 +127,9 @@ jobs:
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+      - name: Export logs
+        if: ${{ failure() }}
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs
   Health-checks-nextcloud:
     runs-on: ubuntu-latest
     env:
@@ -134,6 +149,9 @@ jobs:
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+      - name: Export logs
+        if: ${{ failure() }}
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs
   Health-checks-jackett:
     runs-on: ubuntu-latest
     env:
@@ -153,6 +171,9 @@ jobs:
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+      - name: Export logs
+        if: ${{ failure() }}
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs
   Health-checks-codimd:
     runs-on: ubuntu-latest
     env:
@@ -172,3 +193,6 @@ jobs:
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps
       - name: Check health
         run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"
+      - name: Export logs
+        if: ${{ failure() }}
+        run: docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs

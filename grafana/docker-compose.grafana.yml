@@ -11,18 +11,24 @@ services:
     restart: always
     depends_on:
       - prometheus
+    healthcheck:
+      test: ['CMD', 'curl', '0.0.0.0:3000/healthz'] # https://github.com/grafana/grafana/pull/27536
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.grafana.rule=Host(`grafana.${SITE:-localhost}`)'
       - 'traefik.http.services.grafana.loadbalancer.server.port=3000'
       - 'traefik.http.routers.grafana.middlewares=basic_auth@docker'
     environment:
-      - 'GF_METRICS_ENABLED=true'
+      # https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#reporting_enabled
+      - 'GF_ANALYTICS_REPORTING_ENABLED=false'
       - 'GF_AUTH_ANONYMOUS_ENABLED=true'
       - 'GF_AUTH_ANONYMOUS_ORG_ROLE=Admin'
       - 'GF_AUTH_BASIC_ENABLED=false'
       - 'GF_AUTH_DISABLE_LOGIN_FORM=true'
+      - 'GF_AUTH_DISABLE_SIGNOUT_MENU=true'
       - 'GF_INSTALL_PLUGINS=grafana-piechart-panel'
+      - 'GF_METRICS_ENABLED=true'
+      - 'GF_USERS_ALLOW_SIGN_UP=false'
 
   prometheus:
     image: prom/prometheus:v2.22.0
@@ -40,6 +46,8 @@ services:
       - node_exporter
       - alertmanager
       - cadvisor
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:9090 || exit 1"]
     volumes:
       - './grafana/prometheus/data:/prometheus'
       - './grafana/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml'
@@ -53,27 +61,32 @@ services:
   node_exporter:
     image: prom/node-exporter:v1.0.1
     restart: always
+    networks:
+      - 'srv'
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:9100/metrics || exit 1"]
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.node_exporter.rule=Host(`node_exporter.${SITE:-localhost}`)'
       - 'traefik.http.services.node_exporter.loadbalancer.server.port=9100'
       - 'traefik.http.routers.node_exporter.middlewares=basic_auth@docker'
-    networks:
-      - 'srv'
 
   alertmanager:
     image: prom/alertmanager:v0.21.0
+    restart: always
     networks:
       - 'srv'
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:9093/metrics || exit 1"]
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.alertmanager.rule=Host(`alertmanager.${SITE:-localhost}`)'
       - 'traefik.http.services.alertmanager.loadbalancer.server.port=9093'
       - 'traefik.http.routers.alertmanager.middlewares=basic_auth@docker'
-    restart: always
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
+    restart: always
     volumes:
       - '/:/rootfs:ro'
       - '/var/run:/var/run:ro'
@@ -84,7 +97,6 @@ services:
     privileged: true
     networks:
       - 'srv'
-    restart: always
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.cadvisor.rule=Host(`cadvisor.${SITE:-localhost}`)'
