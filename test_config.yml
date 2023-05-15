@@ -1177,7 +1177,7 @@ services:
     - --log.filepath=/logs/traefik.log
     - --log.format=json
     - --log.level=ERROR
-    - --metrics.prometheus.addrouterslabel
+    - --metrics.prometheus.addrouterslabels
     - --api.dashboard
     - --entrypoints.websecure.http.middlewares=compress@file,headers@file
     - --experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban

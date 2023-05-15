@@ -26,7 +26,7 @@ services:
       - '--log.filepath=/logs/traefik.log'
       - '--log.format=json'
       - '--log.level=${TRAEFIK_LOG_LEVEL:-ERROR}'
-      - '--metrics.prometheus.addrouterslabel'
+      - '--metrics.prometheus.addrouterslabels'
       # Misc
       - '--api.dashboard'
       - '--entrypoints.websecure.http.middlewares=compress@file,headers@file${TRAEFIK_PLUGINS:-}'
