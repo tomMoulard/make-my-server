@@ -5,22 +5,23 @@ listen:
 # Correspond to your reverse proxy "listen" configuration
 webserver:
   https: true
-  hostname: undefined
+  hostname: 'undefined'
   port: 443
 
 rates_limit:
   login:
     # 15 attempts in 5 min
-    window: 5 minutes
+    window: '5 minutes'
     max: 15
   ask_send_email:
     # 3 attempts in 5 min
-    window: 5 minutes
+    window: '5 minutes'
     max: 3
 
 # Proxies to trust to get real client IP
 # If you run PeerTube just behind a local proxy (nginx), keep 'loopback'
-# If you run PeerTube behind a remote proxy, add the proxy IP address (or subnet)
+# If you run PeerTube behind a remote proxy, add the proxy IP address (or
+# subnet)
 trust_proxy:
   - 'loopback'
   - 'linklocal'
@@ -59,7 +60,8 @@ log:
 
 tracker:
   enabled: true
-  reject_too_many_announces: false # false because we have issues with traefik and ws ip/port forwarding
+  # false because we have issues with traefik and ws ip/port forwarding
+  reject_too_many_announces: false
 
 admin:
   email: null

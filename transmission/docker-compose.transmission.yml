@@ -2,29 +2,26 @@ version: '2'
 
 services:
   transmission:
-    image: linuxserver/transmission:${TRANSMISSION_IMAGE_VERSION:-3.00-r5-ls115}
+    image: 'linuxserver/transmission:${TRANSMISSION_IMAGE_VERSION:-3.00-r5-ls115}'
     environment:
-      PGID: ${TRANSMISSION_PGID:-1000}
-      PUID: ${TRANSMISSION_PUID:-1000}
-      TZ: ${TZ:-Europe/Paris}
-      TRANSMISSION_WEB_HOME: ${TRANSMISSION_WEB_HOME:-/flood-for-transmission/}
+      PGID: '${TRANSMISSION_PGID:-1000}'
+      PUID: '${TRANSMISSION_PUID:-1000}'
+      TRANSMISSION_WEB_HOME: '${TRANSMISSION_WEB_HOME:-/flood-for-transmission/}'
+      TZ: '${TZ:-Europe/Paris}'
+    healthcheck:
+      test: 'CMD curl 0.0.0.0:9091/transmission/web/'
+    labels:
+      traefik.enable: true
+      traefik.http.routers.transmission.middlewares: 'basic_auth@docker'
+      traefik.http.routers.transmission.rule: 'Host(`transmission.${SITE:-localhost}`)'
+      traefik.http.services.transmission.loadbalancer.server.port: 9091
+    networks:
+      - 'srv'
     ports:
       - '51413:51413'
       - '51413:51413/udp'
+    restart: 'always'
     volumes:
       - './transmission/config:/config'
       - './transmission/downloads:/downloads'
       - './transmission/watch:/watch'
-    networks:
-      - 'srv'
-    restart: always
-    healthcheck:
-      test: ['CMD', 'curl', '0.0.0.0:9091/transmission/web/']
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    labels:
-      traefik.enable: true
-      traefik.http.routers.transmission.rule: Host(`transmission.${SITE:-localhost}`)
-      traefik.http.services.transmission.loadbalancer.server.port: 9091
-      traefik.http.routers.transmission.middlewares: basic_auth@docker

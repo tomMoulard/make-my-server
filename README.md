@@ -96,6 +96,44 @@ Traefik service locally:
 docker-compose scale nginx=2
 ```
 
+## Tests
+
+### Lint
+
+! Warning: This is enforced for all PRs.
+
+We are using yamllint to lint our yaml files.
+You can install it by looking at the [official
+documentation](https://yamllint.readthedocs.io/en/stable/quickstart.html#installation).
+
+Once installed, you can run the following command to lint all the yaml files:
+```bash
+yamllint .
+```
+
+### docker-compose config
+
+! Warning: This is enforced for all PRs.
+
+You can run the following command to check that the docker-compose files are
+correctly written:
+```bash
+./test.sh
+```
+
+It tests that:
+
+ - all docker-compose files are valid
+ - all docker-compose files are parsable
+ - all docker-compose files are consistent with the test_config.yml file
+ - all environment variables are set inside the `.env.default` file
+
+Once this shell scritp is run, if the tests failes, you can see a bunch of
+modified files (e.g., `test_config.yml`) that indicates what is wrong.
+
+Note that the GitHub Action will run this script for you, and provides a
+`patch.patch` file that **should** solve most of your issues.
+
 # Authors
 Main author:
  - [Tom](http://tom.moulard.org)

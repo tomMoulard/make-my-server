@@ -2,19 +2,16 @@ version: '2'
 
 services:
   nginx:
-    image: nginx:${NGINX_IMAGE_VERSION:-stable-alpine}
+    image: 'nginx:${NGINX_IMAGE_VERSION:-stable-alpine}'
+    healthcheck:
+      test: 'CMD curl 0.0.0.0:80'
+    labels:
+      traefik.enable: true
+      traefik.http.routers.nginx.rule: 'Host(`${SITE:-localhost}`)'
+      traefik.http.services.nginx.loadbalancer.server.port: 80
+    networks:
+      - 'srv'
+    restart: 'always'
     volumes:
       - './nginx/conf:/etc/nginx/conf.d'
       - './nginx/logs:/var/log/nginx/'
-    networks:
-      - 'srv'
-    restart: always
-    healthcheck:
-      test: ['CMD', 'curl', '0.0.0.0:80']
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.nginx.rule=Host(`${SITE:-localhost}`)'
-      - 'traefik.http.services.nginx.loadbalancer.server.port=80'

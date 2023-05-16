@@ -2,24 +2,24 @@ version: '2'
 
 services:
   bazarr:
-    image: linuxserver/bazarr:v0.8.3.4-ls61
+    image: 'linuxserver/bazarr:${BAZARR_IMAGE_VERSION:-v1.2.2}'
     environment:
-      - PUID=1000
-      - PGID=1000
-      - 'TZ=${TZ:-Europe/Paris}'
-    volumes:
-      - ./bazarr/config:/config
-      - ./bazarr/movies:/movies
-      - ./bazarr/tv:/tv
+      PGID: 1000
+      PUID: 1000
+      TZ: '${TZ:-Europe/Paris}'
+    labels:
+      traefik.enable: true
+      traefik.http.routers.bazarr.middlewares: 'basic_auth@docker'
+      traefik.http.routers.bazarr.rule: 'Host(`bazarr.${SITE:-localhost}`)'
+      traefik.http.services.bazarr.loadbalancer.server.port: 8080
     links:
-      - transmission
-      - jackett
-      - sonarr
+      - 'transmission'
+      - 'jackett'
+      - 'sonarr'
     networks:
       - 'srv'
-    restart: always
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.bazarr.rule=Host(`bazarr.${SITE:-localhost}`)'
-      - 'traefik.http.services.bazarr.loadbalancer.server.port=8080'
-      - 'traefik.http.routers.bazarr.middlewares=basic_auth@docker'
+    restart: 'always'
+    volumes:
+      - './bazarr/config:/config'
+      - './bazarr/movies:/movies'
+      - './bazarr/tv:/tv'

@@ -2,23 +2,23 @@ version: '2'
 
 services:
   sonarr:
-    image: linuxserver/sonarr:2.0.0.5337-ls92
+    image: 'linuxserver/sonarr:${SONARR_IMAGE_VERSION:-4.0.0}'
     environment:
-      - PUID=1000
-      - PGID=1000
-      - 'TZ=${TZ:-Europe/Paris}'
-    volumes:
-      - ./sonarr/config:/config
-      - ./sonarr/downloads:/downloads
-      - ./sonarr/tv:/tv
+      PGID: 1000
+      PUID: 1000
+      TZ: '${TZ:-Europe/Paris}'
+    labels:
+      traefik.enable: true
+      traefik.http.routers.sonarr.middlewares: 'basic_auth@docker'
+      traefik.http.routers.sonarr.rule: 'Host(`sonarr.${SITE:-localhost}`)'
+      traefik.http.services.sonarr.loadbalancer.server.port: 8080
     links:
-      - transmission
-      - jackett
+      - 'jackett'
+      - 'transmission'
     networks:
       - 'srv'
-    restart: always
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.sonarr.rule=Host(`sonarr.${SITE:-localhost}`)'
-      - 'traefik.http.services.sonarr.loadbalancer.server.port=8080'
-      - 'traefik.http.routers.sonarr.middlewares=basic_auth@docker'
+    restart: 'always'
+    volumes:
+      - './sonarr/config:/config'
+      - './sonarr/downloads:/downloads'
+      - './sonarr/tv:/tv'

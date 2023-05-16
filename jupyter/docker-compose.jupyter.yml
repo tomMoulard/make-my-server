@@ -2,22 +2,22 @@ version: '2'
 
 services:
   jupyter:
-    image: jupyter/tensorflow-notebook:45f07a14b422
-    command: >
+    image: 'jupyter/tensorflow-notebook:45f07a14b422'
+    command: |
      jupyter notebook
      --NotebookApp.token=''
      --NotebookApp.password=''
     # removing token & password to enable traefik auth
     environment:
-      - 'JUPYTER_ENABLE_LAB=yes'
+      JUPYTER_ENABLE_LAB: 'yes' # yamllint disable-line rule:truthy
+    labels:
+      traefik.enable: true
+      traefik.http.routers.jupyter.middlewares: 'basic_auth@docker'
+      traefik.http.routers.jupyter.rule: 'Host(`jupyter.${SITE:-localhost}`)'
+      traefik.http.services.jupyter.loadbalancer.server.port: 8888
+    networks:
+      - 'srv'
+    restart: 'always'
     volumes:
       - './jupyter/jupyter/config:/root/.jupyter/'
       - './jupyter/notebooks:/home/jovyan/'
-    networks:
-      - 'srv'
-    restart: always
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.jupyter.rule=Host(`jupyter.${SITE:-localhost}`)'
-      - 'traefik.http.services.jupyter.loadbalancer.server.port=8888'
-      - 'traefik.http.routers.jupyter.middlewares=basic_auth@docker'

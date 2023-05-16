@@ -2,20 +2,17 @@ version: '2'
 
 services:
   streama:
-    image: gkiko/streama:v1.8.3
-    volumes:
-      - './transmission/downloads:/data'
-      - './streama/streama.mv.db:/app/streama/streama.mv.db'
-      - './streama/streama.trace.db:/app/streama/streama.trace.db'
+    image: 'gkiko/streama:v1.8.3'
+    healthcheck:
+      test: 'CMD curl 0.0.0.0:8080/login/auth'
+    labels:
+      traefik.enable: true
+      traefik.http.routers.streama.rule: 'Host(`streama.${SITE:-localhost}`)'
+      traefik.http.services.streama.loadbalancer.server.port: 8080
     networks:
       - 'srv'
-    restart: always
-    healthcheck:
-      test: ['CMD', 'curl', '0.0.0.0:8080/login/auth']
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.streama.rule=Host(`streama.${SITE:-localhost}`)'
-      - 'traefik.http.services.streama.loadbalancer.server.port=8080'
+    restart: 'always'
+    volumes:
+      - './streama/streama.mv.db:/app/streama/streama.mv.db'
+      - './streama/streama.trace.db:/app/streama/streama.trace.db'
+      - './transmission/downloads:/data'

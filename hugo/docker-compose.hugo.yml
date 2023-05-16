@@ -2,34 +2,31 @@ version: '2'
 
 services:
   hugo:
-    image: nginx:stable-alpine
+    image: 'nginx:stable-alpine'
     depends_on:
-      - hugo-builder
+      - 'hugo-builder'
+    healthcheck:
+      test: 'CMD curl 0.0.0.0:80'
+    labels:
+      traefik.enable: true
+      traefik.http.routers.hugo.rule: 'Host(`hugo.${SITE:-localhost}`)'
+      traefik.http.services.hugo.loadbalancer.server.port: 80
+    networks:
+      - 'srv'
+    restart: 'always'
     volumes:
       - './hugo/nginx/conf:/etc/nginx/conf.d'
       - './hugo/nginx/logs:/var/log/nginx/'
-    networks:
-      - 'srv'
-    restart: always
-    healthcheck:
-      test: ['CMD', 'curl', '0.0.0.0:80']
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.hugo.rule=Host(`hugo.${SITE:-localhost}`)'
-      - 'traefik.http.services.hugo.loadbalancer.server.port=80'
 
   hugo-builder:
-    image: jojomi/hugo:0.59
-    restart: always
+    image: 'jojomi/hugo:0.59'
     environment:
-    - HUGO_REFRESH_TIME=3600
-    - HUGO_THEME=hugo-theme-cactus-plus
-    - HUGO_BASEURL=https://hugo.${SITE:-localhost}/
-    volumes:
-      - ./hugo/blog:/src
-      - ./hugo/nginx/conf/www:/output
+      HUGO_BASEURL: 'https://hugo.${SITE:-localhost}/'
+      HUGO_REFRESH_TIME: 3600
+      HUGO_THEME: 'hugo-theme-cactus-plus'
     labels:
-      - 'traefik.enable=false'
+      traefik.enable: false
+    restart: 'always'
+    volumes:
+      - './hugo/blog:/src'
+      - './hugo/nginx/conf/www:/output'

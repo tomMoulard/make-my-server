@@ -17,22 +17,30 @@ test ()
     tmp=$($@ 2>$log_file 1>$log_file)
     rt=$?
     if [[ $rt -ne 0 ]]; then
-        echo -e "[${RED}X${WHITE}] $@: $rt"
+        echo -e "[${RED}X${WHITE}] " "$@" ": " "$rt"
         echo "$tmp"
         ((errors += 1))
         return
     fi
-    echo -e "[${GREEN}V${WHITE}] $@"
+    echo -e "[${GREEN}V${WHITE}] " "$@"
 }
 
 test dc config -q
 
+# testing docker-compose.yml files
 file=$(mktemp)
-dc config > $file 2>$log_file
-test diff test_config.yml $file
-mv $file test_config.yml
+dc config > "$file" 2>$log_file
+test diff test_config.yml "$file"
+mv "$file" test_config.yml
 
-grep '${' **/docker-compose.*.yml | sed "s/.*\${\(.*\)}.*/\1/g" | cut -d":" -f 1 | sort -u | xargs -I % echo "%=" | sort >> .env.generated
+# testing environment variables.
+grep '${' ./**/docker-compose.*.yml \
+	| sed "s/.*\${\(.*\)}.*/\1/g" \
+	| cut -d":" -f 1 \
+	| sort -u \
+	| xargs -I % echo "%=" \
+	| sort \
+	>> .env.generated
 test diff .env.default .env.generated
 mv .env.generated .env.default
 

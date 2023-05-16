@@ -2,63 +2,57 @@ version: '2'
 
 services:
   peertube:
-    image: chocobozzz/peertube:production-buster
-    environment:
-      - 'PEERTUBE_DB_USERNAME=peertube'
-      - 'PEERTUBE_DB_PASSWORD=${USERS}'
-      - 'PEERTUBE_DB_HOSTNAME=peertube-db'
-      - 'PEERTUBE_WEBSERVER_HOSTNAME=peertube.${SITE:-localhost}'
-      - 'PEERTUBE_WEBSERVER_PORT=443'
-      - 'PEERTUBE_WEBSERVER_HTTPS=true'
-      - 'PEERTUBE_ADMIN_EMAIL=${ROOT_EMAIL:-changeme@changeme.org}'
-      - 'PEERTUBE_TRUST_PROXY=["127.0.0.1", "loopback", "172.0.0.0/0"]'
-    volumes:
-      - ./peertube/data:/data
-      - ./peertube/config:/config
+    image: 'chocobozzz/peertube:production-buster'
     depends_on:
-      - peertube-db
-      - peertube-redis
-    links:
-      - peertube-db
-      - peertube-redis
-    networks:
-      - 'srv'
-    restart: always
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.peertube.rule=Host(`peertube.${SITE:-localhost}`)'
-      - 'traefik.http.services.peertube.loadbalancer.server.port=9000'
-
-  peertube-db: # peertube-db
-    image: postgres:10-alpine
+      - 'peertube-db'
+      - 'peertube-redis'
     environment:
-      - 'POSTGRES_USER=peertube'
-      - 'POSTGRES_PASSWORD=${USERS}'
-      - 'POSTGRES_DB=peertube'
+      PEERTUBE_ADMIN_EMAIL: '${ROOT_EMAIL:-changeme@changeme.org}'
+      PEERTUBE_DB_HOSTNAME: 'peertube-db'
+      PEERTUBE_DB_PASSWORD: '${USERS}'
+      PEERTUBE_DB_USERNAME: 'peertube'
+      PEERTUBE_TRUST_PROXY: '["127.0.0.1", "loopback", "172.0.0.0/0"]'
+      PEERTUBE_WEBSERVER_HOSTNAME: 'peertube.${SITE:-localhost}'
+      PEERTUBE_WEBSERVER_HTTPS: true
+      PEERTUBE_WEBSERVER_PORT: 443
+    labels:
+      traefik.enable: true
+      traefik.http.routers.peertube.rule: 'Host(`peertube.${SITE:-localhost}`)'
+      traefik.http.services.peertube.loadbalancer.server.port: 9000
+    links:
+      - 'peertube-db'
+      - 'peertube-redis'
     networks:
       - 'srv'
+    restart: 'always'
     volumes:
-      - ./peertube/db:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'peertube']
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    restart: always
-    labels:
-      - 'traefik.enable=false'
+      - './peertube/config:/config'
+      - './peertube/data:/data'
 
-  peertube-redis: # peertube-redis
-    image: redis:4-alpine
+  peertube-db:
+    image: 'postgres:10-alpine'
+    environment:
+      POSTGRES_DB: 'peertube'
+      POSTGRES_PASSWORD: '${USERS}'
+      POSTGRES_USER: 'peertube'
+    healthcheck:
+      test: 'CMD pg_isready -U peertube'
+    labels:
+      traefik.enable: false
     networks:
       - 'srv'
+    restart: 'always'
     volumes:
-      - ./peertube/redis:/data
-    restart: always
+      - './peertube/db:/var/lib/postgresql/data'
+
+  peertube-redis:
+    image: 'redis:4-alpine'
     healthcheck:
-      test: ['CMD', 'redis-cli', 'PING']
-      interval: 10s
-      timeout: 10s
-      retries: 5
+      test: 'CMD redis-cli PING'
     labels:
-      - 'traefik.enable=false'
+      traefik.enable: false
+    networks:
+      - 'srv'
+    restart: 'always'
+    volumes:
+      - './peertube/redis:/data'

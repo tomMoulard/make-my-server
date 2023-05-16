@@ -1,0 +1,44 @@
+# ref: https://yamllint.readthedocs.io/en/stable/configuration.html
+
+extends: 'default'
+
+ignore: |
+  homer/**
+  matrix/**
+  huginn/**
+  registry/**
+  registery/**
+  results.json
+  peertube/config/custom-environment-variables.yaml
+
+  .git/
+  peertube/config/default.yaml
+  test_config.yml
+# .github/
+
+# https://yamllint.readthedocs.io/en/stable/rules.html
+rules:
+  document-start:
+    present: false
+  comments:
+    min-spaces-from-content: 1
+  line-length:
+    allow-non-breakable-inline-mappings: true
+    ignore:
+      - '.github/workflows/dockerpublish.yml'
+  truthy: 'enable'
+  indentation:
+    spaces: 2
+  empty-values: 'enable'
+  float-values:
+    forbid-inf: true
+    forbid-nan: true
+    forbid-scientific-notation: true
+    require-numeral-before-decimal: true
+  octal-values: 'enable'
+  quoted-strings:
+    quote-type: 'single'
+    required: true
+    allow-quoted-quotes: false
+
+# vim: ft=yaml

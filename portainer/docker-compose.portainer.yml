@@ -2,15 +2,15 @@ version: '2'
 
 services:
   portainer:
-    image: portainer/portainer
+    image: 'portainer/portainer'
+    labels:
+      traefik.enable: true
+      traefik.http.routers.portainer.middlewares: 'basic_auth@docker'
+      traefik.http.routers.portainer.rule: 'Host(`portainer.${SITE:-localhost}`)'
+      traefik.http.services.portainer.loadbalancer.server.port: 9000
     networks:
       - 'srv'
+    restart: 'always'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './portainer/data:/data'
-    restart: always
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.portainer.rule=Host(`portainer.${SITE:-localhost}`)'
-      - 'traefik.http.services.portainer.loadbalancer.server.port=9000'
-      - 'traefik.http.routers.portainer.middlewares=basic_auth@docker'

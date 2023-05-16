@@ -2,12 +2,12 @@ version: '2'
 
 services:
   arachni:
-    image: arachni/arachni
+    image: 'arachni/arachni'
+    labels:
+      traefik.enable: true
+      traefik.http.routers.arachni.middlewares: 'basic_auth@docker'
+      traefik.http.routers.arachni.rule: 'Host(`arachni.${SITE:-localhost}`)'
+      traefik.http.services.arachni.loadbalancer.server.port: 9292
     networks:
       - 'srv'
-    restart: always
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.arachni.rule=Host(`arachni.${SITE:-localhost}`)'
-      - 'traefik.http.services.arachni.loadbalancer.server.port=9292'
-      - 'traefik.http.routers.arachni.middlewares=basic_auth@docker'
+    restart: 'always'

@@ -1,86 +1,87 @@
 version: '2'
 
 networks:
-  mastodon-internal:
+  mastodon-internal: {}
 
 services:
-  mastodon-postgres:
-    image: postgres:9.6-alpine
-    restart: always
-    shm_size: 256mb
+  mastodon:
+    image: 'tootsuite/mastodon'
+    command: 'rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000'
+    depends_on:
+      - 'mastodon-postgres'
+      - 'mastodon-redis'
+      - 'mastodon-sidekiq'
+      - 'mastodon-streaming'
+    env_file: './mastodon/.env.production'
+    healthcheck:
+      test: 'CMD wget -q --spider --proxy=off localhost:3000/health'
+    labels:
+      traefik.enable: true
+      traefik.http.routers.mastodon.rule: 'Host(`mastodon.${SITE:-localhost}`)'
+      traefik.http.services.mastodon.loadbalancer.server.port: 3000
     networks:
       - 'mastodon-internal'
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      - 'srv'
+    restart: 'always'
     volumes:
-      - ./mastodon/postgres:/var/lib/postgresql/data
+      - './mastodon/mastodon:/mastodon/public/system'
+
+  mastodon-postgres:
+    image: 'postgres:9.6-alpine'
     environment:
-      - POSTGRES_PASSWORD=mastodon-postgres-pass
+      POSTGRES_PASSWORD: 'mastodon-postgres-pass'
+    healthcheck:
+      test: 'CMD pg_isready -U postgres'
     labels:
-      - 'traefik.enable=false'
+      traefik.enable: false
+    networks:
+      - 'mastodon-internal'
+    restart: 'always'
+    shm_size: '256mb'
+    volumes:
+      - './mastodon/postgres:/var/lib/postgresql/data'
 
   mastodon-redis:
-    image: redis:6.0-alpine
-    restart: always
+    image: 'redis:6.0-alpine'
+    healthcheck:
+      test: 'CMD redis-cli ping'
+    labels:
+      traefik.enable: false
     networks:
       - 'mastodon-internal'
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+    restart: 'always'
     volumes:
-      - ./mastodon/redis:/data
-    labels:
-      - 'traefik.enable=false'
-
-  mastodon:
-    image: tootsuite/mastodon
-    restart: always
-    env_file: ./mastodon/.env.production
-    command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
-    networks:
-      - 'srv'
-      - 'mastodon-internal'
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:3000/health || exit 1"]
-    depends_on:
-      - mastodon-postgres
-      - mastodon-redis
-      - mastodon-streaming
-      - mastodon-sidekiq
-    volumes:
-      - ./mastodon/mastodon:/mastodon/public/system
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.mastodon.rule=Host(`mastodon.${SITE:-localhost}`)'
-      - 'traefik.http.services.mastodon.loadbalancer.server.port=3000'
-
-  mastodon-streaming:
-    image: tootsuite/mastodon
-    restart: always
-    env_file: ./mastodon/.env.production
-    command: node ./streaming
-    networks:
-      - 'srv'
-      - 'mastodon-internal'
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1"]
-    depends_on:
-      - mastodon-postgres
-      - mastodon-redis
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.mastodon-streaming.rule=Host(`mastodon-streaming.${SITE:-localhost}`)'
-      - 'traefik.http.services.mastodon-streaming.loadbalancer.server.port=4000'
+      - './mastodon/redis:/data'
 
   mastodon-sidekiq:
-    image: tootsuite/mastodon
-    restart: always
-    env_file: ./mastodon/.env.production
-    command: bundle exec sidekiq
+    image: 'tootsuite/mastodon'
+    command: 'bundle exec sidekiq'
     depends_on:
-      - mastodon-postgres
-      - mastodon-redis
+      - 'mastodon-postgres'
+      - 'mastodon-redis'
+    env_file: './mastodon/.env.production'
     networks:
       - 'srv'
       - 'mastodon-internal'
+    restart: 'always'
     volumes:
-      - ./mastodon/mastodon:/mastodon/public/system
+      - './mastodon/mastodon:/mastodon/public/system'
+
+  mastodon-streaming:
+    image: 'tootsuite/mastodon'
+    command: 'node ./streaming'
+    depends_on:
+      - 'mastodon-postgres'
+      - 'mastodon-redis'
+    env_file: './mastodon/.env.production'
+    healthcheck:
+      test: |
+        CMD wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health
+    labels:
+      traefik.enable: true
+      traefik.http.routers.mastodon-streaming.rule: 'Host(`mastodon-streaming.${SITE:-localhost}`)'
+      traefik.http.services.mastodon-streaming.loadbalancer.server.port: 4000
+    networks:
+      - 'srv'
+      - 'mastodon-internal'
+    restart: 'always'
