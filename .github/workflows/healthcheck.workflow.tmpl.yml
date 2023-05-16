@@ -1,0 +1,38 @@
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+    inputs:
+      service_name:
+        description: 'A service name to check health check uppon'
+        required: true
+        type: 'string'
+
+env:
+  STARTUP_TIME: '30s'
+
+jobs:
+  health-check:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v2'
+      - name: 'Caching'
+        uses: 'actions/cache@v2'
+        with:
+          path: '/var/lib/docker/'
+          key: '${{ runner.os }}-health-${{ github.job }}'
+      - name: 'Starting the docker-compose stack'
+        run: |
+          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml up -d
+      - name: 'Waiting for service startup (${{ env.STARTUP_TIME }})'
+        run: |
+          sleep ${{ env.STARTUP_TIME }}
+      - name: 'Check running containers'
+        run: |
+          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml ps
+      - name: 'Check health'
+        run: |
+          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml ps | grep "Up (healthy)"
+      - name: 'Export logs'
+        if: '${{ failure() }}'
+        run: |
+          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml ps
+          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml logs

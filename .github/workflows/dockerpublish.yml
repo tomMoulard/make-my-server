@@ -21,181 +21,37 @@ jobs:
             log.log
             *.patch
   Health-checks-traefik:
-    env:
-      SERVICE: 'traefik'
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: 'actions/checkout@v2'
-      - name: 'Caching'
-        uses: 'actions/cache@v2'
-        with:
-          path: '/var/lib/docker/'
-          key: '${{ runner.os }}-health-${{ github.job }}'
-      - name: 'Build the docker-compose stack'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d'
-      - name: 'Waiting for service startup (10s)'
-        run: 'sleep 10s'
-      - name: 'Check running containers'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps'
-      - name: 'Check health'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"'
-      - name: 'Export logs'
-        if: '${{ failure() }}'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/yamllint'
+    with:
+      service_name: 'traefik'
   Health-checks-nginx:
-    env:
-      SERVICE: 'nginx'
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: 'actions/checkout@v2'
-      - name: 'Caching'
-        uses: 'actions/cache@v2'
-        with:
-          path: '/var/lib/docker/'
-          key: '${{ runner.os }}-health-${{ github.job }}'
-      - name: 'Build the docker-compose stack'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d'
-      - name: 'Waiting for service startup (10s)'
-        run: 'sleep 10s'
-      - name: 'Check running containers'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps'
-      - name: 'Check health'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"'
-      - name: 'Export logs'
-        if: '${{ failure() }}'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/yamllint'
+    with:
+      service_name: 'nginx'
   Health-checks-hugo:
-    env:
-      SERVICE: 'hugo'
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: 'actions/checkout@v2'
-      - name: 'Caching'
-        uses: 'actions/cache@v2'
-        with:
-          path: '/var/lib/docker/'
-          key: '${{ runner.os }}-health-${{ github.job }}'
-      - name: 'Build the docker-compose stack'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d'
-      - name: 'Waiting for service startup (10s)'
-        run: 'sleep 10s'
-      - name: 'Check running containers'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps'
-      - name: 'Check health'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"'
-      - name: 'Export logs'
-        if: '${{ failure() }}'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/yamllint'
+    with:
+      service_name: 'hugo'
   Health-checks-peertube:
-    env:
-      SERVICE: 'peertube'
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: 'actions/checkout@v2'
-      - name: 'Caching'
-        uses: 'actions/cache@v2'
-        with:
-          path: '/var/lib/docker/'
-          key: '${{ runner.os }}-health-${{ github.job }}'
-      - name: 'Build the docker-compose stack'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d'
-      - name: 'Waiting for service startup (10s)'
-        run: 'sleep 10s'
-      - name: 'Check running containers'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps'
-      - name: 'Check health'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"'
-      - name: 'Export logs'
-        if: '${{ failure() }}'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/yamllint'
+    with:
+      service_name: 'peertube'
   Health-checks-transmission:
-    env:
-      SERVICE: 'transmission'
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: 'actions/checkout@v2'
-      - name: 'Caching'
-        uses: 'actions/cache@v2'
-        with:
-          path: '/var/lib/docker/'
-          key: '${{ runner.os }}-health-${{ github.job }}'
-      - name: 'Build the docker-compose stack'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d'
-      - name: 'Waiting for service startup (10s)'
-        run: 'sleep 10s'
-      - name: 'Check running containers'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps'
-      - name: 'Check health'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"'
-      - name: 'Export logs'
-        if: '${{ failure() }}'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/yamllint'
+    with:
+      service_name: 'transmission'
   Health-checks-nextcloud:
-    env:
-      SERVICE: 'nextcloud'
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: 'actions/checkout@v2'
-      - name: 'Caching'
-        uses: 'actions/cache@v2'
-        with:
-          path: '/var/lib/docker/'
-          key: '${{ runner.os }}-health-${{ github.job }}'
-      - name: 'Build the docker-compose stack'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d'
-      - name: 'Waiting for service startup (10s)'
-        run: 'sleep 10s'
-      - name: 'Check running containers'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps'
-      - name: 'Check health'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"'
-      - name: 'Export logs'
-        if: '${{ failure() }}'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/yamllint'
+    with:
+      service_name: 'nextcloud'
   Health-checks-jackett:
-    env:
-      SERVICE: 'jackett'
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: 'actions/checkout@v2'
-      - name: 'Caching'
-        uses: 'actions/cache@v2'
-        with:
-          path: '/var/lib/docker/'
-          key: '${{ runner.os }}-health-${{ github.job }}'
-      - name: 'Build the docker-compose stack'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d'
-      - name: 'Waiting for service startup (10s)'
-        run: 'sleep 10s'
-      - name: 'Check running containers'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps'
-      - name: 'Check health'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"'
-      - name: 'Export logs'
-        if: '${{ failure() }}'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/yamllint'
+    with:
+      service_name: 'jackett'
   Health-checks-codimd:
-    env:
-      SERVICE: 'codimd'
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: 'actions/checkout@v2'
-      - name: 'Caching'
-        uses: 'actions/cache@v2'
-        with:
-          path: '/var/lib/docker/'
-          key: '${{ runner.os }}-health-${{ github.job }}'
-      - name: 'Build the docker-compose stack'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml up -d'
-      - name: 'Waiting for service startup (10s)'
-        run: 'sleep 10s'
-      - name: 'Check running containers'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps'
-      - name: 'Check health'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml ps | grep "Up (healthy)"'
-      - name: 'Export logs'
-        if: '${{ failure() }}'
-        run: 'docker-compose -f docker-compose.yml -f ${SERVICE}/docker-compose.${SERVICE}.yml logs'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/yamllint'
+    with:
+      service_name: 'codimd'
   Lint:
     runs-on: 'ubuntu-latest'
     steps:

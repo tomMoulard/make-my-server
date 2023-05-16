@@ -25,7 +25,7 @@ rules:
   line-length:
     allow-non-breakable-inline-mappings: true
     ignore:
-      - '.github/workflows/dockerpublish.yml'
+      - '.github/workflows/healthcheck.workflow.tmpl.yml'
   truthy: 'enable'
   indentation:
     spaces: 2
