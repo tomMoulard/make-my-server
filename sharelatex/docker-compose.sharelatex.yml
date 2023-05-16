@@ -19,7 +19,7 @@ services:
       SHARELATEX_REDIS_HOST: 'sharelatex-redis'
       SHARELATEX_SITE_URL: 'https://latex.${SITE:-localhost}'
     healthcheck:
-      test: 'CMD curl 0.0.0.0:80'
+      test: ['CMD', 'curl', '0.0.0.0:80']
     labels:
       traefik.enable: true
       traefik.http.routers.sharelatex.rule: 'Host(`sharelatex.${SITE:-localhost}`)'
@@ -34,8 +34,8 @@ services:
   sharelatex-mongo:
     image: 'mongo:4.0'
     healthcheck:
-      test: |
-        CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      test: ['CMD', 'echo', 'db.runCommand("ping").ok',
+             '|', 'mongo', 'localhost:27017/test', '--quiet']
     labels:
       traefik.enable: false
     networks:
@@ -47,7 +47,7 @@ services:
   sharelatex-redis:
     image: 'redis:6.0-alpine'
     healthcheck:
-      test: 'CMD redis-cli ping'
+      test: ['CMD', 'redis-cli', 'ping']
     labels:
       traefik.enable: false
     networks:

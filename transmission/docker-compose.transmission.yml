@@ -9,7 +9,7 @@ services:
       TRANSMISSION_WEB_HOME: '${TRANSMISSION_WEB_HOME:-/flood-for-transmission/}'
       TZ: '${TZ:-Europe/Paris}'
     healthcheck:
-      test: 'CMD curl 0.0.0.0:9091/transmission/web/'
+      test: ['CMD', 'curl', '0.0.0.0:9091/transmission/web/']
     labels:
       traefik.enable: true
       traefik.http.routers.transmission.middlewares: 'basic_auth@docker'

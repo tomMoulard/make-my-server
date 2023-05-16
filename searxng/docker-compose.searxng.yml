@@ -6,12 +6,13 @@ services:
     depends_on:
       - 'searxng-redis'
     environment:
-      IMAGE_PROXY: true
-      LIMITER: true
+      IMAGE_PROXY: 'true'
+      LIMITER: 'true'
       REDIS_URL: 'redis://searxng-redis:6379/0'
       SEARXNG_BASE_URL: 'https://searx.${SITE:-localhost}/'
     healthcheck:
-      test: 'CMD wget -q --spider --proxy=off localhost:8080/healthz'
+      test: ['CMD',
+             'wget', '-q', '--spider', '--proxy=off', 'localhost:8080/healthz']
     labels:
       traefik.enable: true
       traefik.http.routers.searxng.rule: 'Host(`searx.${SITE:-localhost}`)'
@@ -26,7 +27,7 @@ services:
     image: 'redis:6.0-alpine'
     command: 'redis-server --save "" --appendonly "no"'
     healthcheck:
-      test: 'CMD redis-cli ping'
+      test: ['CMD', 'redis-cli', 'ping']
     labels:
       traefik.enable: false
     restart: 'always'

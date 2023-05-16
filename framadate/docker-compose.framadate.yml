@@ -41,7 +41,7 @@ services:
       MYSQL_ROOT_PASSWORD: '${FRAMADATE_MYSQL_ROOT_PASSWORD:-pass}'
       MYSQL_USER: '${FRAMADATE_MYSQL_USER:-framadate}'
     healthcheck:
-      test: 'CMD mysqlcheck --all-databases -ppass'
+      test: ['CMD', 'mysqlcheck', '--all-databases', '-ppass']
     labels:
       - 'traefik.enable=false'
     networks:

@@ -9,7 +9,7 @@ services:
     depends_on:
       - 'nextcloud-db'
     healthcheck:
-      test: 'CMD curl 0.0.0.0:80'
+      test: ['CMD', 'curl', '0.0.0.0:80']
     labels:
       traefik.enable: true
 
@@ -49,7 +49,7 @@ services:
       MYSQL_ROOT_PASSWORD: '${NEXTCLOUD_MYSQL_ROOT_PASSWORD:-pass}'
       MYSQL_USER: '${NEXTCLOUD_MYSQL_USER:-nextcloud}'
     healthcheck:
-      test: 'CMD mysqlcheck --all-databases -ppass'
+      test: ['CMD', 'mysqlcheck', '--all-databases', '-ppass']
     labels:
       traefik.enable: false
     networks:

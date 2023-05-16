@@ -13,7 +13,7 @@ services:
       PEERTUBE_DB_USERNAME: 'peertube'
       PEERTUBE_TRUST_PROXY: '["127.0.0.1", "loopback", "172.0.0.0/0"]'
       PEERTUBE_WEBSERVER_HOSTNAME: 'peertube.${SITE:-localhost}'
-      PEERTUBE_WEBSERVER_HTTPS: true
+      PEERTUBE_WEBSERVER_HTTPS: 'true'
       PEERTUBE_WEBSERVER_PORT: 443
     labels:
       traefik.enable: true
@@ -36,7 +36,7 @@ services:
       POSTGRES_PASSWORD: '${USERS}'
       POSTGRES_USER: 'peertube'
     healthcheck:
-      test: 'CMD pg_isready -U peertube'
+      test: ['CMD', 'pg_isready', '-U', 'peertube']
     labels:
       traefik.enable: false
     networks:
@@ -48,7 +48,7 @@ services:
   peertube-redis:
     image: 'redis:4-alpine'
     healthcheck:
-      test: 'CMD redis-cli PING'
+      test: ['CMD', 'redis-cli', 'PING']
     labels:
       traefik.enable: false
     networks:

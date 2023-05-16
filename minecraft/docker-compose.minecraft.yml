@@ -4,7 +4,7 @@ services:
   minecraft:
     image: 'itzg/minecraft-server'
     environment:
-      EULA: true
+      EULA: 'true'
     restart: 'always'
     labels:
       - 'traefik.enable=false'

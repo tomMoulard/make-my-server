@@ -4,7 +4,7 @@ services:
   nginx:
     image: 'nginx:${NGINX_IMAGE_VERSION:-stable-alpine}'
     healthcheck:
-      test: 'CMD curl 0.0.0.0:80'
+      test: ['CMD', 'curl', '0.0.0.0:80']
     labels:
       traefik.enable: true
       traefik.http.routers.nginx.rule: 'Host(`${SITE:-localhost}`)'

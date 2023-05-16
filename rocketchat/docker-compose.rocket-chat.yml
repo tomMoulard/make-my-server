@@ -53,8 +53,8 @@ services:
     image: 'mongo:4.0'
     command: 'mongod --smallfiles --oplogSize 128 --replSet rs01'
     healthcheck:
-      test: |
-        CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      test: ['CMD', 'echo', 'db.runCommand("ping").ok',
+             '|', 'mongo', 'localhost:27017/test', '--quiet']
     labels:
       traefik.enable: false
     networks:

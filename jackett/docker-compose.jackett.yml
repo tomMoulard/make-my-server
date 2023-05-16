@@ -10,7 +10,7 @@ services:
       PUID: '${JACKETT_PUID:-1000}'
       TZ: '${TZ:-Europe/Paris}'
     healthcheck:
-      test: 'CMD curl 0.0.0.0:9117/UI/Login?ReturnUrl=%2FUI%2FDashboard'
+      test: ['CMD', 'curl', '0.0.0.0:9117/UI/Login?ReturnUrl=%2FUI%2FDashboard']
     labels:
       traefik.enable: true
       traefik.http.routers.jackett.middlewares: 'basic_auth@docker'

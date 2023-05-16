@@ -11,11 +11,15 @@ services:
   alertmanager:
     healthcheck:
       test:
-      - CMD-SHELL
-      - wget -q --spider --proxy=off localhost:9093/metrics || exit 1
+      - CMD
+      - wget
+      - -q
+      - --spider
+      - --proxy=off
+      - localhost:9092/metrics
     image: prom/alertmanager:v0.21.0
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.alertmanager.middlewares: basic_auth@docker
       traefik.http.routers.alertmanager.rule: Host(`alertmanager.localhost`)
       traefik.http.services.alertmanager.loadbalancer.server.port: '9093'
@@ -25,7 +29,7 @@ services:
   arachni:
     image: arachni/arachni
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.arachni.middlewares: basic_auth@docker
       traefik.http.routers.arachni.rule: Host(`arachni.localhost`)
       traefik.http.services.arachni.loadbalancer.server.port: '9292'
@@ -37,9 +41,9 @@ services:
       PGID: '1000'
       PUID: '1000'
       TZ: Europe/Paris
-    image: linuxserver/bazarr:v0.8.3.4-ls61
+    image: linuxserver/bazarr:v1.2.2
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.bazarr.middlewares: basic_auth@docker
       traefik.http.routers.bazarr.rule: Host(`bazarr.localhost`)
       traefik.http.services.bazarr.loadbalancer.server.port: '8080'
@@ -58,18 +62,24 @@ services:
     environment:
       ADMIN_TOKEN: ''
       DOMAIN: https://bitwarden.localhost
-      PASSWORD_ITERATIONS: '500000'
-      ROCKET_PORT: '8080'
-      SENDS_ALLOWED: '"true"'
-      SIGNUPS_ALLOWED: '"true"'
-      SIGNUPS_VERIFY: '"false"'
+      PASSWORD_ITERATIONS: 500000
+      ROCKET_PORT: 8080
+      SENDS_ALLOWED: "true"
+      SIGNUPS_ALLOWED: "true"
+      SIGNUPS_VERIFY: "false"
       TZ: Europe/Paris
     image: vaultwarden/server:latest
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.bitwarden-admin.middlewares: basic_auth@docker
-      traefik.http.routers.bitwarden-admin.rule: Host(`bitwarden.localhost`) && PathPrefix(`/admin`)
-      traefik.http.routers.bitwarden-user.rule: Host(`bitwarden.localhost`) && !PathPrefix(`/admin`)
+      traefik.http.routers.bitwarden-admin.rule: '''Host(`bitwarden.localhost`) &&
+        PathPrefix(`/admin`)''
+
+        '
+      traefik.http.routers.bitwarden-user.rule: '''Host(`bitwarden.localhost`) &&
+        !PathPrefix(`/admin`)''
+
+        '
       traefik.http.services.bitwarden.loadbalancer.server.port: '8080'
     networks:
       srv: {}
@@ -82,7 +92,7 @@ services:
     - /dev/kmsg:/dev/kmsg
     image: gcr.io/cadvisor/cadvisor:latest
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.cadvisor.middlewares: basic_auth@docker
       traefik.http.routers.cadvisor.rule: Host(`cadvisor.localhost`)
       traefik.http.services.cadvisor.loadbalancer.server.port: '8080'
@@ -101,7 +111,7 @@ services:
       TIME_ZONE: Europe/Paris
     image: brotandgames/ciao:latest
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.ciao.middlewares: basic_auth@docker
       traefik.http.routers.ciao.rule: Host(`ciao.localhost`)
       traefik.http.services.ciao.loadbalancer.server.port: '3000'
@@ -118,19 +128,13 @@ services:
       CMD_DB_URL: postgres://codimd:mypwd@codimd-db/codimd
       CMD_USECDN: "false"
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - wget
       - 0.0.0.0:3000
-      - '|'
-      - grep
-      - '200'
-      timeout: 10s
-    image: nabo.codimd.dev/hackmdio/hackmd:2.2.0
+    image: hackmdio/hackmd:2.4.2-cjk
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.codimd.rule: Host(`codimd.localhost`)
       traefik.http.services.codimd.loadbalancer.server.port: '3000'
     links:
@@ -147,17 +151,14 @@ services:
       POSTGRES_PASSWORD: mypwd
       POSTGRES_USER: codimd
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - pg_isready
       - -U
       - codimd
-      timeout: 10s
     image: postgres:11.6-alpine
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     networks:
       codi-internal: {}
     restart: always
@@ -171,7 +172,7 @@ services:
       discovery.type: single-node
     image: docker.elastic.co/elasticsearch/elasticsearch:7.1.0
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     restart: always
     ulimits:
       memlock:
@@ -182,7 +183,7 @@ services:
   factorio:
     image: factoriotools/factorio
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     ports:
     - protocol: udp
       published: 34197
@@ -198,7 +199,7 @@ services:
       ADMIN_PASSWORD: pass
       APP_NAME: Framadate
       APP_URL: framadate.localhost
-      DEFAULT_POLL_DURATION: 365
+      DEFAULT_POLL_DURATION: '365'
       MARKDOWN_EDITOR_BY_DEFAULT: "true"
       MYSQL_DATABASE: framadate
       MYSQL_PASSWORD: framadate
@@ -226,14 +227,11 @@ services:
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_USER: framadate
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - mysqlcheck
       - --all-databases
       - -ppass
-      timeout: 10s
     image: mysql:5.7
     labels:
       traefik.enable: "false"
@@ -252,7 +250,7 @@ services:
     hostname: gitlab.localhost
     image: gitlab/gitlab-ce:latest
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.gitlab.rule: Host(`gitlab.localhost`)
       traefik.http.services.gitlab.loadbalancer.server.port: '80'
     networks:
@@ -286,7 +284,7 @@ services:
       - 0.0.0.0:3000/healthz
     image: grafana/grafana:7.2.2
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.grafana.middlewares: basic_auth@docker
       traefik.http.routers.grafana.rule: Host(`grafana.localhost`)
       traefik.http.services.grafana.loadbalancer.server.port: '3000'
@@ -301,16 +299,13 @@ services:
       hits-postgresql:
         condition: service_started
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - curl
       - 0.0.0.0:4000
-      timeout: 10s
     image: tommoulard/hits
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.hits.rule: Host(`hits.localhost`)
       traefik.http.services.hits.loadbalancer.server.port: '4000'
     networks:
@@ -322,14 +317,11 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - pg_isready
       - -U
       - postgres
-      timeout: 10s
     image: postgres
     networks:
       hits-internal:
@@ -344,16 +336,13 @@ services:
       hugo-builder:
         condition: service_started
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - curl
       - 0.0.0.0:80
-      timeout: 10s
     image: nginx:stable-alpine
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.hugo.rule: Host(`hugo.localhost`)
       traefik.http.services.hugo.loadbalancer.server.port: '80'
     networks:
@@ -365,11 +354,11 @@ services:
   hugo-builder:
     environment:
       HUGO_BASEURL: https://hugo.localhost/
-      HUGO_REFRESH_TIME: '3600'
+      HUGO_REFRESH_TIME: 3600
       HUGO_THEME: hugo-theme-cactus-plus
     image: jojomi/hugo:0.59
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     restart: always
     volumes:
     - /home/runner/work/make-my-server/make-my-server/hugo/nginx/conf/www:/output:rw
@@ -382,16 +371,13 @@ services:
       PUID: '1000'
       TZ: Europe/Paris
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - curl
       - 0.0.0.0:9117/UI/Login?ReturnUrl=%2FUI%2FDashboard
-      timeout: 10s
     image: linuxserver/jackett:v0.20.567-ls56
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.jackett.middlewares: basic_auth@docker
       traefik.http.routers.jackett.rule: Host(`jackett.localhost`)
       traefik.http.services.jackett.loadbalancer.server.port: '9117'
@@ -404,7 +390,7 @@ services:
   jellyfin:
     image: jellyfin/jellyfin
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.jellyfin.rule: Host(`jellyfin.localhost`)
       traefik.http.services.jellyfin.loadbalancer.server.port: '8096'
     networks:
@@ -417,14 +403,18 @@ services:
     - /home/runner/work/make-my-server/make-my-server/jellyfin/logs:/logs:rw
     - /home/runner/work/make-my-server/make-my-server/jellyfin/media:/media:rw
   jupyter:
-    command: 'jupyter notebook --NotebookApp.token='''' --NotebookApp.password=''''
+    command: 'jupyter notebook
+
+      --NotebookApp.token=''''
+
+      --NotebookApp.password=''''
 
       '
     environment:
       JUPYTER_ENABLE_LAB: "yes"
     image: jupyter/tensorflow-notebook:45f07a14b422
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.jupyter.middlewares: basic_auth@docker
       traefik.http.routers.jupyter.rule: Host(`jupyter.localhost`)
       traefik.http.services.jupyter.loadbalancer.server.port: '8888'
@@ -437,7 +427,7 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:7.1.0
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.kibana.middlewares: basic_auth@docker
       traefik.http.routers.kibana.rule: Host(`kibana.localhost`)
       traefik.http.services.kibana.loadbalancer.server.port: '5601'
@@ -451,7 +441,7 @@ services:
   logstash:
     image: docker.elastic.co/logstash/logstash:7.1.0
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     links:
     - elasticsearch
     restart: always
@@ -460,8 +450,17 @@ services:
     - /home/runner/work/make-my-server/make-my-server/nginx/logs:/var/log/nginx:rw
     - /home/runner/work/make-my-server/make-my-server/traefik/logs:/var/log/traefik:rw
   mastodon:
-    command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p
-      3000"
+    command:
+    - rm
+    - -f
+    - /mastodon/tmp/pids/server.pid
+    - ;
+    - bundle
+    - exec
+    - rails
+    - s
+    - -p
+    - '3000'
     depends_on:
       mastodon-postgres:
         condition: service_started
@@ -500,11 +499,15 @@ services:
       VAPID_PUBLIC_KEY: ''
     healthcheck:
       test:
-      - CMD-SHELL
-      - wget -q --spider --proxy=off localhost:3000/health || exit 1
+      - CMD
+      - wget
+      - -q
+      - --spider
+      - --proxy=off
+      - localhost:3000/health
     image: tootsuite/mastodon
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.mastodon.rule: Host(`mastodon.localhost`)
       traefik.http.services.mastodon.loadbalancer.server.port: '3000'
     networks:
@@ -524,7 +527,7 @@ services:
       - postgres
     image: postgres:9.6-alpine
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     networks:
       mastodon-internal: {}
     restart: always
@@ -539,7 +542,7 @@ services:
       - ping
     image: redis:6.0-alpine
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     networks:
       mastodon-internal: {}
     restart: always
@@ -622,12 +625,15 @@ services:
       VAPID_PUBLIC_KEY: ''
     healthcheck:
       test:
-      - CMD-SHELL
-      - wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit
-        1
+      - CMD
+      - wget
+      - -q
+      - --spider
+      - --proxy=off
+      - localhost:4000/api/v1/streaming/health
     image: tootsuite/mastodon
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.mastodon-streaming.rule: Host(`mastodon-streaming.localhost`)
       traefik.http.services.mastodon-streaming.loadbalancer.server.port: '4000'
     networks:
@@ -636,7 +642,7 @@ services:
     restart: always
   minecraft:
     environment:
-      EULA: "TRUE"
+      EULA: "true"
     image: itzg/minecraft-server
     labels:
       traefik.enable: "false"
@@ -650,7 +656,7 @@ services:
   minecraft-ftb:
     image: jonasbonno/ftb-revelation
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     ports:
     - protocol: udp
       published: 25565
@@ -663,7 +669,7 @@ services:
       MUMBLE_SUPERUSER_PASSWORD: CHANGE_ME
     image: mumblevoip/mumble-server:latest
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     networks:
       srv: {}
     ports:
@@ -678,7 +684,7 @@ services:
   musicbot:
     image: raiponce/musicbot:0.2.10
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     networks:
       srv: {}
     restart: always
@@ -690,13 +696,10 @@ services:
       nextcloud-db:
         condition: service_started
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - curl
       - 0.0.0.0:80
-      timeout: 10s
     image: nextcloud:latest
     labels:
       traefik.enable: "True"
@@ -727,14 +730,11 @@ services:
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_USER: nextcloud
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - mysqlcheck
       - --all-databases
       - -ppass
-      timeout: 10s
     image: mariadb
     labels:
       traefik.enable: "False"
@@ -745,16 +745,13 @@ services:
     - /home/runner/work/make-my-server/make-my-server/nextcloud/db:/var/lib/mysql:rw
   nginx:
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - curl
       - 0.0.0.0:80
-      timeout: 10s
     image: nginx:stable-alpine
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.nginx.rule: Host(`localhost`)
       traefik.http.services.nginx.loadbalancer.server.port: '80'
     networks:
@@ -766,11 +763,15 @@ services:
   node_exporter:
     healthcheck:
       test:
-      - CMD-SHELL
-      - wget -q --spider --proxy=off localhost:9100/metrics || exit 1
+      - CMD
+      - wget
+      - -q
+      - --spider
+      - --proxy=off
+      - localhost:9100/metrics
     image: prom/node-exporter:v1.0.1
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.node_exporter.middlewares: basic_auth@docker
       traefik.http.routers.node_exporter.rule: Host(`node_exporter.localhost`)
       traefik.http.services.node_exporter.loadbalancer.server.port: '9100'
@@ -780,7 +781,7 @@ services:
   pastebin:
     image: mkodockx/docker-pastebin:latest
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.pastebin.rule: Host(`pastebin.localhost`)
       traefik.http.services.pastebin.loadbalancer.server.port: '80'
     networks:
@@ -800,10 +801,10 @@ services:
       PEERTUBE_TRUST_PROXY: '["127.0.0.1", "loopback", "172.0.0.0/0"]'
       PEERTUBE_WEBSERVER_HOSTNAME: peertube.localhost
       PEERTUBE_WEBSERVER_HTTPS: "true"
-      PEERTUBE_WEBSERVER_PORT: '443'
+      PEERTUBE_WEBSERVER_PORT: 443
     image: chocobozzz/peertube:production-buster
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.peertube.rule: Host(`peertube.localhost`)
       traefik.http.services.peertube.loadbalancer.server.port: '9000'
     links:
@@ -821,17 +822,14 @@ services:
       POSTGRES_PASSWORD: ''
       POSTGRES_USER: peertube
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - pg_isready
       - -U
       - peertube
-      timeout: 10s
     image: postgres:10-alpine
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     networks:
       srv: {}
     restart: always
@@ -839,16 +837,13 @@ services:
     - /home/runner/work/make-my-server/make-my-server/peertube/db:/var/lib/postgresql/data:rw
   peertube-redis:
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - redis-cli
       - PING
-      timeout: 10s
     image: redis:4-alpine
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     networks:
       srv: {}
     restart: always
@@ -857,7 +852,7 @@ services:
   portainer:
     image: portainer/portainer
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.portainer.middlewares: basic_auth@docker
       traefik.http.routers.portainer.rule: Host(`portainer.localhost`)
       traefik.http.services.portainer.loadbalancer.server.port: '9000'
@@ -883,11 +878,15 @@ services:
         condition: service_started
     healthcheck:
       test:
-      - CMD-SHELL
-      - wget -q --spider --proxy=off localhost:9090 || exit 1
+      - CMD
+      - wget
+      - -q
+      - --spider
+      - --proxy=off
+      - localhost:9090
     image: prom/prometheus:v2.22.0
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.prometheus.middlewares: basic_auth@docker
       traefik.http.routers.prometheus.rule: Host(`prometheus.localhost`)
       traefik.http.services.prometheus.loadbalancer.server.port: '9090'
@@ -904,7 +903,7 @@ services:
       context: https://github.com/immense/remotely.git#:Server
     image: translucency/remotely:latest
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.remotely.rule: Host(`remotely.localhost`)
       traefik.http.services.remotely.loadbalancer.server.port: '5000'
     networks:
@@ -924,7 +923,7 @@ services:
       ROOT_URL: https://rocketchat.localhost
     image: rocket.chat:latest
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.rocketchat.rule: Host(`rocketchat.localhost`)
       traefik.http.services.rocketchat.loadbalancer.server.port: '3000'
     networks:
@@ -945,42 +944,49 @@ services:
       ROCKETCHAT_USER: bot
     image: rocketchat/hubot-rocketchat:latest
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     restart: unless-stopped
     volumes:
     - /home/runner/work/make-my-server/make-my-server/rocketchat/scripts:/home/hubot/scripts:rw
   rocketchat-mongo:
     command: mongod --smallfiles --oplogSize 128 --replSet rs01
     healthcheck:
-      interval: 10s
-      retries: 5
-      test: 'CMD echo ''db.runCommand("ping").ok'' | mongo localhost:27017/test --quiet
-
-        '
-      timeout: 10s
+      test:
+      - CMD
+      - echo
+      - db.runCommand("ping").ok
+      - '|'
+      - mongo
+      - localhost:27017/test
+      - --quiet
     image: mongo:4.0
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     networks:
       rocketchat-internal: {}
     restart: unless-stopped
     volumes:
     - /home/runner/work/make-my-server/make-my-server/rocketchat/db:/data/db:rw
   rocketchat-mongo-replica:
-    command: 'mongo rocketchat-mongo/rocketchat --eval "rs.initiate({ _id: ''rs01'',
-      members: [ { _id: 0, host: ''rocketchat-mongo:27017'' } ]})"'
+    command: 'mongo rocketchat-mongo/rocketchat --eval
+
+      "rs.initiate({ _id: ''''rs01'''',
+
+      members: [ { _id: 0, host: ''''rocketchat-mongo:27017'''' } ]})"
+
+      '
     depends_on:
       rocketchat-mongo:
         condition: service_started
     image: mongo:4.0
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     networks:
       rocketchat-internal: {}
   runner:
     image: gitlab/gitlab-runner:latest
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     links:
     - gitlab
     restart: always
@@ -995,14 +1001,18 @@ services:
       IMAGE_PROXY: "true"
       LIMITER: "true"
       REDIS_URL: redis://searxng-redis:6379/0
-      SEARXNG_BASE_URL: https://searx.localhost/'
+      SEARXNG_BASE_URL: https://searx.localhost/
     healthcheck:
       test:
-      - CMD-SHELL
-      - wget -q --spider --proxy=off localhost:8080/healthz || exit 1
+      - CMD
+      - wget
+      - -q
+      - --spider
+      - --proxy=off
+      - localhost:8080/healthz
     image: searxng/searxng:latest
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.searxng.rule: Host(`searx.localhost`)
       traefik.http.services.searxng.loadbalancer.server.port: '8080'
     networks:
@@ -1019,7 +1029,7 @@ services:
       - ping
     image: redis:6.0-alpine
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     restart: always
     tmpfs:
     - /var/lib/redis
@@ -1032,7 +1042,7 @@ services:
     environment:
       REDIS_HOST: sharelatex-redis
       SHARELATEX_ADMIN_EMAIL: changeme@changeme.org
-      SHARELATEX_APP_NAME: '''s ShareLaTeX'
+      SHARELATEX_APP_NAME: ' ShareLaTeX'
       SHARELATEX_MONGO_URL: mongodb://sharelatex-mongo/sharelatex
       SHARELATEX_NAV_TITLE: localhost - ShareLaTeX
       SHARELATEX_REDIS_HOST: sharelatex-redis
@@ -1042,7 +1052,7 @@ services:
       - CMD
       - curl
       - 0.0.0.0:80
-    image: sharelatex/sharelatex
+    image: sharelatex/sharelatex:3.5
     labels:
       traefik.enable: "True"
       traefik.http.routers.sharelatex.rule: Host(`sharelatex.localhost`)
@@ -1055,8 +1065,15 @@ services:
     - /home/runner/work/make-my-server/make-my-server/sharelatex/data:/var/lib/sharelatex:rw
   sharelatex-mongo:
     healthcheck:
-      test: CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
-    image: mongo
+      test:
+      - CMD
+      - echo
+      - db.runCommand("ping").ok
+      - '|'
+      - mongo
+      - localhost:27017/test
+      - --quiet
+    image: mongo:4.0
     labels:
       traefik.enable: "False"
     networks:
@@ -1070,7 +1087,7 @@ services:
       - CMD
       - redis-cli
       - ping
-    image: redis
+    image: redis:6.0-alpine
     labels:
       traefik.enable: "False"
     networks:
@@ -1083,9 +1100,9 @@ services:
       PGID: '1000'
       PUID: '1000'
       TZ: Europe/Paris
-    image: linuxserver/sonarr:2.0.0.5337-ls92
+    image: linuxserver/sonarr:4.0.0
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.sonarr.middlewares: basic_auth@docker
       traefik.http.routers.sonarr.rule: Host(`sonarr.localhost`)
       traefik.http.services.sonarr.loadbalancer.server.port: '8080'
@@ -1101,16 +1118,13 @@ services:
     - /home/runner/work/make-my-server/make-my-server/sonarr/tv:/tv:rw
   streama:
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - curl
       - 0.0.0.0:8080/login/auth
-      timeout: 10s
     image: gkiko/streama:v1.8.3
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.streama.rule: Host(`streama.localhost`)
       traefik.http.services.streama.loadbalancer.server.port: '8080'
     networks:
@@ -1124,7 +1138,7 @@ services:
     image: theiaide/theia
     init: true
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.theia.middlewares: basic_auth@docker
       traefik.http.routers.theia.rule: Host(`theia.localhost`)
       traefik.http.services.theia.loadbalancer.server.port: '3000'
@@ -1144,11 +1158,11 @@ services:
       RELAY_BANDWIDTH_BURST: 200 KBytes
       RELAY_BANDWIDTH_RATE: 100 KBytes
       RELAY_NICKNAME: hacktheplanet
-      RELAY_PORT: '9001'
+      RELAY_PORT: 9001
       RELAY_TYPE: middle
     image: jess/tor-relay
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     networks:
       srv: {}
     ports:
@@ -1190,18 +1204,15 @@ services:
     environment:
       TZ: Europe/Paris
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - traefik
       - healthcheck
       - --ping
-      timeout: 10s
     image: traefik:v2.10
     labels:
-      traefik.enable: "true"
-      traefik.http.middlewares.basic_auth.basicauth.removeHeader: "true"
+      traefik.enable: "True"
+      traefik.http.middlewares.basic_auth.basicauth.removeHeader: "True"
       traefik.http.middlewares.basic_auth.basicauth.users: ''
       traefik.http.routers.traefik.middlewares: basic_auth@docker
       traefik.http.routers.traefik.rule: Host(`traefik.localhost`)
@@ -1225,13 +1236,10 @@ services:
       TRANSMISSION_WEB_HOME: /flood-for-transmission/
       TZ: Europe/Paris
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - curl
       - 0.0.0.0:9091/transmission/web/
-      timeout: 10s
     image: linuxserver/transmission:3.00-r5-ls115
     labels:
       traefik.enable: "True"
@@ -1274,7 +1282,7 @@ services:
     environment:
       WATCHTOWER_CLEANUP: "true"
       WATCHTOWER_ROLLING_RESTART: "true"
-      WATCHTOWER_SCHEDULE: '''0 0 2 * * *'''
+      WATCHTOWER_SCHEDULE: 0 0 2 * * *
     image: containrrr/watchtower:latest
     labels:
       traefik.enable: "False"
@@ -1291,16 +1299,13 @@ services:
       WORDPRESS_DB_PASSWORD: ''
       WORDPRESS_DB_USER: wordpress-user
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - curl
       - 0.0.0.0:80
-      timeout: 10s
-    image: wordpress
+    image: wordpress:6.2
     labels:
-      traefik.enable: "true"
+      traefik.enable: "True"
       traefik.http.routers.wordpress.rule: Host(`wordpress.localhost`)
       traefik.http.services.wordpress.loadbalancer.server.port: '80'
     links:
@@ -1314,24 +1319,21 @@ services:
     environment:
       MYSQL_DATABASE: wordpress-db
       MYSQL_PASSWORD: ''
-      MYSQL_RANDOM_ROOT_PASSWORD: ''
+      MYSQL_RANDOM_ROOT_PASSWORD: "true"
       MYSQL_USER: wordpress-user
     healthcheck:
-      interval: 10s
-      retries: 5
       test:
       - CMD
       - mysqladmin
       - ping
       - -uwordpress-user
-      - -p''
+      - -p
       - '|'
       - grep
       - alive
-      timeout: 10s
     image: mysql:5.7
     labels:
-      traefik.enable: "false"
+      traefik.enable: "False"
     networks:
       srv: {}
     restart: always

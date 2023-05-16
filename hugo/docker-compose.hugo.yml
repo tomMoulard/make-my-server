@@ -6,7 +6,7 @@ services:
     depends_on:
       - 'hugo-builder'
     healthcheck:
-      test: 'CMD curl 0.0.0.0:80'
+      test: ['CMD', 'curl', '0.0.0.0:80']
     labels:
       traefik.enable: true
       traefik.http.routers.hugo.rule: 'Host(`hugo.${SITE:-localhost}`)'

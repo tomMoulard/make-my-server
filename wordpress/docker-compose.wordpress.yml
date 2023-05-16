@@ -11,7 +11,7 @@ services:
       WORDPRESS_DB_PASSWORD: '${USERS}'
       WORDPRESS_DB_USER: 'wordpress-user'
     healthcheck:
-      test: 'CMD curl 0.0.0.0:80'
+      test: ['CMD', 'curl', '0.0.0.0:80']
     labels:
       traefik.enable: true
       traefik.http.routers.wordpress.rule: 'Host(`wordpress.${SITE:-localhost}`)'
@@ -29,10 +29,12 @@ services:
     environment:
       MYSQL_DATABASE: 'wordpress-db'
       MYSQL_PASSWORD: '${USERS}'
-      MYSQL_RANDOM_ROOT_PASSWORD: '${USERS}'
+      MYSQL_RANDOM_ROOT_PASSWORD: 'true'
       MYSQL_USER: 'wordpress-user'
     healthcheck:
-      test: 'CMD mysqladmin ping  -uwordpress-user "-p${USERS}" | grep alive'
+      test: ['CMD',
+             'mysqladmin', 'ping', '-uwordpress-user', '-p${USERS}',
+             '|', 'grep', 'alive']
     labels:
       traefik.enable: false
     networks:

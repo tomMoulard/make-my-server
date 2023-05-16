@@ -40,7 +40,7 @@ services:
     environment:
       - 'TZ=${TZ:-Europe/Paris}'
     healthcheck:
-      test: 'CMD traefik healthcheck --ping'
+      test: ['CMD', 'traefik', 'healthcheck', '--ping']
     labels:
       traefik.enable: true
       # Basic Auth Middleware definitions

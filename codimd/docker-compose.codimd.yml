@@ -9,10 +9,11 @@ services:
     depends_on:
       - 'codimd-db'
     environment:
+      # https://hackmd.io/c/codimd-documentation/%2Fs%2Fcodimd-configuration
       CMD_DB_URL: 'postgres://codimd:mypwd@codimd-db/codimd'
-      CMD_USECDN: false
+      CMD_USECDN: 'false'
     healthcheck:
-      test: 'CMD wget 0.0.0.0:3000 | grep 200'
+      test: ['CMD', 'wget', '0.0.0.0:3000']
     labels:
       traefik.enable: true
       traefik.http.routers.codimd.rule: 'Host(`codimd.${SITE:-localhost}`)'
@@ -33,7 +34,7 @@ services:
       POSTGRES_PASSWORD: 'mypwd'
       POSTGRES_USER: 'codimd'
     healthcheck:
-      test: 'CMD pg_isready -U codimd'
+      test: ['CMD', 'pg_isready', '-U', 'codimd']
     labels:
       traefik.enable: false
     networks:

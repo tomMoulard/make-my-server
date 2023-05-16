@@ -6,7 +6,8 @@ networks:
 services:
   mastodon:
     image: 'tootsuite/mastodon'
-    command: 'rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000'
+    command: ['rm', '-f', '/mastodon/tmp/pids/server.pid', ';',
+              'bundle', 'exec', 'rails', 's', '-p', '3000']
     depends_on:
       - 'mastodon-postgres'
       - 'mastodon-redis'
@@ -14,7 +15,8 @@ services:
       - 'mastodon-streaming'
     env_file: './mastodon/.env.production'
     healthcheck:
-      test: 'CMD wget -q --spider --proxy=off localhost:3000/health'
+      test: ['CMD',
+             'wget', '-q', '--spider', '--proxy=off', 'localhost:3000/health']
     labels:
       traefik.enable: true
       traefik.http.routers.mastodon.rule: 'Host(`mastodon.${SITE:-localhost}`)'
@@ -31,7 +33,7 @@ services:
     environment:
       POSTGRES_PASSWORD: 'mastodon-postgres-pass'
     healthcheck:
-      test: 'CMD pg_isready -U postgres'
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
     labels:
       traefik.enable: false
     networks:
@@ -44,7 +46,7 @@ services:
   mastodon-redis:
     image: 'redis:6.0-alpine'
     healthcheck:
-      test: 'CMD redis-cli ping'
+      test: ['CMD', 'redis-cli', 'ping']
     labels:
       traefik.enable: false
     networks:
@@ -75,8 +77,9 @@ services:
       - 'mastodon-redis'
     env_file: './mastodon/.env.production'
     healthcheck:
-      test: |
-        CMD wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health
+      test: ['CMD',
+             'wget', '-q', '--spider', '--proxy=off',
+             'localhost:4000/api/v1/streaming/health']
     labels:
       traefik.enable: true
       traefik.http.routers.mastodon-streaming.rule: 'Host(`mastodon-streaming.${SITE:-localhost}`)'

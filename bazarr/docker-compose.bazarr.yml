@@ -4,8 +4,8 @@ services:
   bazarr:
     image: 'linuxserver/bazarr:${BAZARR_IMAGE_VERSION:-v1.2.2}'
     environment:
-      PGID: 1000
-      PUID: 1000
+      PGID: '${BAZARR_GPID:-1000}'
+      PUID: '${BAZARR_PUID:-1000}'
       TZ: '${TZ:-Europe/Paris}'
     labels:
       traefik.enable: true

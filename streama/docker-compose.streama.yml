@@ -4,7 +4,7 @@ services:
   streama:
     image: 'gkiko/streama:v1.8.3'
     healthcheck:
-      test: 'CMD curl 0.0.0.0:8080/login/auth'
+      test: ['CMD', 'curl', '0.0.0.0:8080/login/auth']
     labels:
       traefik.enable: true
       traefik.http.routers.streama.rule: 'Host(`streama.${SITE:-localhost}`)'

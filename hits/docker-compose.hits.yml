@@ -9,7 +9,7 @@ services:
     depends_on:
       - 'hits-postgresql'
     healthcheck:
-      test: 'CMD curl 0.0.0.0:4000'
+      test: ['CMD', 'curl', '0.0.0.0:4000']
     labels:
       traefik.enable: true
       traefik.http.routers.hits.rule: 'Host(`hits.${SITE:-localhost}`)'
@@ -25,7 +25,7 @@ services:
       POSTGRES_PASSWORD: 'postgres'
       POSTGRES_USER: 'postgres'
     healthcheck:
-      test: 'CMD pg_isready -U postgres'
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
     networks:
       hits-internal:
         aliases:
