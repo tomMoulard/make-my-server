@@ -1,0 +1,50 @@
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+    inputs:
+      sus:
+        description: 'a StartUp Script to run beforehand'
+        required: false
+        type: 'string'
+      service_name:
+        description: 'A service name to check health check uppon'
+        required: true
+        type: 'string'
+      timeout-minutes:
+        description: 'a timeout to waitfor running containers'
+        required: false
+        default: 2
+        type: 'number'
+
+jobs:
+  health-check:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v3'
+      - name: 'Caching'
+        uses: 'actions/cache@v3'
+        with:
+          path: '/var/lib/docker/'
+          key: '${{ runner.os }}-health-${{ github.job }}'
+      - name: 'Setting up job'
+        if: '${{ inputs.sus }}'
+        run: |
+          ${{ inputs.sus }}
+      - name: 'Starting the docker-compose stack'
+        run: |
+          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml up -d
+      - name: 'Waiting for running containers'
+        timeout-minutes: '${{ inputs.timeout-minutes }}'
+        run: |
+          while :; do
+            echo "sleeping for 5s"
+            sleep 5s;
+            docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml ps | grep "starting" || exit 0
+          done
+      - name: 'Check health'
+        run: |
+          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml ps | grep "Up (healthy)"
+      - name: 'Export logs'
+        if: '${{ failure() }}'
+        run: |
+          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml ps
+          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml logs

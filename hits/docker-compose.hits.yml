@@ -1,43 +1,36 @@
 version: '2'
 
 networks:
-  hits-internal:
+  hits-internal: {}
 
 services:
   hits:
-    image: tommoulard/hits
-    networks:
-      - 'srv'
-      - 'hits-internal'
-    restart: always
+    image: 'tommoulard/hits'
     depends_on:
       - 'hits-postgresql'
     healthcheck:
       test: ['CMD', 'curl', '0.0.0.0:4000']
-      interval: 10s
-      timeout: 10s
-      retries: 5
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.hits.rule=Host(`hits.${SITE:-localhost}`)'
-      - 'traefik.http.services.hits.loadbalancer.server.port=4000'
+      traefik.enable: true
+      traefik.http.routers.hits.rule: 'Host(`hits.${SITE:-localhost}`)'
+      traefik.http.services.hits.loadbalancer.server.port: 4000
+    networks:
+      - 'hits-internal'
+      - 'srv'
+    restart: 'always'
 
   hits-postgresql:
-    image: postgres
-    restart: always
-    user: 1000:1000
+    image: 'postgres'
+    environment:
+      POSTGRES_PASSWORD: 'postgres'
+      POSTGRES_USER: 'postgres'
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
     networks:
       hits-internal:
         aliases:
           - 'postgresql'
-    environment:
-      - 'POSTGRES_USER=postgres'
-      - 'POSTGRES_PASSWORD=postgres'
-    healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'postgres']
-      interval: 10s
-      timeout: 10s
-      retries: 5
+    restart: 'always'
+    user: '1000:1000'
     volumes:
       - './hits/postgresql/:/var/lib/postgresql/data'
-

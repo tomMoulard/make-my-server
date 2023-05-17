@@ -1,29 +1,30 @@
 version: '2'
 
 # See https://blog.jessfraz.com/post/running-a-tor-relay-with-docker/
-# Checkou logs and https://atlas.torproject.org/ for annalytics
+# Checkout logs and https://atlas.torproject.org/ for annalytics
 
 services:
   tor-relay:
-    image: jess/tor-relay
-    build: https://github.com/jessfraz/dockerfiles.git#:tor-relay
+    image: 'jess/tor-relay'
+    build: 'https://github.com/jessfraz/dockerfiles.git#:tor-relay'
     environment:
-      # see https://github.com/jessfraz/dockerfiles/tree/master/tor-relay for further information about the values
-      - 'RELAY_TYPE=${TOR_RELAY_TYPE:-middle}' # possible values are bridge, middle, or exit
-      - 'RELAY_NICKNAME=${TOR_RELAY_NICKNAME:-hacktheplanet}'
-      - 'CONTACT_GPG_FINGERPRINT=${TOR_CONTACT_GPG_FINGERPRINT:-}'
-      - 'CONTACT_NAME=${USERNAME}'
-      - 'CONTACT_EMAIL=${ROOT_EMAIL:-changeme@changeme.org}'
-      - 'RELAY_BANDWIDTH_RATE=${TOR_RELAY_BANDWIDTH_RATE:-100 KBytes}'
-      - 'RELAY_BANDWIDTH_BURST=${TOR_RELAY_BANDWIDTH_BURST:-200 KBytes}'
-      - 'RELAY_PORT=9001'
-    volumes:
-      - '/etc/localtime:/etc/localtime'
-      - './tor-relay/keys:/var/lib/tor/.tor/keys/'
+      # see https://github.com/jessfraz/dockerfiles/tree/master/tor-relay for
+      # further information about the values
+      CONTACT_EMAIL: '${ROOT_EMAIL:-changeme@changeme.org}'
+      CONTACT_GPG_FINGERPRINT: '${TOR_CONTACT_GPG_FINGERPRINT:-}'
+      CONTACT_NAME: '${USERNAME}'
+      RELAY_BANDWIDTH_BURST: '${TOR_RELAY_BANDWIDTH_BURST:-200 KBytes}'
+      RELAY_BANDWIDTH_RATE: '${TOR_RELAY_BANDWIDTH_RATE:-100 KBytes}'
+      RELAY_NICKNAME: '${TOR_RELAY_NICKNAME:-hacktheplanet}'
+      RELAY_PORT: 9001
+      RELAY_TYPE: '${TOR_RELAY_TYPE:-middle}' # bridge, middle, or exit
+    labels:
+      traefik.enable: false
     networks:
       - 'srv'
     ports:
-        - '9001:9001'
-    restart: always
-    labels:
-      - 'traefik.enable=false'
+      - '9001:9001'
+    restart: 'always'
+    volumes:
+      - './tor-relay/keys:/var/lib/tor/.tor/keys/'
+      - '/etc/localtime:/etc/localtime'

@@ -2,13 +2,14 @@ version: '2'
 
 services:
   watchtower:
-    image: containrrr/watchtower:${WATCHTOWER_IMAGE_VERSION:-latest}
+    image: 'containrrr/watchtower:${WATCHTOWER_IMAGE_VERSION:-latest}'
     environment:
-      WATCHTOWER_CLEANUP: ${WATCHTOWER_CLEANUP:-true}
-      WATCHTOWER_ROLLING_RESTART: ${WATCHTOWER_ROLLING_RESTART:-true}
-      WATCHTOWER_SCHEDULE: ${WATCHTOWER_SCHEDULE:-'0 0 2 * * *'} # run at 2am everyday
-    restart: always
+      WATCHTOWER_CLEANUP: '${WATCHTOWER_CLEANUP:-true}'
+      WATCHTOWER_ROLLING_RESTART: '${WATCHTOWER_ROLLING_RESTART:-true}'
+      # run at 2am everyday
+      WATCHTOWER_SCHEDULE: '${WATCHTOWER_SCHEDULE:-0 0 2 * * *}'
     labels:
       traefik.enable: false
+    restart: 'always'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'

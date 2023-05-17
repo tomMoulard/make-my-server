@@ -1,65 +1,59 @@
 version: '2'
 
 networks:
-  nextcloud-internal:
+  nextcloud-internal: {}
 
 services:
   nextcloud:
-    image: nextcloud:${NEXTCLOUD_IMAGE_VERSION:-latest}
-    volumes:
-      - './nextcloud/data:/var/www/html'
-    networks:
-      - srv
-      - nextcloud-internal
-    restart: always
+    image: 'nextcloud:${NEXTCLOUD_IMAGE_VERSION:-latest}'
     depends_on:
-      - nextcloud-db
+      - 'nextcloud-db'
     healthcheck:
       test: ['CMD', 'curl', '0.0.0.0:80']
-      interval: 10s
-      timeout: 10s
-      retries: 5
     labels:
       traefik.enable: true
-      traefik.http.routers.nextcloud.rule: Host(`nextcloud.${SITE:-localhost}`)
-      traefik.http.services.nextcloud.loadbalancer.server.port: 80
 
       # https://docs.nextcloud.com/server/22/admin_manual/installation/harden_server.html
       # https://doc.traefik.io/traefik/v2.6/middlewares/http/headers/
+      traefik.http.middlewares.header-nextcloud.headers.browserXssFilter: true
+      traefik.http.middlewares.header-nextcloud.headers.contentTypeNosniff: true
+      traefik.http.middlewares.header-nextcloud.headers.customFrameOptionsValue: 'SAMEORIGIN'
+      traefik.http.middlewares.header-nextcloud.headers.referrerPolicy: 'no-referrer'
       traefik.http.middlewares.header-nextcloud.headers.stsincludesubdomains: true
       traefik.http.middlewares.header-nextcloud.headers.stspreload: true
       traefik.http.middlewares.header-nextcloud.headers.stsseconds: 15552000
-      traefik.http.middlewares.header-nextcloud.headers.customFrameOptionsValue: SAMEORIGIN
-      traefik.http.middlewares.header-nextcloud.headers.browserXssFilter: true
-      traefik.http.middlewares.header-nextcloud.headers.contentTypeNosniff: true
-      traefik.http.middlewares.header-nextcloud.headers.referrerPolicy: no-referrer
 
       # https://docs.nextcloud.com/server/21/admin_manual/issues/general_troubleshooting.html#service-discovery
       # https://docs.nextcloud.com/server/23/admin_manual/configuration_server/reverse_proxy_configuration.html#traefik-2
       # https://doc.traefik.io/traefik/v2.6/middlewares/http/redirectregex/
       traefik.http.middlewares.redirect-dav-nextcloud.redirectRegex.permanent: true
-      traefik.http.middlewares.redirect-dav-nextcloud.redirectRegex.regex: https://nextcloud.${SITE:-localhost}/.well-known/(card|cal)dav
-      traefik.http.middlewares.redirect-dav-nextcloud.redirectRegex.replacement: https://nextcloud.${SITE:-localhost}/remote.php/dav/
+      traefik.http.middlewares.redirect-dav-nextcloud.redirectRegex.regex: 'https://nextcloud.${SITE:-localhost}/.well-known/(card|cal)dav'
+      traefik.http.middlewares.redirect-dav-nextcloud.redirectRegex.replacement: 'https://nextcloud.${SITE:-localhost}/remote.php/dav/'
 
-      traefik.http.routers.nextcloud.middlewares: header-nextcloud,redirect-dav-nextcloud
+      traefik.http.routers.nextcloud.middlewares: 'header-nextcloud,redirect-dav-nextcloud'
+      traefik.http.routers.nextcloud.rule: 'Host(`nextcloud.${SITE:-localhost}`)'
+      traefik.http.services.nextcloud.loadbalancer.server.port: 80
+    networks:
+      - 'srv'
+      - 'nextcloud-internal'
+    restart: 'always'
+    volumes:
+      - './nextcloud/data:/var/www/html'
 
   nextcloud-db:
-    image: mariadb
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-    volumes:
-      - './nextcloud/db:/var/lib/mysql'
-    networks:
-      - nextcloud-internal
+    image: 'mariadb'
+    command: '--transaction-isolation=READ-COMMITTED --binlog-format=ROW'
     environment:
-      MYSQL_ROOT_PASSWORD: ${NEXTCLOUD_MYSQL_ROOT_PASSWORD:-pass}
-      MYSQL_PASSWORD: ${NEXTCLOUD_MYSQL_PASSWORD:-nextcloud}
-      MYSQL_DATABASE: ${NEXTCLOUD_MYSQL_DATABASE:-nextcloud}
-      MYSQL_USER: ${NEXTCLOUD_MYSQL_USER:-nextcloud}
-    restart: always
+      MYSQL_DATABASE: '${NEXTCLOUD_MYSQL_DATABASE:-nextcloud}'
+      MYSQL_PASSWORD: '${NEXTCLOUD_MYSQL_PASSWORD:-nextcloud}'
+      MYSQL_ROOT_PASSWORD: '${NEXTCLOUD_MYSQL_ROOT_PASSWORD:-pass}'
+      MYSQL_USER: '${NEXTCLOUD_MYSQL_USER:-nextcloud}'
     healthcheck:
       test: ['CMD', 'mysqlcheck', '--all-databases', '-ppass']
-      interval: 10s
-      timeout: 10s
-      retries: 5
     labels:
       traefik.enable: false
+    networks:
+      - 'nextcloud-internal'
+    restart: 'always'
+    volumes:
+      - './nextcloud/db:/var/lib/mysql'

@@ -2,16 +2,16 @@ version: '2'
 
 services:
   mumble:
-    image: mumblevoip/mumble-server:${MUMBLE_IMAGE_VERSION:-latest}
+    image: 'mumblevoip/mumble-server:${MUMBLE_IMAGE_VERSION:-latest}'
     environment:
-      - 'MUMBLE_SUPERUSER_PASSWORD=${MUMBLE_SUPERUSER_PASSWORD:-CHANGE_ME}'
-    volumes:
-      - './mumble/data:/data'
+      MUMBLE_SUPERUSER_PASSWORD: '${MUMBLE_SUPERUSER_PASSWORD:-CHANGE_ME}'
+    labels:
+      traefik.enable: false
     networks:
       - 'srv'
     ports:
       - '64738:64738'
       - '64738:64738/udp'
-    restart: always
-    labels:
-      - 'traefik.enable=false'
+    restart: 'always'
+    volumes:
+      - './mumble/data:/data'

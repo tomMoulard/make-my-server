@@ -1,56 +1,57 @@
 version: '2'
 
 networks:
-  sharelatex-internal:
+  sharelatex-internal: {}
 
 services:
   sharelatex:
-    image: sharelatex/sharelatex
+    image: 'sharelatex/sharelatex:${SHARELATEX_IMAGE_VERSION:-3.5}'
     depends_on:
-      - sharelatex-mongo
-      - sharelatex-redis
+      - 'sharelatex-mongo'
+      - 'sharelatex-redis'
+    environment:
+      REDIS_HOST: 'sharelatex-redis'
+      SHARELATEX_ADMIN_EMAIL: '${ROOT_EMAIL:-changeme@changeme.org}'
+      SHARELATEX_APP_NAME: '${USERNAME} ShareLaTeX'
+      # SHARELATEX_HEADER_IMAGE_URL: 'http://somewhere.com/mylogo.png'
+      SHARELATEX_MONGO_URL: 'mongodb://sharelatex-mongo/sharelatex'
+      SHARELATEX_NAV_TITLE: '${SITE:-localhost} - ShareLaTeX'
+      SHARELATEX_REDIS_HOST: 'sharelatex-redis'
+      SHARELATEX_SITE_URL: 'https://latex.${SITE:-localhost}'
     healthcheck:
       test: ['CMD', 'curl', '0.0.0.0:80']
-    volumes:
-      - ./sharelatex/data:/var/lib/sharelatex
-    networks:
-      - srv
-      - sharelatex-internal
-    restart: always
     labels:
       traefik.enable: true
-      traefik.http.routers.sharelatex.rule: Host(`sharelatex.${SITE:-localhost}`)
+      traefik.http.routers.sharelatex.rule: 'Host(`sharelatex.${SITE:-localhost}`)'
       traefik.http.services.sharelatex.loadbalancer.server.port: 80
-    environment:
-      SHARELATEX_MONGO_URL: mongodb://sharelatex-mongo/sharelatex
-      SHARELATEX_REDIS_HOST: sharelatex-redis
-      REDIS_HOST: sharelatex-redis
-      SHARELATEX_APP_NAME: ${USERNAME}'s ShareLaTeX
-      SHARELATEX_NAV_TITLE: ${SITE:-localhost} - ShareLaTeX
-      SHARELATEX_SITE_URL: https://latex.${SITE:-localhost}
-      # SHARELATEX_HEADER_IMAGE_URL: http://somewhere.com/mylogo.png
-      SHARELATEX_ADMIN_EMAIL: ${ROOT_EMAIL:-changeme@changeme.org}
+    networks:
+      - 'sharelatex-internal'
+      - 'srv'
+    restart: 'always'
+    volumes:
+      - './sharelatex/data:/var/lib/sharelatex'
 
   sharelatex-mongo:
-    restart: always
-    image: mongo
-    networks:
-      - sharelatex-internal
+    image: 'mongo:4.0'
     healthcheck:
-      test: CMD echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
-    volumes:
-      - ./sharelatex/mongo:/data/db
+      test: ['CMD', 'echo', 'db.runCommand("ping").ok',
+             '|', 'mongo', 'localhost:27017/test', '--quiet']
     labels:
       traefik.enable: false
+    networks:
+      - 'sharelatex-internal'
+    restart: 'always'
+    volumes:
+      - './sharelatex/mongo:/data/db'
 
   sharelatex-redis:
-    restart: always
-    image: redis
-    networks:
-      - sharelatex-internal
+    image: 'redis:6.0-alpine'
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-    volumes:
-      - ./sharelatex/redis:/data
+      test: ['CMD', 'redis-cli', 'ping']
     labels:
       traefik.enable: false
+    networks:
+      - 'sharelatex-internal'
+    restart: 'always'
+    volumes:
+      - './sharelatex/redis:/data'

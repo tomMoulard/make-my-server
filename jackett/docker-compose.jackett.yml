@@ -2,26 +2,23 @@ version: '2'
 
 services:
   jackett:
-    image: linuxserver/jackett:${JACKETT_IMAGE_VERSION:-v0.20.567-ls56}
-    environment:
-      PUID: ${JACKETT_PUID:-1000}
-      PGID: ${JACKETT_GPID:-1000}
-      TZ: ${TZ:-Europe/Paris}
-    volumes:
-      - ./jackett/config:/config
-      - ./jackett/downloads:/downloads
+    image: 'linuxserver/jackett:${JACKETT_IMAGE_VERSION:-v0.20.567-ls56}'
     dns:
-      - 1.1.1.1
-    networks:
-      - 'srv'
-    restart: always
+      - '1.1.1.1'
+    environment:
+      PGID: '${JACKETT_GPID:-1000}'
+      PUID: '${JACKETT_PUID:-1000}'
+      TZ: '${TZ:-Europe/Paris}'
     healthcheck:
       test: ['CMD', 'curl', '0.0.0.0:9117/UI/Login?ReturnUrl=%2FUI%2FDashboard']
-      interval: 10s
-      timeout: 10s
-      retries: 5
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.jackett.rule=Host(`jackett.${SITE:-localhost}`)'
-      - 'traefik.http.services.jackett.loadbalancer.server.port=9117'
-      - 'traefik.http.routers.jackett.middlewares=basic_auth@docker'
+      traefik.enable: true
+      traefik.http.routers.jackett.middlewares: 'basic_auth@docker'
+      traefik.http.routers.jackett.rule: 'Host(`jackett.${SITE:-localhost}`)'
+      traefik.http.services.jackett.loadbalancer.server.port: 9117
+    networks:
+      - 'srv'
+    restart: 'always'
+    volumes:
+      - './jackett/config:/config'
+      - './jackett/downloads:/downloads'

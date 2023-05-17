@@ -2,33 +2,33 @@ version: '2'
 
 services:
   gitlab:
-    image: 'gitlab/gitlab-ce:latest'
-    restart: always
-    hostname: 'gitlab.${SITE:-localhost}'
+    image: 'gitlab/gitlab-ce:${GITLAB_IMAGE_VERSION:-latest}'
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://gitlab.${SITE:-localhost}:80'
         gitlab_rails['gitlab_shell_ssh_port'] = 2224
-    ports:
-      - '2224:22'
-    volumes:
-      - './gitlab/config:/etc/gitlab'
-      - './gitlab/logs:/var/log/gitlab'
-      - './gitlab/data:/var/opt/gitlab'
+    hostname: 'gitlab.${SITE:-localhost}'
+    labels:
+      traefik.enable: true
+      traefik.http.routers.gitlab.rule: 'Host(`gitlab.${SITE:-localhost}`)'
+      traefik.http.services.gitlab.loadbalancer.server.port: 80
     networks:
       - 'srv'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.gitlab.rule=Host(`gitlab.${SITE:-localhost}`)'
-      - 'traefik.http.services.gitlab.loadbalancer.server.port=80'
+    ports:
+      - '2224:22'
+    restart: 'always'
+    volumes:
+      - './gitlab/config:/etc/gitlab'
+      - './gitlab/data:/var/opt/gitlab'
+      - './gitlab/logs:/var/log/gitlab'
 
   runner:
-    image: gitlab/gitlab-runner:latest
-    restart: always
+    image: 'gitlab/gitlab-runner:${GITLAB_RUNNER_IMAGE_VERSION:-latest}'
+    labels:
+      traefik.enable: false
+    links:
+      - 'gitlab'
+    restart: 'always'
     volumes:
       - './gitlab/runner:/etc/gitlab-runner'
       - '/var/run/docker.sock:/var/run/docker.sock'
-    links:
-      - gitlab
-    labels:
-      - 'traefik.enable=false'

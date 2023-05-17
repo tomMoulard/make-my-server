@@ -2,47 +2,43 @@ version: '2'
 
 services:
   wordpress:
-    image: wordpress
-    environment:
-      - WORDPRESS_DB_HOST=wordpress-db
-      - WORDPRESS_DB_USER=wordpress-user
-      - WORDPRESS_DB_PASSWORD=${USERS}
-      - WORDPRESS_DB_NAME=wordpress-db
-    volumes:
-      - ./wordpress/wordpress:/var/www/html
+    image: 'wordpress:${WORDPRESS_IMAGE_VERSION:-6.2}'
     depends_on:
-      - wordpress-db
-    links:
-      - wordpress-db
-    networks:
-      - 'srv'
-    restart: always
+      - 'wordpress-db'
+    environment:
+      WORDPRESS_DB_HOST: 'wordpress-db'
+      WORDPRESS_DB_NAME: 'wordpress-db'
+      WORDPRESS_DB_PASSWORD: '${USERS}'
+      WORDPRESS_DB_USER: 'wordpress-user'
     healthcheck:
       test: ['CMD', 'curl', '0.0.0.0:80']
-      interval: 10s
-      timeout: 10s
-      retries: 5
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.wordpress.rule=Host(`wordpress.${SITE:-localhost}`)'
-      - 'traefik.http.services.wordpress.loadbalancer.server.port=80'
-
-  wordpress-db:
-    image: mysql:5.7
-    environment:
-      - MYSQL_DATABASE=wordpress-db
-      - MYSQL_USER=wordpress-user
-      - MYSQL_PASSWORD=${USERS}
-      - MYSQL_RANDOM_ROOT_PASSWORD=${USERS}
-    volumes:
-      - ./wordpress/db:/var/lib/mysql
+      traefik.enable: true
+      traefik.http.routers.wordpress.rule: 'Host(`wordpress.${SITE:-localhost}`)'
+      traefik.http.services.wordpress.loadbalancer.server.port: 80
+    links:
+      - 'wordpress-db'
     networks:
       - 'srv'
-    restart: always
+    restart: 'always'
+    volumes:
+      - './wordpress/wordpress:/var/www/html'
+
+  wordpress-db:
+    image: 'mysql:5.7'
+    environment:
+      MYSQL_DATABASE: 'wordpress-db'
+      MYSQL_PASSWORD: '${USERS}'
+      MYSQL_RANDOM_ROOT_PASSWORD: 'true'
+      MYSQL_USER: 'wordpress-user'
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping' , '-uwordpress-user', "-p'${USERS}'", '|', 'grep', 'alive']
-      interval: 10s
-      timeout: 10s
-      retries: 5
+      test: ['CMD',
+             'mysqladmin', 'ping', '-uwordpress-user', '-p${USERS}',
+             '|', 'grep', 'alive']
     labels:
-      - 'traefik.enable=false'
+      traefik.enable: false
+    networks:
+      - 'srv'
+    restart: 'always'
+    volumes:
+      - './wordpress/db:/var/lib/mysql'

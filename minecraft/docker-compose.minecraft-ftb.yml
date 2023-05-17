@@ -2,11 +2,11 @@ version: '2'
 
 services:
   minecraft-ftb:
-    image: jonasbonno/ftb-revelation
+    image: 'jonasbonno/ftb-revelation'
+    labels:
+      traefik.enable: false
     ports:
       - '25565:25565/udp'
+    restart: 'always'
     volumes:
       - './minecraft/ftb-data:/minecraft'
-    restart: always
-    labels:
-      - 'traefik.enable=false'

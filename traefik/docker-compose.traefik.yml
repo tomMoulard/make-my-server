@@ -2,7 +2,7 @@ version: '2'
 
 services:
   traefik:
-    image: traefik:${TRAEFIK_IMAGE_VERSION:-v2.10}
+    image: 'traefik:${TRAEFIK_IMAGE_VERSION:-v2.10}'
     command:
       # Provider
       - '--providers.docker'
@@ -37,27 +37,25 @@ services:
       - '--ping'
       - '--providers.file.directory=/dynamic_conf/'
       - '--providers.file.watch=true'
+    environment:
+      - 'TZ=${TZ:-Europe/Paris}'
+    healthcheck:
+      test: ['CMD', 'traefik', 'healthcheck', '--ping']
+    labels:
+      traefik.enable: true
+      # Basic Auth Middleware definitions
+      traefik.http.middlewares.basic_auth.basicauth.removeHeader: true
+      traefik.http.middlewares.basic_auth.basicauth.users: '${USERS}'
+      traefik.http.routers.traefik.middlewares: 'basic_auth@docker'
+
+      traefik.http.routers.traefik.rule: 'Host(`traefik.${SITE:-localhost}`)'
+      traefik.http.routers.traefik.service: 'api@internal'
+    networks:
+      - 'srv'
     ports:
       - '${TRAEFIK_WEB_ENTRYPOINT:-80}:${TRAEFIK_WEB_ENTRYPOINT:-80}'
       - '${TRAEFIK_WEBSECURE_ENTRYPOINT:-443}:${TRAEFIK_WEBSECURE_ENTRYPOINT:-443}'
-    networks:
-      - 'srv'
-    environment:
-      - TZ=${TZ:-Europe/Paris}
-    restart: always
-    healthcheck:
-      test: ['CMD', 'traefik', 'healthcheck', '--ping']
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.traefik.rule=Host(`traefik.${SITE:-localhost}`)'
-      - 'traefik.http.routers.traefik.service=api@internal'
-      - 'traefik.http.routers.traefik.middlewares=basic_auth@docker'
-      # Middleware definitions
-      - 'traefik.http.middlewares.basic_auth.basicauth.users=${USERS}'
-      - 'traefik.http.middlewares.basic_auth.basicauth.removeHeader=true'
+    restart: 'always'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './traefik/logs:/logs'

@@ -1,49 +1,44 @@
 version: '2'
 
 networks:
-    codi-internal:
+  codi-internal: {}
 
 services:
   codimd:
-    image: nabo.codimd.dev/hackmdio/hackmd:2.2.0
-    environment:
-      - 'CMD_DB_URL=postgres://codimd:mypwd@codimd-db/codimd'
-      - 'CMD_USECDN=false'
+    image: 'hackmdio/hackmd:${CODIMD_IMAGE_VERSION:-2.4.2-cjk}'
     depends_on:
-      - codimd-db
+      - 'codimd-db'
+    environment:
+      # https://hackmd.io/c/codimd-documentation/%2Fs%2Fcodimd-configuration
+      CMD_DB_URL: 'postgres://codimd:mypwd@codimd-db/codimd'
+      CMD_USECDN: 'false'
+    healthcheck:
+      test: ['CMD', 'wget', '0.0.0.0:3000']
+    labels:
+      traefik.enable: true
+      traefik.http.routers.codimd.rule: 'Host(`codimd.${SITE:-localhost}`)'
+      traefik.http.services.codimd.loadbalancer.server.port: 3000
     links:
-      - codimd-db
+      - 'codimd-db'
+    networks:
+      - 'codi-internal'
+      - 'srv'
+    restart: 'always'
     volumes:
       - './codimd/data:/home/hackmd/app/public/uploads'
-    networks:
-      - 'srv'
-      - 'codi-internal'
-    restart: always
-    healthcheck:
-      test: ['CMD', 'wget', '0.0.0.0:3000', '|', 'grep', '200']
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.codimd.rule=Host(`codimd.${SITE:-localhost}`)'
-      - 'traefik.http.services.codimd.loadbalancer.server.port=3000'
 
   codimd-db:
-    image: postgres:11.6-alpine
+    image: 'postgres:11.6-alpine'
     environment:
-      - POSTGRES_USER=codimd
-      - POSTGRES_PASSWORD=mypwd
-      - POSTGRES_DB=codimd
-    volumes:
-      - './codimd/db:/var/lib/postgresql/data'
-    networks:
-      - 'codi-internal'
-    restart: always
+      POSTGRES_DB: 'codimd'
+      POSTGRES_PASSWORD: 'mypwd'
+      POSTGRES_USER: 'codimd'
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'codimd']
-      interval: 10s
-      timeout: 10s
-      retries: 5
     labels:
-      - 'traefik.enable=false'
+      traefik.enable: false
+    networks:
+      - 'codi-internal'
+    restart: 'always'
+    volumes:
+      - './codimd/db:/var/lib/postgresql/data'
