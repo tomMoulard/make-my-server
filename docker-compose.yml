@@ -1,4 +1,42 @@
 version: '2'
 
-networks:
-  srv: {}
+include:
+  - arachni/docker-compose.arachni.yml
+  - bazarr/docker-compose.bazarr.yml
+  - bitwarden/docker-compose.bitwarden.yml
+  - ciao/docker-compose.ciao.yml
+  - codimd/docker-compose.codimd.yml
+  - elk/docker-compose.elk.yml
+  - factorio/docker-compose.factorio.yml
+  - framadate/docker-compose.framadate.yml
+  - gitlab/docker-compose.gitlab.yml
+  - grafana/docker-compose.grafana.yml
+  - hits/docker-compose.hits.yml
+  - hugo/docker-compose.hugo.yml
+  - jackett/docker-compose.jackett.yml
+  - jellyfin/docker-compose.jellyfin.yml
+  - jupyter/docker-compose.jupyter.yml
+  - mastodon/docker-compose.mastodon.yml
+  - minecraft/docker-compose.minecraft-ftb.yml
+  - minecraft/docker-compose.minecraft.yml
+  - mumble/docker-compose.mumble.yml
+  - musicbot/docker-compose.musicBot.yml
+  - nextcloud/docker-compose.nextcloud.yml
+  - nginx/docker-compose.nginx.yml
+  - pastebin/docker-compose.pastebin.yml
+  - peertube/docker-compose.peertube.yml
+  - portainer/docker-compose.portainer.yml
+  - remotely/docker-compose.remotely.yml
+  - rocketchat/docker-compose.rocket-chat.yml
+  - searxng/docker-compose.searxng.yml
+  - sharelatex/docker-compose.sharelatex.yml
+  - sonarr/docker-compose.sonarr.yml
+  - streama/docker-compose.streama.yml
+  - theia/docker-compose.theia.yml
+  - tor-relay/docker-compose.tor-relay.yml
+  - traefik/docker-compose.traefik.yml
+  - transmission/docker-compose.transmission.yml
+  - vpn/docker-compose.vpn.yml
+  - watchtower/docker-compose.watchtower.yml
+  - wordpress/docker-compose.wordpress.yml
+  - docker-compose.networks.yml
