@@ -12,4 +12,4 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './remotely/remotely-data:/remotely-data'
+      - './remotely-data:/remotely-data'

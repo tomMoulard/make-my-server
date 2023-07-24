@@ -10,6 +10,9 @@ jobs:
   Config-test:
     runs-on: 'ubuntu-latest'
     steps:
+      - uses: 'KengoTODA/actions-setup-docker-compose@v1'
+        with:
+          version: '2.20.2'
       - uses: 'actions/checkout@v3'
       - name: 'DEBUG'
         run: 'docker version && docker compose version'
@@ -23,63 +26,63 @@ jobs:
             log.log
             *.patch
   Health-checks-codimd:
-    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
     with:
       service_name: 'codimd'
       timeout-minutes: 5
 # Health-checks-grafana:
-#   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+#   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
 #   with:
 #     sus: 'mkdir -p ./grafana/grafana/ ./grafana/prometheus/data/'
 #     service_name: 'grafana'
 # Health-checks-hits:
-#   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+#   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
 #   with:
 #     sus: 'mkdir -p ./hits/postgresql/data'
 #     service_name: 'hits'
 # Health-checks-hugo:
-#   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+#   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
 #   with:
 #     service_name: 'hugo'
   Health-checks-jackett:
-    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
     with:
       service_name: 'jackett'
 # Health-checks-mastodon:
-#   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+#   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
 #   with:
 #     service_name: 'mastodon'
   Health-checks-nextcloud:
-    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
     with:
       service_name: 'nextcloud'
   Health-checks-nginx:
-    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
     with:
       service_name: 'nginx'
   Health-checks-searxng:
-    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
     with:
       service_name: 'searxng'
   Health-checks-sharelatex:
-    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
     with:
       service_name: 'sharelatex'
   Health-checks-streama:
-    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
     with:
       sus: 'touch streama/streama.mv.db streama/streama.trace.db'
       service_name: 'streama'
   Health-checks-traefik:
-    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
     with:
       service_name: 'traefik'
   Health-checks-transmission:
-    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
     with:
       service_name: 'transmission'
   Health-checks-wordpress:
-    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@feat/compose-v2.20'
     with:
       service_name: 'wordpress'
   Lint:

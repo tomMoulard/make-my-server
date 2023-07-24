@@ -38,7 +38,7 @@ services:
       - 'nextcloud-internal'
     restart: 'always'
     volumes:
-      - './nextcloud/data:/var/www/html'
+      - './data:/var/www/html'
 
   nextcloud-db:
     image: 'mariadb'
@@ -56,4 +56,4 @@ services:
       - 'nextcloud-internal'
     restart: 'always'
     volumes:
-      - './nextcloud/db:/var/lib/mysql'
+      - './db:/var/lib/mysql'

@@ -48,4 +48,4 @@ services:
       - 'framadate-internal'
     restart: 'always'
     volumes:
-      - './framadate/db:/var/lib/mysql'
+      - './db:/var/lib/mysql'

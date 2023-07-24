@@ -1,17 +1,25 @@
 # Server configuration
-[![Docker](https://github.com/tomMoulard/make-my-server/workflows/Docker/badge.svg)](https://github.com/tomMoulard/make-my-server/actions)
 [![Discord](https://img.shields.io/discord/861623516142501898)](https://discord.gg/zQV6m9Jk6Z)
 
+Your (my) own server configuration, managed by docker-compose, with
+comprehensive default configuration.
+
 ## Setup
+IF you are using [docker compose version <2.20](https://docs.docker.com/compose/multiple-compose-files/include/),
+you need to use the following bash command to use this project:
 ```bash
 docker-compose ()
 {
-    docker-compose $(find -name 'docker-compose*.yml' -type f -printf '%p\t%d\n'  2>/dev/null | sort -n -k2 | cut -f 1 | awk '{print "-f "$0}') $@
+    docker-compose $(find -name 'docker-compose.*.yml' -type f -printf '%p\t%d\n'  2>/dev/null | sort -n -k2 | cut -f 1 | awk '{print "-f "$0}') $@
 }
+```
+
+### Run
+```bash
 SITE=tom.moulard.org docker-compose up -d
 ```
 
-Now you have my own server configuration.
+Now you have your own server configuration.
 
 To be a little more consistent with the management, you can use a `.env` file
 and do:
@@ -19,7 +27,7 @@ and do:
 cp .env.default .env
 ```
 
-And edit the file to use the correct site URL.
+And edit the `.env` file to use the correct configuration.
 
 The `docker-compose` function gather all docker-compose files in order to have
 the whole configuration in one place (see `docker-compose config`).

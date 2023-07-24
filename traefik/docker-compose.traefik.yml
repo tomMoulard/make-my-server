@@ -58,5 +58,5 @@ services:
     restart: 'always'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
-      - './traefik/logs:/logs'
-      - './traefik/dynamic_conf:/dynamic_conf'
+      - './logs:/logs'
+      - './dynamic_conf:/dynamic_conf'

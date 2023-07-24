@@ -8,11 +8,6 @@ GREEN="\e[32m"
 RED="\e[31m"
 WHITE="\e[0m"
 
-dc ()
-{
-    docker-compose $(find -name 'docker-compose*.yml' -type f -printf '%p\t%d\n'  2>/dev/null | sort -n -k2 | cut -f 1 | awk '{print "-f "$0}') $@
-}
-
 test ()
 {
     tmp=$({ $@ 2>&1; echo $? > /tmp/PIPESTATUS; } | tee $log_file)
@@ -26,11 +21,11 @@ test ()
     echo -e "[${GREEN}V${WHITE}] " "$@"
 }
 
-test dc config -q
+test docker-compose config -q
 
 # testing docker-compose.yml files
 file=$(mktemp)
-dc config > "$file" 2>$log_file
+docker-compose config > "$file" 2>$log_file
 test diff test_config.yml "$file"
 mv "$file" test_config.yml
 

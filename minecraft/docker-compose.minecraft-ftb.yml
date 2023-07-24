@@ -9,4 +9,4 @@ services:
       - '25565:25565/udp'
     restart: 'always'
     volumes:
-      - './minecraft/ftb-data:/minecraft'
+      - './ftb-data:/minecraft'

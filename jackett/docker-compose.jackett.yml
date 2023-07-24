@@ -20,5 +20,5 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './jackett/config:/config'
-      - './jackett/downloads:/downloads'
+      - './config:/config'
+      - './downloads:/downloads'

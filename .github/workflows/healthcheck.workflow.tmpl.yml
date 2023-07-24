@@ -20,6 +20,9 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - uses: 'actions/checkout@v3'
+      - uses: 'KengoTODA/actions-setup-docker-compose@v1'
+        with:
+          version: '2.20.2'
       - name: 'Caching'
         uses: 'actions/cache@v3'
         with:
@@ -31,20 +34,24 @@ jobs:
           ${{ inputs.sus }}
       - name: 'Starting the docker-compose stack'
         run: |
-          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml up -d
+          echo -e "USERS=runner\nUSERNAME=octocat" > .env
+          docker-compose up -d ${{inputs.service_name}}
       - name: 'Waiting for running containers'
         timeout-minutes: '${{ inputs.timeout-minutes }}'
         run: |
           while :; do
             echo "sleeping for 5s"
             sleep 5s;
-            docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml ps | grep "starting" || exit 0
+            docker-compose ps ${{inputs.service_name}} | grep "starting" || exit 0
           done
-      - name: 'Check health'
+      - name: 'Checking containers health'
         run: |
-          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml ps | grep "Up (healthy)"
-      - name: 'Export logs'
+          docker-compose ps ${{inputs.service_name}} | grep "healthy"
+      - name: 'Checking for unattended volumes'
+        run: |
+          git diff --exit-code .
+      - name: 'Exporting logs'
         if: '${{ failure() }}'
         run: |
-          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml ps
-          docker-compose -f docker-compose.yml -f ${{inputs.service_name}}/docker-compose.${{inputs.service_name}}.yml logs
+          docker-compose ps ${{inputs.service_name}}
+          docker-compose logs ${{inputs.service_name}}

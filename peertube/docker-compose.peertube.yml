@@ -26,8 +26,8 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './peertube/config:/config'
-      - './peertube/data:/data'
+      - './config:/config'
+      - './data:/data'
 
   peertube-db:
     image: 'postgres:10-alpine'
@@ -43,7 +43,7 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './peertube/db:/var/lib/postgresql/data'
+      - './db:/var/lib/postgresql/data'
 
   peertube-redis:
     image: 'redis:4-alpine'
@@ -55,4 +55,4 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './peertube/redis:/data'
+      - './redis:/data'

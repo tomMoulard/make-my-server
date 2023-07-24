@@ -20,6 +20,6 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './bazarr/config:/config'
-      - './bazarr/movies:/movies'
-      - './bazarr/tv:/tv'
+      - './config:/config'
+      - './movies:/movies'
+      - './tv:/tv'

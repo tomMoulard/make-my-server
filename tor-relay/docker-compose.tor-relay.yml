@@ -26,5 +26,5 @@ services:
       - '9001:9001'
     restart: 'always'
     volumes:
-      - './tor-relay/keys:/var/lib/tor/.tor/keys/'
+      - './keys:/var/lib/tor/.tor/keys/'
       - '/etc/localtime:/etc/localtime'

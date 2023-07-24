@@ -21,7 +21,7 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './searxng/searxng/:/etc/searxng:rw'
+      - './searxng/:/etc/searxng:rw'
 
   searxng-redis:
     image: 'redis:6.0-alpine'

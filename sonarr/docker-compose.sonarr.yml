@@ -19,6 +19,6 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './sonarr/config:/config'
-      - './sonarr/downloads:/downloads'
-      - './sonarr/tv:/tv'
+      - './config:/config'
+      - './downloads:/downloads'
+      - './tv:/tv'
