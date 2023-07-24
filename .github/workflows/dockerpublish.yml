@@ -10,6 +10,9 @@ jobs:
   Config-test:
     runs-on: 'ubuntu-latest'
     steps:
+      - uses: KengoTODA/actions-setup-docker-compose@v1
+        with:
+          version: '2.20.2'
       - uses: 'actions/checkout@v3'
       - name: 'DEBUG'
         run: 'docker version && docker compose version'
