@@ -29,7 +29,7 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './sharelatex/data:/var/lib/sharelatex'
+      - './data:/var/lib/sharelatex'
 
   sharelatex-mongo:
     image: 'mongo:4.0'
@@ -42,7 +42,7 @@ services:
       - 'sharelatex-internal'
     restart: 'always'
     volumes:
-      - './sharelatex/mongo:/data/db'
+      - './mongo:/data/db'
 
   sharelatex-redis:
     image: 'redis:6.0-alpine'
@@ -54,4 +54,4 @@ services:
       - 'sharelatex-internal'
     restart: 'always'
     volumes:
-      - './sharelatex/redis:/data'
+      - './redis:/data'

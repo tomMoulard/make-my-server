@@ -13,5 +13,5 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './nginx/conf:/etc/nginx/conf.d'
-      - './nginx/logs:/var/log/nginx/'
+      - './conf:/etc/nginx/conf.d'
+      - './logs:/var/log/nginx/'

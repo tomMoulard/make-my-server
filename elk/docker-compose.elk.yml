@@ -16,7 +16,7 @@ services:
         hard: -1
         soft: -1
     volumes:
-      - './elk/elasticsearch/data:/usr/share/elasticsearch/data'
+      - './elasticsearch/data:/usr/share/elasticsearch/data'
 
   kibana:
     image: 'docker.elastic.co/kibana/kibana:${KIBANA_IMAGE_VERSION:-7.1.0}'
@@ -31,7 +31,7 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml'
+      - './kibana/kibana.yml:/usr/share/kibana/config/kibana.yml'
 
   logstash:
     image: 'docker.elastic.co/logstash/logstash:${LOGSTASH_IMAGE_VERSION:-7.1.0}'
@@ -41,6 +41,6 @@ services:
       - 'elasticsearch'
     restart: 'always'
     volumes:
-      - './elk/logstash/:/usr/share/logstash/pipeline/'
-      - './nginx/logs:/var/log/nginx'
-      - './traefik/logs:/var/log/traefik'
+      - './logstash/:/usr/share/logstash/pipeline/'
+      - '../nginx/logs:/var/log/nginx'
+      - '../traefik/logs:/var/log/traefik'

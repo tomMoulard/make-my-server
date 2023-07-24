@@ -33,4 +33,4 @@ services:
     restart: 'always'
     user: '1000:1000'
     volumes:
-      - './hits/postgresql/:/var/lib/postgresql/data'
+      - './postgresql/:/var/lib/postgresql/data'

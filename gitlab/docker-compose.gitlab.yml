@@ -18,9 +18,9 @@ services:
       - '2224:22'
     restart: 'always'
     volumes:
-      - './gitlab/config:/etc/gitlab'
-      - './gitlab/data:/var/opt/gitlab'
-      - './gitlab/logs:/var/log/gitlab'
+      - './config:/etc/gitlab'
+      - './data:/var/opt/gitlab'
+      - './logs:/var/log/gitlab'
 
   runner:
     image: 'gitlab/gitlab-runner:${GITLAB_RUNNER_IMAGE_VERSION:-latest}'
@@ -30,5 +30,5 @@ services:
       - 'gitlab'
     restart: 'always'
     volumes:
-      - './gitlab/runner:/etc/gitlab-runner'
+      - './runner:/etc/gitlab-runner'
       - '/var/run/docker.sock:/var/run/docker.sock'

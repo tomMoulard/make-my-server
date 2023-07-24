@@ -15,4 +15,4 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './ciao/db:/app/db/sqlite/'
+      - './db:/app/db/sqlite/'

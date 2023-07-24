@@ -15,8 +15,8 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './hugo/nginx/conf:/etc/nginx/conf.d'
-      - './hugo/nginx/logs:/var/log/nginx/'
+      - './nginx/conf:/etc/nginx/conf.d'
+      - './nginx/logs:/var/log/nginx/'
 
   hugo-builder:
     image: 'jojomi/hugo:0.59'
@@ -28,5 +28,5 @@ services:
       traefik.enable: false
     restart: 'always'
     volumes:
-      - './hugo/blog:/src'
-      - './hugo/nginx/conf/www:/output'
+      - './blog:/src'
+      - './nginx/conf/www:/output'

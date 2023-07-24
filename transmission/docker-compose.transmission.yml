@@ -22,6 +22,6 @@ services:
       - '51413:51413/udp'
     restart: 'always'
     volumes:
-      - './transmission/config:/config'
-      - './transmission/downloads:/downloads'
-      - './transmission/watch:/watch'
+      - './config:/config'
+      - './downloads:/downloads'
+      - './watch:/watch'

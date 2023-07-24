@@ -11,4 +11,4 @@ services:
     ports:
       - '25565:25565/udp'
     volumes:
-      - './minecraft/minecraft-data:/data'
+      - './minecraft-data:/data'

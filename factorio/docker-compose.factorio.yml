@@ -10,4 +10,4 @@ services:
       # - '27015:27015/tcp' # RCON port
     restart: 'always'
     volumes:
-      - './factorio:/factorio'
+      - '.:/factorio'

@@ -28,4 +28,4 @@ services:
     restart: 'always'
     user: 'nobody'
     volumes:
-      - './bitwarden/data:/data'
+      - './data:/data'

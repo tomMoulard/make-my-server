@@ -22,7 +22,7 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './wordpress/wordpress:/var/www/html'
+      - './wordpress:/var/www/html'
 
   wordpress-db:
     image: 'mysql:5.7'
@@ -41,4 +41,4 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './wordpress/db:/var/lib/mysql'
+      - './db:/var/lib/mysql'

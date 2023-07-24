@@ -19,5 +19,5 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './jupyter/jupyter/config:/root/.jupyter/'
-      - './jupyter/notebooks:/home/jovyan/'
+      - './jupyter/config:/root/.jupyter/'
+      - './notebooks:/home/jovyan/'

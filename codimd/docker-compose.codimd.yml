@@ -25,7 +25,7 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './codimd/data:/home/hackmd/app/public/uploads'
+      - './data:/home/hackmd/app/public/uploads'
 
   codimd-db:
     image: 'postgres:11.6-alpine'
@@ -41,4 +41,4 @@ services:
       - 'codi-internal'
     restart: 'always'
     volumes:
-      - './codimd/db:/var/lib/postgresql/data'
+      - './db:/var/lib/postgresql/data'

@@ -62,7 +62,7 @@ services:
     restart: 'always'
     user: '1000:1000'
     volumes:
-      - './grafana/grafana:/var/lib/grafana'
+      - './grafana:/var/lib/grafana'
 
   node_exporter:
     image: 'prom/node-exporter:${NODE_EXPORTER_IMAGE_VERSION:-v1.0.1}'
@@ -102,6 +102,6 @@ services:
     restart: 'always'
     user: '1000:1000'
     volumes:
-      - './grafana/prometheus/data:/prometheus'
-      - './grafana/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml'
-      - './grafana/prometheus/rules:/etc/prometheus/rules'
+      - './prometheus/data:/prometheus'
+      - './prometheus/prometheus.yml:/etc/prometheus/prometheus.yml'
+      - './prometheus/rules:/etc/prometheus/rules'

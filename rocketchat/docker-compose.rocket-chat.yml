@@ -22,7 +22,7 @@ services:
       - 'srv'
     restart: 'unless-stopped'
     volumes:
-      - './rocketchat/uploads:/app/uploads'
+      - './uploads:/app/uploads'
 
   # hubot, the popular chatbot (add the bot user first and change the password
   # before starting this image)
@@ -47,7 +47,7 @@ services:
     #   - '3001:8080'
     restart: 'unless-stopped'
     volumes:
-      - './rocketchat/scripts:/home/hubot/scripts'
+      - './scripts:/home/hubot/scripts'
 
   rocketchat-mongo:
     image: 'mongo:4.0'
@@ -61,7 +61,7 @@ services:
       - 'rocketchat-internal'
     restart: 'unless-stopped'
     volumes:
-      - './rocketchat/db/:/data/db'
+      - './db/:/data/db'
 
   rocketchat-mongo-replica:
     image: 'mongo:4.0'

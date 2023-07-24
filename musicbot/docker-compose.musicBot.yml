@@ -9,5 +9,5 @@ services:
       - 'srv'
     restart: 'always'
     volumes:
-      - './musicbot/conf:/musicBot/conf/'
-      - './musicbot/playlists:/musicBot/playlists/'
+      - './conf:/musicBot/conf/'
+      - './playlists:/musicBot/playlists/'
