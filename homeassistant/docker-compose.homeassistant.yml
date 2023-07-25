@@ -1,0 +1,26 @@
+version: '2'
+
+services:
+  homeassistant:
+    image: 'ghcr.io/home-assistant/home-assistant:${HOME_ASSISTANT_IMAGE_VERSION:-stable}'
+    # devices: # For passing through USB, serial or gpio devices.
+      # - '/dev/ttyUSB0:/dev/ttyUSB0'
+    environment:
+      GUID: 1000
+      PUID: 1000
+    healthcheck:
+      test: ['CMD', 'curl', '0.0.0.0:8123']
+    labels:
+      traefik.enable: true
+      traefik.http.routers.homeassistant.middlewares: 'basic_auth@docker'
+      traefik.http.routers.homeassistant.rule: |
+        'Host(`homeassistant.${SITE:-localhost}`) && !Path(`/api/prometheus`)'
+      traefik.http.services.homeassistant.loadbalancer.server.port: 8123
+    # network_mode: host # might be required to discover som devices(i.e.,UPnP).
+    networks:
+      - 'srv'
+    # privileged: true
+    restart: 'always'
+    volumes:
+      - './config:/config'
+      - '/etc/localtime:/etc/localtime:ro'
