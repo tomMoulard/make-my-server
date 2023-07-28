@@ -13,6 +13,7 @@ include:
   - path: 'gitlab/docker-compose.gitlab.yml'
   - path: 'grafana/docker-compose.grafana.yml'
   - path: 'hits/docker-compose.hits.yml'
+  - path: 'homeassistant/docker-compose.homeassistant.yml'
   - path: 'hugo/docker-compose.hugo.yml'
   - path: 'jackett/docker-compose.jackett.yml'
   - path: 'jellyfin/docker-compose.jellyfin.yml'

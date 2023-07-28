@@ -67,3 +67,12 @@ scrape_configs:
     static_configs:
       - targets:
           - 'alertmanager:9093'
+  - honor_timestamps: true
+    job_name: 'hass' # home assistant
+    metrics_path: '/api/prometheus'
+    scheme: 'http'
+    scrape_interval: '60s'
+    scrape_timeout: '10s'
+    static_configs:
+      - targets:
+          - 'homeassistant:8123'

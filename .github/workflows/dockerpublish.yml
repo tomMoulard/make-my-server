@@ -40,6 +40,10 @@ jobs:
 #   with:
 #     sus: 'mkdir -p ./hits/postgresql/data'
 #     service_name: 'hits'
+  Health-checks-homeassistant:
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    with:
+      service_name: 'homeassistant'
 # Health-checks-hugo:
 #   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
 #   with:

@@ -421,6 +421,37 @@ services:
       target: /var/lib/postgresql/data
       bind:
         create_host_path: true
+  homeassistant:
+    environment:
+      GUID: "1000"
+      PUID: "1000"
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:8123
+    image: ghcr.io/home-assistant/home-assistant:stable
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.homeassistant.middlewares: basic_auth@docker
+      traefik.http.routers.homeassistant.rule: |
+        'Host(`homeassistant.localhost`) && !Path(`/api/prometheus`)'
+      traefik.http.services.homeassistant.loadbalancer.server.port: "8123"
+    networks:
+      srv: null
+    restart: always
+    volumes:
+    - type: bind
+      source: /home/runner/work/make-my-server/make-my-server/homeassistant/config
+      target: /config
+      bind:
+        create_host_path: true
+    - type: bind
+      source: /etc/localtime
+      target: /etc/localtime
+      read_only: true
+      bind:
+        create_host_path: true
   hugo:
     depends_on:
       hugo-builder:
