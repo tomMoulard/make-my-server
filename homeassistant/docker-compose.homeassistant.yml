@@ -12,9 +12,8 @@ services:
       test: ['CMD', 'curl', '0.0.0.0:8123']
     labels:
       traefik.enable: true
-      traefik.http.routers.homeassistant.middlewares: 'basic_auth@docker'
       traefik.http.routers.homeassistant.rule: |
-        'Host(`homeassistant.${SITE:-localhost}`) && !Path(`/api/prometheus`)'
+        Host(`homeassistant.${SITE:-localhost}`) && !Path(`/api/prometheus`)
       traefik.http.services.homeassistant.loadbalancer.server.port: 8123
     # network_mode: host # might be required to discover som devices(i.e.,UPnP).
     networks:
