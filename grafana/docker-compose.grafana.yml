@@ -35,7 +35,7 @@ services:
       - '/var/run:/var/run:ro'
 
   grafana:
-    image: 'grafana/grafana:${GRAFANA_IMAGE_VERSION:-7.2.2}'
+    image: 'grafana/grafana-oss:${GRAFANA_IMAGE_VERSION:-7.2.2}'
     depends_on:
       - 'prometheus'
     environment:

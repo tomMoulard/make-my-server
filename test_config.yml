@@ -363,7 +363,7 @@ services:
       - CMD
       - curl
       - 0.0.0.0:3000/healthz
-    image: grafana/grafana:7.2.2
+    image: grafana/grafana-oss:7.2.2
     labels:
       traefik.enable: "true"
       traefik.http.routers.grafana.middlewares: basic_auth@docker
