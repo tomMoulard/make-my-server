@@ -1679,6 +1679,8 @@ services:
       bind:
         create_host_path: true
   transmission:
+    dns:
+    - 1.1.1.1
     environment:
       PGID: "1000"
       PUID: "1000"
