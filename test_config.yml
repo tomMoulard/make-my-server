@@ -433,9 +433,8 @@ services:
     image: ghcr.io/home-assistant/home-assistant:stable
     labels:
       traefik.enable: "true"
-      traefik.http.routers.homeassistant.middlewares: basic_auth@docker
       traefik.http.routers.homeassistant.rule: |
-        'Host(`homeassistant.localhost`) && !Path(`/api/prometheus`)'
+        Host(`homeassistant.localhost`) && !Path(`/api/prometheus`)
       traefik.http.services.homeassistant.loadbalancer.server.port: "8123"
     networks:
       srv: null
