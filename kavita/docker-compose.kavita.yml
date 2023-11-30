@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  kavita:
+    image: 'lscr.io/linuxserver/kavita:${KAVITA_IMAGE_VERSION:-latest}'
+    environment:
+      PGID: '${KAVITA_GPID:-1000}'
+      PUID: '${KAVITA_PUID:-1000}'
+      TZ: '${TZ:-Europe/Paris}'
+    healthcheck:
+      test: ['CMD', 'curl', '0.0.0.0:5000']
+    labels:
+      traefik.enable: true
+      traefik.http.routers.kavita.rule: 'Host(`kavita.${SITE:-localhost}`)'
+      traefik.http.services.kavita.loadbalancer.server.port: 5000
+    networks:
+      - 'srv'
+    restart: 'always'
+    volumes:
+      - './data:/data'
+      - './config:/config'
