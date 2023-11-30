@@ -593,6 +593,35 @@ services:
       target: /home/jovyan
       bind:
         create_host_path: true
+  kavita:
+    environment:
+      PGID: "1000"
+      PUID: "1000"
+      TZ: Europe/Paris
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - 0.0.0.0:5000
+    image: lscr.io/linuxserver/kavita:latest
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.kavita.rule: Host(`kavita.localhost`)
+      traefik.http.services.kavita.loadbalancer.server.port: "5000"
+    networks:
+      srv: null
+    restart: always
+    volumes:
+    - type: bind
+      source: /home/runner/work/make-my-server/make-my-server/kavita/data
+      target: /data
+      bind:
+        create_host_path: true
+    - type: bind
+      source: /home/runner/work/make-my-server/make-my-server/kavita/config
+      target: /config
+      bind:
+        create_host_path: true
   kibana:
     depends_on:
       elasticsearch:

@@ -18,6 +18,7 @@ include:
   - path: 'jackett/docker-compose.jackett.yml'
   - path: 'jellyfin/docker-compose.jellyfin.yml'
   - path: 'jupyter/docker-compose.jupyter.yml'
+  - path: 'kavita/docker-compose.kavita.yml'
   - path: 'mastodon/docker-compose.mastodon.yml'
   - path: 'minecraft/docker-compose.minecraft-ftb.yml'
   - path: 'minecraft/docker-compose.minecraft.yml'

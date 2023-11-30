@@ -52,6 +52,10 @@ jobs:
     uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
     with:
       service_name: 'jackett'
+  Health-checks-kavita:
+    uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    with:
+      service_name: 'kavita'
 # Health-checks-mastodon:
 #   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
 #   with:
