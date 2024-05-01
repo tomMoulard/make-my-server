@@ -2,7 +2,7 @@ version: '2'
 
 services:
   traefik:
-    image: 'traefik:${TRAEFIK_IMAGE_VERSION:-v2.10}'
+    image: 'traefik:${TRAEFIK_IMAGE_VERSION:-v3.0}'
     command:
       # Provider
       - '--providers.docker'
@@ -18,7 +18,6 @@ services:
       - '--certificatesresolvers.myresolver.acme.httpchallenge=true'
       - '--entrypoints.websecure.http.tls.certresolver=myresolver'
       # HTTP/3
-      - '--experimental.http3=true'
       - '--entrypoints.websecure.http3'
       # Logs
       - '--accesslog.filepath=/logs/access.log'

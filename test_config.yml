@@ -1646,7 +1646,6 @@ services:
     - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
     - --certificatesresolvers.myresolver.acme.httpchallenge=true
     - --entrypoints.websecure.http.tls.certresolver=myresolver
-    - --experimental.http3=true
     - --entrypoints.websecure.http3
     - --accesslog.filepath=/logs/access.log
     - --accesslog.format=json
@@ -1671,7 +1670,7 @@ services:
       - traefik
       - healthcheck
       - --ping
-    image: traefik:v2.10
+    image: traefik:v3.0
     labels:
       traefik.enable: "true"
       traefik.http.middlewares.basic_auth.basicauth.removeHeader: "true"
