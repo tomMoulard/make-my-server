@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json.schemastore.org/yamllint.json
 # ref: https://yamllint.readthedocs.io/en/stable/configuration.html
 
 extends: 'default'
@@ -14,7 +15,6 @@ ignore: |
   .git/
   peertube/config/default.yaml
   test_config.yml
-# .github/
 
 # https://yamllint.readthedocs.io/en/stable/rules.html
 rules:
@@ -27,7 +27,11 @@ rules:
     ignore:
       - '.github/workflows/healthcheck.workflow.tmpl.yml'
       - '.github/workflows/dockerpublish.yml'
-  truthy: 'enable'
+  truthy:
+    allowed-values:
+      - 'false'
+      - 'on'
+      - 'true'
   indentation:
     spaces: 2
   empty-values: 'enable'

@@ -9,7 +9,7 @@ services:
      --NotebookApp.password=''
     # removing token & password to enable traefik auth
     environment:
-      JUPYTER_ENABLE_LAB: 'yes' # yamllint disable-line rule:truthy
+      JUPYTER_ENABLE_LAB: 'yes'
     labels:
       traefik.enable: true
       traefik.http.routers.jupyter.middlewares: 'basic_auth@docker'

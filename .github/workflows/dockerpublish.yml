@@ -30,24 +30,24 @@ jobs:
     with:
       service_name: 'codimd'
       timeout-minutes: 5
-# Health-checks-grafana:
-#   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
-#   with:
-#     sus: 'mkdir -p ./grafana/grafana/ ./grafana/prometheus/data/'
-#     service_name: 'grafana'
-# Health-checks-hits:
-#   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
-#   with:
-#     sus: 'mkdir -p ./hits/postgresql/data'
-#     service_name: 'hits'
+  # Health-checks-grafana:
+  #   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+  #   with:
+  #     sus: 'mkdir -p ./grafana/grafana/ ./grafana/prometheus/data/'
+  #     service_name: 'grafana'
+  # Health-checks-hits:
+  #   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+  #   with:
+  #     sus: 'mkdir -p ./hits/postgresql/data'
+  #     service_name: 'hits'
   Health-checks-homeassistant:
     uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
     with:
       service_name: 'homeassistant'
-# Health-checks-hugo:
-#   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
-#   with:
-#     service_name: 'hugo'
+  # Health-checks-hugo:
+  #   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+  #   with:
+  #     service_name: 'hugo'
   Health-checks-jackett:
     uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
     with:
@@ -56,10 +56,10 @@ jobs:
     uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
     with:
       service_name: 'kavita'
-# Health-checks-mastodon:
-#   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
-#   with:
-#     service_name: 'mastodon'
+  # Health-checks-mastodon:
+  #   uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+  #   with:
+  #     service_name: 'mastodon'
   Health-checks-nextcloud:
     uses: 'tomMoulard/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
     with:
