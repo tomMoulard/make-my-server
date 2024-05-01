@@ -18,7 +18,7 @@ jobs:
         run: 'docker version && docker compose version'
       - name: 'Run tests'
         run: './test.sh'
-      - uses: 'actions/upload-artifact@v3'
+      - uses: 'actions/upload-artifact@v4'
         if: 'failure()'
         with:
           name: 'test-artifacts'
