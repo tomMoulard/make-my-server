@@ -24,7 +24,7 @@ jobs:
         with:
           version: '2.20.2'
       - name: 'Caching'
-        uses: 'actions/cache@v3'
+        uses: 'actions/cache@v4'
         with:
           path: '/var/lib/docker/'
           key: '${{ runner.os }}-health-${{ github.job }}'
