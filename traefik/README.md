@@ -8,20 +8,6 @@ out which components are responsible for handling them. What sets Traefik
 apart, besides its many features, is that it automatically discovers the right
 configuration for your services.
 
-## Register your instance to [pilot](https://pilot.traefik.io)
-You can add your pilot token using the `TRAEFIK_PiLOT_TOKEN` environment
-variable.
-
-You can add this to your `.env` file:
-```bash
-echo "TRAEFIK_PiLOT_TOKEN=$MY_TOKEN" >> .env
-```
-
-Once you have registered your instance, you can provide use plugins by setting the `TRAEFIK_PLUGINS` variable:
-```bash
-echo 'TRAEFIK_PLUGINS=,fail2ban@file' >> .env
-```
-
 ## Add a Router/Service using the file provider
 To create a new router and/or a new service, you can use the file provider:
 
