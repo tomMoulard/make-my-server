@@ -13,7 +13,7 @@ jobs:
       - uses: 'KengoTODA/actions-setup-docker-compose@v1'
         with:
           version: '2.20.2'
-      - uses: 'actions/checkout@v4'
+      - uses: 'actions/checkout@v5'
       - name: 'DEBUG'
         run: 'docker version && docker compose version'
       - name: 'Run tests'
@@ -96,7 +96,7 @@ jobs:
   Lint:
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: 'actions/checkout@v4'
+      - uses: 'actions/checkout@v5'
       - name: 'Install yamllint'
         run: 'pip install yamllint'
       - name: 'yamllint version'
