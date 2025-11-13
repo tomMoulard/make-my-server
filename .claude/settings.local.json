@@ -1,0 +1,48 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)",
+      "Bash(git stash:*)",
+      "Bash(git restore:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh issue:*)",
+      "Bash(gh repo:*)",
+      "Bash(docker-compose:*)",
+      "Bash(docker:*)",
+      "Bash(yamllint:*)",
+      "Bash(./test.sh:*)",
+      "Bash(htpasswd:*)",
+      "mcp__archon__find_tasks",
+      "mcp__archon__manage_task",
+      "mcp__archon__find_projects",
+      "mcp__archon__manage_project",
+      "mcp__archon__find_documents",
+      "mcp__archon__manage_document",
+      "mcp__archon__rag_search_knowledge_base",
+      "mcp__archon__rag_search_code_examples",
+      "mcp__archon__rag_get_available_sources",
+      "mcp__archon__rag_read_full_page",
+      "mcp__archon__rag_list_pages_for_source",
+      "mcp__archon__get_project_features",
+      "mcp__archon__find_versions",
+      "mcp__archon__manage_version",
+      "mcp__archon__health_check",
+      "mcp__archon__session_info"
+    ],
+    "deny": [],
+    "ask": [
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(gh pr create:*)"
+    ]
+  }
+}
