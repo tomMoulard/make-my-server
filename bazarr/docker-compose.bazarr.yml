@@ -12,10 +12,6 @@ services:
       traefik.http.routers.bazarr.middlewares: 'basic_auth@docker'
       traefik.http.routers.bazarr.rule: 'Host(`bazarr.${SITE:-localhost}`)'
       traefik.http.services.bazarr.loadbalancer.server.port: 8080
-    links:
-      - 'transmission'
-      - 'jackett'
-      - 'sonarr'
     networks:
       - 'srv'
     restart: 'always'

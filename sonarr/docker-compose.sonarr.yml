@@ -12,9 +12,6 @@ services:
       traefik.http.routers.sonarr.middlewares: 'basic_auth@docker'
       traefik.http.routers.sonarr.rule: 'Host(`sonarr.${SITE:-localhost}`)'
       traefik.http.services.sonarr.loadbalancer.server.port: 8080
-    links:
-      - 'jackett'
-      - 'transmission'
     networks:
       - 'srv'
     restart: 'always'

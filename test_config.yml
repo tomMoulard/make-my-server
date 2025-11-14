@@ -3,12 +3,12 @@ services:
   alertmanager:
     healthcheck:
       test:
-      - CMD
-      - wget
-      - -q
-      - --spider
-      - --proxy=off
-      - localhost:9092/metrics
+        - CMD
+        - wget
+        - -q
+        - --spider
+        - --proxy=off
+        - localhost:9092/metrics
     image: prom/alertmanager:v0.21.0
     labels:
       traefik.enable: "true"
@@ -18,30 +18,7 @@ services:
     networks:
       srv: null
     restart: always
-  arachni:
-    image: arachni/arachni
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.arachni.middlewares: basic_auth@docker
-      traefik.http.routers.arachni.rule: Host(`arachni.localhost`)
-      traefik.http.services.arachni.loadbalancer.server.port: "9292"
-    networks:
-      srv: null
-    restart: always
   bazarr:
-    depends_on:
-      jackett:
-        condition: service_started
-        restart: true
-        required: true
-      sonarr:
-        condition: service_started
-        restart: true
-        required: true
-      transmission:
-        condition: service_started
-        restart: true
-        required: true
     environment:
       PGID: "1000"
       PUID: "1000"
@@ -52,61 +29,30 @@ services:
       traefik.http.routers.bazarr.middlewares: basic_auth@docker
       traefik.http.routers.bazarr.rule: Host(`bazarr.localhost`)
       traefik.http.services.bazarr.loadbalancer.server.port: "8080"
-    links:
-    - transmission
-    - jackett
-    - sonarr
     networks:
       srv: null
     restart: always
     volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/bazarr/config
-      target: /config
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/bazarr/movies
-      target: /movies
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/bazarr/tv
-      target: /tv
-      bind:
-        create_host_path: true
-  bitwarden:
-    environment:
-      ADMIN_TOKEN: ""
-      DOMAIN: https://bitwarden.localhost
-      PASSWORD_ITERATIONS: "500000"
-      ROCKET_PORT: "8080"
-      SENDS_ALLOWED: "true"
-      SIGNUPS_ALLOWED: "true"
-      SIGNUPS_VERIFY: "false"
-      TZ: Europe/Paris
-    image: vaultwarden/server:latest
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.bitwarden-admin.middlewares: basic_auth@docker
-      traefik.http.routers.bitwarden-admin.rule: |
-        'Host(`bitwarden.localhost`) && PathPrefix(`/admin`)'
-      traefik.http.routers.bitwarden-user.rule: |
-        'Host(`bitwarden.localhost`) && !PathPrefix(`/admin`)'
-      traefik.http.services.bitwarden.loadbalancer.server.port: "8080"
-    networks:
-      srv: null
-    restart: always
-    user: nobody
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/bitwarden/data
-      target: /data
-      bind:
-        create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\bazarr\config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\bazarr\movies
+        target: /movies
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\bazarr\tv
+        target: /tv
+        bind:
+          create_host_path: true
   cadvisor:
     devices:
-    - /dev/kmsg:/dev/kmsg
+      - source: /dev/kmsg
+        target: /dev/kmsg
+        permissions: rwm
     image: gcr.io/cadvisor/cadvisor:latest
     labels:
       traefik.enable: "true"
@@ -118,231 +64,30 @@ services:
     privileged: true
     restart: always
     volumes:
-    - type: bind
-      source: /
-      target: /rootfs
-      read_only: true
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /sys
-      target: /sys
-      read_only: true
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /var/lib/docker/
-      target: /var/lib/docker
-      read_only: true
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /var/run
-      target: /var/run
-      read_only: true
-      bind:
-        create_host_path: true
-  ciao:
-    environment:
-      PROMETHEUS_ENABLED: "false"
-      TIME_ZONE: Europe/Paris
-    image: brotandgames/ciao:latest
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.ciao.middlewares: basic_auth@docker
-      traefik.http.routers.ciao.rule: Host(`ciao.localhost`)
-      traefik.http.services.ciao.loadbalancer.server.port: "3000"
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/ciao/db
-      target: /app/db/sqlite
-      bind:
-        create_host_path: true
-  codimd:
-    depends_on:
-      codimd-db:
-        condition: service_started
-        required: true
-    environment:
-      CMD_DB_URL: postgres://codimd:mypwd@codimd-db/codimd
-      CMD_USECDN: "false"
-    healthcheck:
-      test:
-      - CMD
-      - wget
-      - 0.0.0.0:3000
-    image: hackmdio/hackmd:2.4.2-cjk
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.codimd.rule: Host(`codimd.localhost`)
-      traefik.http.services.codimd.loadbalancer.server.port: "3000"
-    links:
-    - codimd-db
-    networks:
-      codi-internal: null
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/codimd/data
-      target: /home/hackmd/app/public/uploads
-      bind:
-        create_host_path: true
-  codimd-db:
-    environment:
-      POSTGRES_DB: codimd
-      POSTGRES_PASSWORD: mypwd
-      POSTGRES_USER: codimd
-    healthcheck:
-      test:
-      - CMD
-      - pg_isready
-      - -U
-      - codimd
-    image: postgres:11.6-alpine
-    labels:
-      traefik.enable: "false"
-    networks:
-      codi-internal: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/codimd/db
-      target: /var/lib/postgresql/data
-      bind:
-        create_host_path: true
-  elasticsearch:
-    environment:
-      ES_JAVA_OPTS: -Xms512m -Xmx512m
-      bootstrap.memory_lock: "true"
-      cluster.name: docker-cluster
-      discovery.type: single-node
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.1.0
-    labels:
-      traefik.enable: "false"
-    networks:
-      default: null
-    restart: always
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/elk/elasticsearch/data
-      target: /usr/share/elasticsearch/data
-      bind:
-        create_host_path: true
-  factorio:
-    image: factoriotools/factorio
-    labels:
-      traefik.enable: "false"
-    networks:
-      default: null
-    ports:
-    - mode: ingress
-      target: 34197
-      published: "34197"
-      protocol: udp
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/factorio
-      target: /factorio
-      bind:
-        create_host_path: true
-  framadate:
-    depends_on:
-      framadate-db:
-        condition: service_started
-        required: true
-    environment:
-      ADMIN_PASSWORD: pass
-      APP_NAME: Framadate
-      APP_URL: framadate.localhost
-      DEFAULT_POLL_DURATION: "365"
-      MARKDOWN_EDITOR_BY_DEFAULT: "true"
-      MYSQL_DATABASE: framadate
-      MYSQL_PASSWORD: framadate
-      MYSQL_ROOT_PASSWORD: pass
-      MYSQL_USER: framadate
-      PROVIDE_FORK_AWESOME: "true"
-      SERVERNAME: framadate.localhost
-      SHOW_CULTIVATE_YOUR_GARDEN: "true"
-      SHOW_THE_SOFTWARE: "true"
-      SHOW_WHAT_IS_THAT: "true"
-      USER_CAN_ADD_IMG_OR_LINK: "true"
-    image: xgaia/framadate:latest
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.framadate.rule: Host(`framadate.localhost`)
-      traefik.http.services.framadate.loadbalancer.server.port: "80"
-    networks:
-      framadate-internal: null
-      srv: null
-    restart: always
-  framadate-db:
-    environment:
-      MYSQL_DATABASE: framadate
-      MYSQL_PASSWORD: framadate
-      MYSQL_ROOT_PASSWORD: pass
-      MYSQL_USER: framadate
-    healthcheck:
-      test:
-      - CMD
-      - mysqlcheck
-      - --all-databases
-      - -ppass
-    image: mysql:5.7
-    labels:
-      traefik.enable: "false"
-    networks:
-      framadate-internal: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/framadate/db
-      target: /var/lib/mysql
-      bind:
-        create_host_path: true
-  gitlab:
-    environment:
-      GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://gitlab.localhost:80'
-        gitlab_rails['gitlab_shell_ssh_port'] = 2224
-    hostname: gitlab.localhost
-    image: gitlab/gitlab-ce:latest
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.gitlab.rule: Host(`gitlab.localhost`)
-      traefik.http.services.gitlab.loadbalancer.server.port: "80"
-    networks:
-      srv: null
-    ports:
-    - mode: ingress
-      target: 22
-      published: "2224"
-      protocol: tcp
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/gitlab/config
-      target: /etc/gitlab
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/gitlab/data
-      target: /var/opt/gitlab
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/gitlab/logs
-      target: /var/log/gitlab
-      bind:
-        create_host_path: true
+      - type: bind
+        source: /
+        target: /rootfs
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /sys
+        target: /sys
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /var/lib/docker/
+        target: /var/lib/docker
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /var/run
+        target: /var/run
+        read_only: true
+        bind:
+          create_host_path: true
   grafana:
     depends_on:
       prometheus:
@@ -360,9 +105,9 @@ services:
       GF_USERS_ALLOW_SIGN_UP: "false"
     healthcheck:
       test:
-      - CMD
-      - curl
-      - 0.0.0.0:3000/healthz
+        - CMD
+        - curl
+        - 0.0.0.0:3000/healthz
     image: grafana/grafana-oss:7.2.2
     labels:
       traefik.enable: "true"
@@ -374,62 +119,20 @@ services:
     restart: always
     user: 1000:1000
     volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/grafana/grafana
-      target: /var/lib/grafana
-      bind:
-        create_host_path: true
-  hits:
-    depends_on:
-      hits-postgresql:
-        condition: service_started
-        required: true
-    healthcheck:
-      test:
-      - CMD
-      - curl
-      - 0.0.0.0:4000
-    image: tommoulard/hits
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.hits.rule: Host(`hits.localhost`)
-      traefik.http.services.hits.loadbalancer.server.port: "4000"
-    networks:
-      hits-internal: null
-      srv: null
-    restart: always
-  hits-postgresql:
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-    healthcheck:
-      test:
-      - CMD
-      - pg_isready
-      - -U
-      - postgres
-    image: postgres
-    networks:
-      hits-internal:
-        aliases:
-        - postgresql
-    restart: always
-    user: 1000:1000
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/hits/postgresql
-      target: /var/lib/postgresql/data
-      bind:
-        create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\grafana\grafana
+        target: /var/lib/grafana
+        bind:
+          create_host_path: true
   homeassistant:
     environment:
       GUID: "1000"
       PUID: "1000"
     healthcheck:
       test:
-      - CMD
-      - curl
-      - 0.0.0.0:8123
+        - CMD
+        - curl
+        - 0.0.0.0:8123
     image: ghcr.io/home-assistant/home-assistant:stable
     labels:
       traefik.enable: "true"
@@ -440,17 +143,17 @@ services:
       srv: null
     restart: always
     volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/homeassistant/config
-      target: /config
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /etc/localtime
-      target: /etc/localtime
-      read_only: true
-      bind:
-        create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\homeassistant\config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+        bind:
+          create_host_path: true
   hugo:
     depends_on:
       hugo-builder:
@@ -458,9 +161,9 @@ services:
         required: true
     healthcheck:
       test:
-      - CMD
-      - curl
-      - 0.0.0.0:80
+        - CMD
+        - curl
+        - 0.0.0.0:80
     image: nginx:stable-alpine
     labels:
       traefik.enable: "true"
@@ -470,16 +173,16 @@ services:
       srv: null
     restart: always
     volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/hugo/nginx/conf
-      target: /etc/nginx/conf.d
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/hugo/nginx/logs
-      target: /var/log/nginx
-      bind:
-        create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\hugo\nginx\conf
+        target: /etc/nginx/conf.d
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\hugo\nginx\logs
+        target: /var/log/nginx
+        bind:
+          create_host_path: true
   hugo-builder:
     environment:
       HUGO_BASEURL: https://hugo.localhost/
@@ -492,85 +195,22 @@ services:
       default: null
     restart: always
     volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/hugo/blog
-      target: /src
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/hugo/nginx/conf/www
-      target: /output
-      bind:
-        create_host_path: true
-  jackett:
-    dns:
-    - 1.1.1.1
-    environment:
-      PGID: "1000"
-      PUID: "1000"
-      TZ: Europe/Paris
-    healthcheck:
-      test:
-      - CMD
-      - curl
-      - 0.0.0.0:9117/UI/Login?ReturnUrl=%2FUI%2FDashboard
-    image: linuxserver/jackett:v0.20.567-ls56
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.jackett.middlewares: basic_auth@docker
-      traefik.http.routers.jackett.rule: Host(`jackett.localhost`)
-      traefik.http.services.jackett.loadbalancer.server.port: "9117"
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/jackett/config
-      target: /config
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/jackett/downloads
-      target: /downloads
-      bind:
-        create_host_path: true
-  jellyfin:
-    image: jellyfin/jellyfin
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.jellyfin.rule: Host(`jellyfin.localhost`)
-      traefik.http.services.jellyfin.loadbalancer.server.port: "8096"
-    networks:
-      srv: null
-    restart: always
-    user: 1000:1000
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/jellyfin/cache
-      target: /cache
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/jellyfin/config
-      target: /config
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/jellyfin/logs
-      target: /logs
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/jellyfin/media
-      target: /media
-      bind:
-        create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\hugo\blog
+        target: /src
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\hugo\nginx\conf\www
+        target: /output
+        bind:
+          create_host_path: true
   jupyter:
     command:
-    - jupyter
-    - notebook
-    - --NotebookApp.token=
-    - --NotebookApp.password=
+      - jupyter
+      - notebook
+      - --NotebookApp.token=
+      - --NotebookApp.password=
     environment:
       JUPYTER_ENABLE_LAB: "yes"
     image: jupyter/tensorflow-notebook:45f07a14b422
@@ -583,398 +223,16 @@ services:
       srv: null
     restart: always
     volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/jupyter/jupyter/config
-      target: /root/.jupyter
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/jupyter/notebooks
-      target: /home/jovyan
-      bind:
-        create_host_path: true
-  kavita:
-    environment:
-      PGID: "1000"
-      PUID: "1000"
-      TZ: Europe/Paris
-    healthcheck:
-      test:
-      - CMD
-      - curl
-      - 0.0.0.0:5000
-    image: lscr.io/linuxserver/kavita:latest
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.kavita.rule: Host(`kavita.localhost`)
-      traefik.http.services.kavita.loadbalancer.server.port: "5000"
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/kavita/data
-      target: /data
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/kavita/config
-      target: /config
-      bind:
-        create_host_path: true
-  kibana:
-    depends_on:
-      elasticsearch:
-        condition: service_started
-        restart: true
-        required: true
-    image: docker.elastic.co/kibana/kibana:7.1.0
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.kibana.middlewares: basic_auth@docker
-      traefik.http.routers.kibana.rule: Host(`kibana.localhost`)
-      traefik.http.services.kibana.loadbalancer.server.port: "5601"
-    links:
-    - elasticsearch
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/elk/kibana/kibana.yml
-      target: /usr/share/kibana/config/kibana.yml
-      bind:
-        create_host_path: true
-  logstash:
-    depends_on:
-      elasticsearch:
-        condition: service_started
-        restart: true
-        required: true
-    image: docker.elastic.co/logstash/logstash:7.1.0
-    labels:
-      traefik.enable: "false"
-    links:
-    - elasticsearch
-    networks:
-      default: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/elk/logstash
-      target: /usr/share/logstash/pipeline
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/nginx/logs
-      target: /var/log/nginx
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/traefik/logs
-      target: /var/log/traefik
-      bind:
-        create_host_path: true
-  mastodon:
-    command:
-    - rm
-    - -f
-    - /mastodon/tmp/pids/server.pid
-    - ;
-    - bundle
-    - exec
-    - rails
-    - s
-    - -p
-    - "3000"
-    depends_on:
-      mastodon-postgres:
-        condition: service_started
-        required: true
-      mastodon-redis:
-        condition: service_started
-        required: true
-      mastodon-sidekiq:
-        condition: service_started
-        required: true
-      mastodon-streaming:
-        condition: service_started
-        required: true
-    environment:
-      AWS_ACCESS_KEY_ID: ""
-      AWS_SECRET_ACCESS_KEY: ""
-      DB_HOST: mastodon-postgres
-      DB_NAME: postgres
-      DB_PASS: mastodon-postgres-pass
-      DB_PORT: "5432"
-      DB_USER: postgres
-      ES_ENABLED: "false"
-      ES_HOST: localhost
-      ES_PORT: "9200"
-      LOCAL_DOMAIN: mastodon.example.com
-      OTP_SECRET: ""
-      REDIS_HOST: mastodon-redis
-      REDIS_PORT: "6379"
-      S3_ALIAS_HOST: files.example.com
-      S3_BUCKET: files.example.com
-      S3_ENABLED: "false"
-      SECRET_KEY_BASE: ""
-      SMTP_FROM_ADDRESS: notificatons@example.com
-      SMTP_LOGIN: ""
-      SMTP_PASSWORD: ""
-      SMTP_PORT: "587"
-      SMTP_SERVER: smtp.mailgun.org
-      STREAMING_API_BASE_URL: wss://mastodon-streaming.example.com
-      VAPID_PRIVATE_KEY: ""
-      VAPID_PUBLIC_KEY: ""
-    healthcheck:
-      test:
-      - CMD
-      - wget
-      - -q
-      - --spider
-      - --proxy=off
-      - localhost:3000/health
-    image: tootsuite/mastodon
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.mastodon.rule: Host(`mastodon.localhost`)
-      traefik.http.services.mastodon.loadbalancer.server.port: "3000"
-    networks:
-      mastodon-internal: null
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/mastodon/mastodon
-      target: /mastodon/public/system
-      bind:
-        create_host_path: true
-  mastodon-postgres:
-    environment:
-      POSTGRES_PASSWORD: mastodon-postgres-pass
-    healthcheck:
-      test:
-      - CMD
-      - pg_isready
-      - -U
-      - postgres
-    image: postgres:9.6-alpine
-    labels:
-      traefik.enable: "false"
-    networks:
-      mastodon-internal: null
-    restart: always
-    shm_size: "268435456"
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/mastodon/postgres
-      target: /var/lib/postgresql/data
-      bind:
-        create_host_path: true
-  mastodon-redis:
-    healthcheck:
-      test:
-      - CMD
-      - redis-cli
-      - ping
-    image: redis:6.0-alpine
-    labels:
-      traefik.enable: "false"
-    networks:
-      mastodon-internal: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/mastodon/redis
-      target: /data
-      bind:
-        create_host_path: true
-  mastodon-sidekiq:
-    command:
-    - bundle
-    - exec
-    - sidekiq
-    depends_on:
-      mastodon-postgres:
-        condition: service_started
-        required: true
-      mastodon-redis:
-        condition: service_started
-        required: true
-    environment:
-      AWS_ACCESS_KEY_ID: ""
-      AWS_SECRET_ACCESS_KEY: ""
-      DB_HOST: mastodon-postgres
-      DB_NAME: postgres
-      DB_PASS: mastodon-postgres-pass
-      DB_PORT: "5432"
-      DB_USER: postgres
-      ES_ENABLED: "false"
-      ES_HOST: localhost
-      ES_PORT: "9200"
-      LOCAL_DOMAIN: mastodon.example.com
-      OTP_SECRET: ""
-      REDIS_HOST: mastodon-redis
-      REDIS_PORT: "6379"
-      S3_ALIAS_HOST: files.example.com
-      S3_BUCKET: files.example.com
-      S3_ENABLED: "false"
-      SECRET_KEY_BASE: ""
-      SMTP_FROM_ADDRESS: notificatons@example.com
-      SMTP_LOGIN: ""
-      SMTP_PASSWORD: ""
-      SMTP_PORT: "587"
-      SMTP_SERVER: smtp.mailgun.org
-      STREAMING_API_BASE_URL: wss://mastodon-streaming.example.com
-      VAPID_PRIVATE_KEY: ""
-      VAPID_PUBLIC_KEY: ""
-    image: tootsuite/mastodon
-    networks:
-      mastodon-internal: null
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/mastodon/mastodon
-      target: /mastodon/public/system
-      bind:
-        create_host_path: true
-  mastodon-streaming:
-    command:
-    - node
-    - ./streaming
-    depends_on:
-      mastodon-postgres:
-        condition: service_started
-        required: true
-      mastodon-redis:
-        condition: service_started
-        required: true
-    environment:
-      AWS_ACCESS_KEY_ID: ""
-      AWS_SECRET_ACCESS_KEY: ""
-      DB_HOST: mastodon-postgres
-      DB_NAME: postgres
-      DB_PASS: mastodon-postgres-pass
-      DB_PORT: "5432"
-      DB_USER: postgres
-      ES_ENABLED: "false"
-      ES_HOST: localhost
-      ES_PORT: "9200"
-      LOCAL_DOMAIN: mastodon.example.com
-      OTP_SECRET: ""
-      REDIS_HOST: mastodon-redis
-      REDIS_PORT: "6379"
-      S3_ALIAS_HOST: files.example.com
-      S3_BUCKET: files.example.com
-      S3_ENABLED: "false"
-      SECRET_KEY_BASE: ""
-      SMTP_FROM_ADDRESS: notificatons@example.com
-      SMTP_LOGIN: ""
-      SMTP_PASSWORD: ""
-      SMTP_PORT: "587"
-      SMTP_SERVER: smtp.mailgun.org
-      STREAMING_API_BASE_URL: wss://mastodon-streaming.example.com
-      VAPID_PRIVATE_KEY: ""
-      VAPID_PUBLIC_KEY: ""
-    healthcheck:
-      test:
-      - CMD
-      - wget
-      - -q
-      - --spider
-      - --proxy=off
-      - localhost:4000/api/v1/streaming/health
-    image: tootsuite/mastodon
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.mastodon-streaming.rule: Host(`mastodon-streaming.localhost`)
-      traefik.http.services.mastodon-streaming.loadbalancer.server.port: "4000"
-    networks:
-      mastodon-internal: null
-      srv: null
-    restart: always
-  minecraft:
-    environment:
-      EULA: "true"
-    image: itzg/minecraft-server
-    labels:
-      traefik.enable: "false"
-    networks:
-      default: null
-    ports:
-    - mode: ingress
-      target: 25565
-      published: "25565"
-      protocol: udp
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/minecraft/minecraft-data
-      target: /data
-      bind:
-        create_host_path: true
-  minecraft-ftb:
-    image: jonasbonno/ftb-revelation
-    labels:
-      traefik.enable: "false"
-    networks:
-      default: null
-    ports:
-    - mode: ingress
-      target: 25565
-      published: "25565"
-      protocol: udp
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/minecraft/ftb-data
-      target: /minecraft
-      bind:
-        create_host_path: true
-  mumble:
-    environment:
-      MUMBLE_SUPERUSER_PASSWORD: CHANGE_ME
-    image: mumblevoip/mumble-server:latest
-    labels:
-      traefik.enable: "false"
-    networks:
-      srv: null
-    ports:
-    - mode: ingress
-      target: 64738
-      published: "64738"
-      protocol: tcp
-    - mode: ingress
-      target: 64738
-      published: "64738"
-      protocol: udp
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/mumble/data
-      target: /data
-      bind:
-        create_host_path: true
-  musicbot:
-    image: raiponce/musicbot:0.2.10
-    labels:
-      traefik.enable: "false"
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/musicbot/conf
-      target: /musicBot/conf
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/musicbot/playlists
-      target: /musicBot/playlists
-      bind:
-        create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\jupyter\jupyter\config
+        target: /root/.jupyter
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\jupyter\notebooks
+        target: /home/jovyan
+        bind:
+          create_host_path: true
   nextcloud:
     depends_on:
       nextcloud-db:
@@ -982,9 +240,9 @@ services:
         required: true
     healthcheck:
       test:
-      - CMD
-      - curl
-      - 0.0.0.0:80
+        - CMD
+        - curl
+        - 0.0.0.0:80
     image: nextcloud:latest
     labels:
       traefik.enable: "true"
@@ -1006,15 +264,15 @@ services:
       srv: null
     restart: always
     volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/nextcloud/data
-      target: /var/www/html
-      bind:
-        create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\nextcloud\data
+        target: /var/www/html
+        bind:
+          create_host_path: true
   nextcloud-db:
     command:
-    - --transaction-isolation=READ-COMMITTED
-    - --binlog-format=ROW
+      - --transaction-isolation=READ-COMMITTED
+      - --binlog-format=ROW
     environment:
       MYSQL_DATABASE: nextcloud
       MYSQL_PASSWORD: nextcloud
@@ -1022,10 +280,10 @@ services:
       MYSQL_USER: nextcloud
     healthcheck:
       test:
-      - CMD
-      - mysqlcheck
-      - --all-databases
-      - -ppass
+        - CMD
+        - mysqlcheck
+        - --all-databases
+        - -ppass
     image: mariadb
     labels:
       traefik.enable: "false"
@@ -1033,17 +291,17 @@ services:
       nextcloud-internal: null
     restart: always
     volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/nextcloud/db
-      target: /var/lib/mysql
-      bind:
-        create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\nextcloud\db
+        target: /var/lib/mysql
+        bind:
+          create_host_path: true
   nginx:
     healthcheck:
       test:
-      - CMD
-      - curl
-      - 0.0.0.0:80
+        - CMD
+        - curl
+        - 0.0.0.0:80
     image: nginx:stable-alpine
     labels:
       traefik.enable: "true"
@@ -1053,25 +311,25 @@ services:
       srv: null
     restart: always
     volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/nginx/conf
-      target: /etc/nginx/conf.d
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/nginx/logs
-      target: /var/log/nginx
-      bind:
-        create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\nginx\conf
+        target: /etc/nginx/conf.d
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\nginx\logs
+        target: /var/log/nginx
+        bind:
+          create_host_path: true
   node_exporter:
     healthcheck:
       test:
-      - CMD
-      - wget
-      - -q
-      - --spider
-      - --proxy=off
-      - localhost:9100/metrics
+        - CMD
+        - wget
+        - -q
+        - --spider
+        - --proxy=off
+        - localhost:9100/metrics
     image: prom/node-exporter:v1.0.1
     labels:
       traefik.enable: "true"
@@ -1081,95 +339,6 @@ services:
     networks:
       srv: null
     restart: always
-  pastebin:
-    image: mkodockx/docker-pastebin:latest
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.pastebin.rule: Host(`pastebin.localhost`)
-      traefik.http.services.pastebin.loadbalancer.server.port: "80"
-    networks:
-      srv: null
-    restart: always
-  peertube:
-    depends_on:
-      peertube-db:
-        condition: service_started
-        required: true
-      peertube-redis:
-        condition: service_started
-        required: true
-    environment:
-      PEERTUBE_ADMIN_EMAIL: changeme@changeme.org
-      PEERTUBE_DB_HOSTNAME: peertube-db
-      PEERTUBE_DB_PASSWORD: ""
-      PEERTUBE_DB_USERNAME: peertube
-      PEERTUBE_TRUST_PROXY: '["127.0.0.1", "loopback", "172.0.0.0/0"]'
-      PEERTUBE_WEBSERVER_HOSTNAME: peertube.localhost
-      PEERTUBE_WEBSERVER_HTTPS: "true"
-      PEERTUBE_WEBSERVER_PORT: "443"
-    image: chocobozzz/peertube:production-buster
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.peertube.rule: Host(`peertube.localhost`)
-      traefik.http.services.peertube.loadbalancer.server.port: "9000"
-    links:
-    - peertube-db
-    - peertube-redis
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/peertube/config
-      target: /config
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/peertube/data
-      target: /data
-      bind:
-        create_host_path: true
-  peertube-db:
-    environment:
-      POSTGRES_DB: peertube
-      POSTGRES_PASSWORD: ""
-      POSTGRES_USER: peertube
-    healthcheck:
-      test:
-      - CMD
-      - pg_isready
-      - -U
-      - peertube
-    image: postgres:10-alpine
-    labels:
-      traefik.enable: "false"
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/peertube/db
-      target: /var/lib/postgresql/data
-      bind:
-        create_host_path: true
-  peertube-redis:
-    healthcheck:
-      test:
-      - CMD
-      - redis-cli
-      - PING
-    image: redis:4-alpine
-    labels:
-      traefik.enable: "false"
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/peertube/redis
-      target: /data
-      bind:
-        create_host_path: true
   portainer:
     image: portainer/portainer
     labels:
@@ -1181,23 +350,23 @@ services:
       srv: null
     restart: always
     volumes:
-    - type: bind
-      source: /var/run/docker.sock
-      target: /var/run/docker.sock
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/portainer/data
-      target: /data
-      bind:
-        create_host_path: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\portainer\data
+        target: /data
+        bind:
+          create_host_path: true
   prometheus:
     command:
-    - --config.file=/etc/prometheus/prometheus.yml
-    - --storage.tsdb.path=/prometheus
-    - --storage.tsdb.retention.time=30d
-    - --web.console.libraries=/usr/share/prometheus/console_libraries
-    - --web.console.templates=/usr/share/prometheus/consoles
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
     depends_on:
       alertmanager:
         condition: service_started
@@ -1210,12 +379,12 @@ services:
         required: true
     healthcheck:
       test:
-      - CMD
-      - wget
-      - -q
-      - --spider
-      - --proxy=off
-      - localhost:9090
+        - CMD
+        - wget
+        - -q
+        - --spider
+        - --proxy=off
+        - localhost:9090
     image: prom/prometheus:v2.22.0
     labels:
       traefik.enable: "true"
@@ -1227,298 +396,22 @@ services:
     restart: always
     user: 1000:1000
     volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/grafana/prometheus/data
-      target: /prometheus
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/grafana/prometheus/prometheus.yml
-      target: /etc/prometheus/prometheus.yml
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/grafana/prometheus/rules
-      target: /etc/prometheus/rules
-      bind:
-        create_host_path: true
-  remotely:
-    build:
-      context: https://github.com/immense/remotely.git#:Server
-      dockerfile: Dockerfile
-    image: translucency/remotely:latest
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.remotely.rule: Host(`remotely.localhost`)
-      traefik.http.services.remotely.loadbalancer.server.port: "5000"
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/remotely/remotely-data
-      target: /remotely-data
-      bind:
-        create_host_path: true
-  rocketchat:
-    depends_on:
-      rocketchat-mongo:
-        condition: service_started
-        required: true
-      rocketchat-mongo-replica:
-        condition: service_started
-        required: true
-    environment:
-      MONGO_OPLOG_URL: mongodb://rocketchat-mongo:27017/local
-      MONGO_URL: mongodb://rocketchat-mongo:27017/rocketchat
-      ROOT_URL: https://rocketchat.localhost
-    image: rocket.chat:latest
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.rocketchat.rule: Host(`rocketchat.localhost`)
-      traefik.http.services.rocketchat.loadbalancer.server.port: "3000"
-    networks:
-      rocketchat-internal: null
-      srv: null
-    restart: unless-stopped
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/rocketchat/uploads
-      target: /app/uploads
-      bind:
-        create_host_path: true
-  rocketchat-hubot:
-    depends_on:
-      rocketchat:
-        condition: service_started
-        required: true
-    environment:
-      BOT_NAME: bot
-      ROCKETCHAT_PASSWORD: botpassword
-      ROCKETCHAT_ROOM: GENERAL
-      ROCKETCHAT_URL: rocketchat:3000
-      ROCKETCHAT_USER: bot
-    image: rocketchat/hubot-rocketchat:latest
-    labels:
-      traefik.enable: "false"
-    networks:
-      default: null
-    restart: unless-stopped
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/rocketchat/scripts
-      target: /home/hubot/scripts
-      bind:
-        create_host_path: true
-  rocketchat-mongo:
-    command:
-    - mongod
-    - --smallfiles
-    - --oplogSize
-    - "128"
-    - --replSet
-    - rs01
-    healthcheck:
-      test:
-      - CMD
-      - echo
-      - db.runCommand("ping").ok
-      - '|'
-      - mongo
-      - localhost:27017/test
-      - --quiet
-    image: mongo:4.0
-    labels:
-      traefik.enable: "false"
-    networks:
-      rocketchat-internal: null
-    restart: unless-stopped
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/rocketchat/db
-      target: /data/db
-      bind:
-        create_host_path: true
-  rocketchat-mongo-replica:
-    command:
-    - mongo
-    - rocketchat-mongo/rocketchat
-    - --eval
-    - |-
-      rs.initiate({ _id: ''rs01'',
-      members: [ { _id: 0, host: ''rocketchat-mongo:27017'' } ]})
-    depends_on:
-      rocketchat-mongo:
-        condition: service_started
-        required: true
-    image: mongo:4.0
-    labels:
-      traefik.enable: "false"
-    networks:
-      rocketchat-internal: null
-  runner:
-    depends_on:
-      gitlab:
-        condition: service_started
-        restart: true
-        required: true
-    image: gitlab/gitlab-runner:latest
-    labels:
-      traefik.enable: "false"
-    links:
-    - gitlab
-    networks:
-      default: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/gitlab/runner
-      target: /etc/gitlab-runner
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /var/run/docker.sock
-      target: /var/run/docker.sock
-      bind:
-        create_host_path: true
-  searxng:
-    depends_on:
-      searxng-redis:
-        condition: service_started
-        required: true
-    environment:
-      IMAGE_PROXY: "true"
-      LIMITER: "true"
-      REDIS_URL: redis://searxng-redis:6379/0
-      SEARXNG_BASE_URL: https://searx.localhost/
-    healthcheck:
-      test:
-      - CMD
-      - wget
-      - -q
-      - --spider
-      - --proxy=off
-      - localhost:8080/healthz
-    image: searxng/searxng:latest
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.searxng.rule: Host(`searx.localhost`)
-      traefik.http.services.searxng.loadbalancer.server.port: "8080"
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/searxng/searxng
-      target: /etc/searxng
-      bind:
-        create_host_path: true
-  searxng-redis:
-    command:
-    - redis-server
-    - --save
-    - ""
-    - --appendonly
-    - "no"
-    healthcheck:
-      test:
-      - CMD
-      - redis-cli
-      - ping
-    image: redis:6.0-alpine
-    labels:
-      traefik.enable: "false"
-    networks:
-      default: null
-    restart: always
-    tmpfs:
-    - /var/lib/redis
-  sharelatex:
-    depends_on:
-      sharelatex-mongo:
-        condition: service_started
-        required: true
-      sharelatex-redis:
-        condition: service_started
-        required: true
-    environment:
-      REDIS_HOST: sharelatex-redis
-      SHARELATEX_ADMIN_EMAIL: changeme@changeme.org
-      SHARELATEX_APP_NAME: ' ShareLaTeX'
-      SHARELATEX_MONGO_URL: mongodb://sharelatex-mongo/sharelatex
-      SHARELATEX_NAV_TITLE: localhost - ShareLaTeX
-      SHARELATEX_REDIS_HOST: sharelatex-redis
-      SHARELATEX_SITE_URL: https://latex.localhost
-    healthcheck:
-      test:
-      - CMD
-      - curl
-      - 0.0.0.0:80
-    image: sharelatex/sharelatex:3.5
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.sharelatex.rule: Host(`sharelatex.localhost`)
-      traefik.http.services.sharelatex.loadbalancer.server.port: "80"
-    networks:
-      sharelatex-internal: null
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/sharelatex/data
-      target: /var/lib/sharelatex
-      bind:
-        create_host_path: true
-  sharelatex-mongo:
-    healthcheck:
-      test:
-      - CMD
-      - echo
-      - db.runCommand("ping").ok
-      - '|'
-      - mongo
-      - localhost:27017/test
-      - --quiet
-    image: mongo:4.0
-    labels:
-      traefik.enable: "false"
-    networks:
-      sharelatex-internal: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/sharelatex/mongo
-      target: /data/db
-      bind:
-        create_host_path: true
-  sharelatex-redis:
-    healthcheck:
-      test:
-      - CMD
-      - redis-cli
-      - ping
-    image: redis:6.0-alpine
-    labels:
-      traefik.enable: "false"
-    networks:
-      sharelatex-internal: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/sharelatex/redis
-      target: /data
-      bind:
-        create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\grafana\prometheus\data
+        target: /prometheus
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\grafana\prometheus\prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\grafana\prometheus\rules
+        target: /etc/prometheus/rules
+        bind:
+          create_host_path: true
   sonarr:
-    depends_on:
-      jackett:
-        condition: service_started
-        restart: true
-        required: true
-      transmission:
-        condition: service_started
-        restart: true
-        required: true
     environment:
       PGID: "1000"
       PUID: "1000"
@@ -1529,147 +422,61 @@ services:
       traefik.http.routers.sonarr.middlewares: basic_auth@docker
       traefik.http.routers.sonarr.rule: Host(`sonarr.localhost`)
       traefik.http.services.sonarr.loadbalancer.server.port: "8080"
-    links:
-    - jackett
-    - transmission
     networks:
       srv: null
     restart: always
     volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/sonarr/config
-      target: /config
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/sonarr/downloads
-      target: /downloads
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/sonarr/tv
-      target: /tv
-      bind:
-        create_host_path: true
-  streama:
-    healthcheck:
-      test:
-      - CMD
-      - curl
-      - 0.0.0.0:8080/login/auth
-    image: gkiko/streama:v1.8.3
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.streama.rule: Host(`streama.localhost`)
-      traefik.http.services.streama.loadbalancer.server.port: "8080"
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/streama/streama.mv.db
-      target: /app/streama/streama.mv.db
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/streama/streama.trace.db
-      target: /app/streama/streama.trace.db
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/transmission/downloads
-      target: /data
-      bind:
-        create_host_path: true
-  theia:
-    image: theiaide/theia
-    init: true
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.theia.middlewares: basic_auth@docker
-      traefik.http.routers.theia.rule: Host(`theia.localhost`)
-      traefik.http.services.theia.loadbalancer.server.port: "3000"
-    networks:
-      srv: null
-    restart: always
-    user: 1000:1000
-    volumes:
-    - type: bind
-      source: /home/runner
-      target: /home/project
-      bind:
-        create_host_path: true
-  tor-relay:
-    build:
-      context: https://github.com/jessfraz/dockerfiles.git#:tor-relay
-      dockerfile: Dockerfile
-    environment:
-      CONTACT_EMAIL: changeme@changeme.org
-      CONTACT_GPG_FINGERPRINT: ""
-      CONTACT_NAME: ""
-      RELAY_BANDWIDTH_BURST: 200 KBytes
-      RELAY_BANDWIDTH_RATE: 100 KBytes
-      RELAY_NICKNAME: hacktheplanet
-      RELAY_PORT: "9001"
-      RELAY_TYPE: middle
-    image: jess/tor-relay
-    labels:
-      traefik.enable: "false"
-    networks:
-      srv: null
-    ports:
-    - mode: ingress
-      target: 9001
-      published: "9001"
-      protocol: tcp
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/tor-relay/keys
-      target: /var/lib/tor/.tor/keys
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /etc/localtime
-      target: /etc/localtime
-      bind:
-        create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\sonarr\config
+        target: /config
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\sonarr\downloads
+        target: /downloads
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\sonarr\tv
+        target: /tv
+        bind:
+          create_host_path: true
   traefik:
     command:
-    - --providers.docker
-    - --providers.docker.exposedbydefault=false
-    - --providers.docker.network=make-my-server_srv
-    - --entrypoints.web.address=:80
-    - --entrypoints.web.http.redirections.entrypoint.to=websecure
-    - --entrypoints.websecure.address=:443
-    - --certificatesresolvers.myresolver.acme.email=changeme@changeme.org
-    - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
-    - --certificatesresolvers.myresolver.acme.httpchallenge=true
-    - --entrypoints.websecure.http.tls.certresolver=myresolver
-    - --entrypoints.websecure.http3
-    - --accesslog.filepath=/logs/access.log
-    - --accesslog.format=json
-    - --log.filepath=/logs/traefik.log
-    - --log.format=json
-    - --log.level=ERROR
-    - --metrics.prometheus.addrouterslabels
-    - --api.dashboard
-    - --entrypoints.websecure.http.middlewares=compress@file,headers@file
-    - --experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban
-    - --experimental.plugins.fail2ban.version=v0.6.0
-    - --global.checknewversion=false
-    - --global.sendanonymoususage=false
-    - --ping
-    - --providers.file.directory=/dynamic_conf/
-    - --providers.file.watch=true
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=make-my-server_srv
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.myresolver.acme.email=changeme@changeme.org
+      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.myresolver.acme.httpchallenge=true
+      - --entrypoints.websecure.http.tls.certresolver=myresolver
+      - --entrypoints.websecure.http3
+      - --accesslog.filepath=/logs/access.log
+      - --accesslog.format=json
+      - --log.filepath=/logs/traefik.log
+      - --log.format=json
+      - --log.level=ERROR
+      - --metrics.prometheus.addrouterslabels
+      - --api.dashboard
+      - --entrypoints.websecure.http.middlewares=compress@file,headers@file
+      - --experimental.plugins.fail2ban.modulename=github.com/tommoulard/fail2ban
+      - --experimental.plugins.fail2ban.version=v0.6.0
+      - --global.checknewversion=false
+      - --global.sendanonymoususage=false
+      - --ping
+      - --providers.file.directory=/dynamic_conf/
+      - --providers.file.watch=true
     environment:
       TZ: Europe/Paris
     healthcheck:
       test:
-      - CMD
-      - traefik
-      - healthcheck
-      - --ping
+        - CMD
+        - traefik
+        - healthcheck
+        - --ping
     image: traefik:v3.0
     labels:
       traefik.enable: "true"
@@ -1681,106 +488,31 @@ services:
     networks:
       srv: null
     ports:
-    - mode: ingress
-      target: 80
-      published: "80"
-      protocol: tcp
-    - mode: ingress
-      target: 443
-      published: "443"
-      protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "80"
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        published: "443"
+        protocol: tcp
     restart: always
     volumes:
-    - type: bind
-      source: /var/run/docker.sock
-      target: /var/run/docker.sock
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/traefik/logs
-      target: /logs
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/traefik/dynamic_conf
-      target: /dynamic_conf
-      bind:
-        create_host_path: true
-  transmission:
-    dns:
-    - 1.1.1.1
-    environment:
-      PGID: "1000"
-      PUID: "1000"
-      TRANSMISSION_WEB_HOME: /flood-for-transmission/
-      TZ: Europe/Paris
-    healthcheck:
-      test:
-      - CMD
-      - curl
-      - 0.0.0.0:9091/transmission/web/
-    image: linuxserver/transmission:3.00-r5-ls115
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.transmission.middlewares: basic_auth@docker
-      traefik.http.routers.transmission.rule: Host(`transmission.localhost`)
-      traefik.http.services.transmission.loadbalancer.server.port: "9091"
-    networks:
-      srv: null
-    ports:
-    - mode: ingress
-      target: 51413
-      published: "51413"
-      protocol: tcp
-    - mode: ingress
-      target: 51413
-      published: "51413"
-      protocol: udp
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/transmission/config
-      target: /config
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/transmission/downloads
-      target: /downloads
-      bind:
-        create_host_path: true
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/transmission/watch
-      target: /watch
-      bind:
-        create_host_path: true
-  vpn:
-    environment:
-      VPN_ADDL_PASSWORDS: ""
-      VPN_ADDL_USERS: ""
-      VPN_IPSEC_PSK: ""
-      VPN_PASSWORD: ""
-      VPN_USER: ""
-    image: hwdsl2/ipsec-vpn-server:latest
-    networks:
-      default: null
-    ports:
-    - mode: ingress
-      target: 4500
-      published: "4500"
-      protocol: udp
-    - mode: ingress
-      target: 500
-      published: "500"
-      protocol: udp
-    privileged: true
-    restart: always
-    volumes:
-    - type: bind
-      source: /lib/modules
-      target: /lib/modules
-      read_only: true
-      bind:
-        create_host_path: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\traefik\logs
+        target: /logs
+        bind:
+          create_host_path: true
+      - type: bind
+        source: c:\Users\Ollie\Documents\Github\make-my-server\traefik\dynamic_conf
+        target: /dynamic_conf
+        bind:
+          create_host_path: true
   watchtower:
     environment:
       WATCHTOWER_CLEANUP: "true"
@@ -1793,86 +525,15 @@ services:
       default: null
     restart: always
     volumes:
-    - type: bind
-      source: /var/run/docker.sock
-      target: /var/run/docker.sock
-      bind:
-        create_host_path: true
-  wordpress:
-    depends_on:
-      wordpress-db:
-        condition: service_started
-        required: true
-    environment:
-      WORDPRESS_DB_HOST: wordpress-db
-      WORDPRESS_DB_NAME: wordpress-db
-      WORDPRESS_DB_PASSWORD: ""
-      WORDPRESS_DB_USER: wordpress-user
-    healthcheck:
-      test:
-      - CMD
-      - curl
-      - 0.0.0.0:80
-    image: wordpress:6.2
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.wordpress.rule: Host(`wordpress.localhost`)
-      traefik.http.services.wordpress.loadbalancer.server.port: "80"
-    links:
-    - wordpress-db
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/wordpress/wordpress
-      target: /var/www/html
-      bind:
-        create_host_path: true
-  wordpress-db:
-    environment:
-      MYSQL_DATABASE: wordpress-db
-      MYSQL_PASSWORD: ""
-      MYSQL_RANDOM_ROOT_PASSWORD: "true"
-      MYSQL_USER: wordpress-user
-    healthcheck:
-      test:
-      - CMD
-      - mysqladmin
-      - ping
-      - -uwordpress-user
-      - -p
-      - '|'
-      - grep
-      - alive
-    image: mysql:5.7
-    labels:
-      traefik.enable: "false"
-    networks:
-      srv: null
-    restart: always
-    volumes:
-    - type: bind
-      source: /home/runner/work/make-my-server/make-my-server/wordpress/db
-      target: /var/lib/mysql
-      bind:
-        create_host_path: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        bind:
+          create_host_path: true
 networks:
-  codi-internal:
-    name: make-my-server_codi-internal
   default:
     name: make-my-server_default
-  framadate-internal:
-    name: make-my-server_framadate-internal
-  hits-internal:
-    name: make-my-server_hits-internal
-  mastodon-internal:
-    name: make-my-server_mastodon-internal
   nextcloud-internal:
     name: make-my-server_nextcloud-internal
-  rocketchat-internal:
-    name: make-my-server_rocketchat-internal
-  sharelatex-internal:
-    name: make-my-server_sharelatex-internal
   srv:
     name: make-my-server_srv

@@ -212,7 +212,7 @@ docker-compose logs service     # Logs
 **Triggers**: All PRs/pushes
 **Jobs**:
 - **Config-test**: Validates syntax, runs `./test.sh`, uploads artifacts on fail
-- **Health-checks**: 12 services (codimd, homeassistant, jackett, kavita, nextcloud, nginx, searxng, sharelatex, streama, traefik, transmission, wordpress)
+- **Health Checks:** 4 services with configured health checks (homeassistant, nextcloud, nginx, traefik)
 - **Lint**: Runs `yamllint`, GitHub-formatted output
 
 ### healthcheck.workflow.tmpl.yml
