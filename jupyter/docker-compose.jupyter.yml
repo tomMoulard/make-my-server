@@ -1,5 +1,3 @@
-version: '2'
-
 services:
   jupyter:
     image: 'jupyter/tensorflow-notebook:45f07a14b422'

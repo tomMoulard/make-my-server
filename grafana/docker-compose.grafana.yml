@@ -1,5 +1,3 @@
-version: '2'
-
 services:
   alertmanager:
     image: 'prom/alertmanager:${ALERTMANAGER_IMAGE_VERSION:-v0.21.0}'

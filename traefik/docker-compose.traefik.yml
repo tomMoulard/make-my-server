@@ -1,5 +1,3 @@
-version: '2'
-
 services:
   traefik:
     image: 'traefik:${TRAEFIK_IMAGE_VERSION:-v3.0}'

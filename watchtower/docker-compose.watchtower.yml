@@ -1,5 +1,3 @@
-version: '2'
-
 services:
   watchtower:
     image: 'containrrr/watchtower:${WATCHTOWER_IMAGE_VERSION:-latest}'

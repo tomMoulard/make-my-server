@@ -1,5 +1,3 @@
-version: '2'
-
 services:
   hugo:
     image: 'nginx:stable-alpine'

@@ -1,5 +1,3 @@
-version: '2'
-
 services:
   freshrss:
     image: 'lscr.io/linuxserver/freshrss:${FRESHRSS_IMAGE_VERSION:-latest}'

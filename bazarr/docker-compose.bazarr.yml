@@ -1,5 +1,3 @@
-version: '2'
-
 services:
   bazarr:
     image: 'linuxserver/bazarr:${BAZARR_IMAGE_VERSION:-version-v1.5.3}'

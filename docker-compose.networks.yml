@@ -1,4 +1,2 @@
-version: '2'
-
 networks:
   srv: {}

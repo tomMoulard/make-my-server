@@ -1,5 +1,3 @@
-version: '2'
-
 services:
   fivefilters-full-text-rss:
     image: 'heussd/fivefilters-full-text-rss:${FIVEFILTERS_IMAGE_VERSION:-latest}'
