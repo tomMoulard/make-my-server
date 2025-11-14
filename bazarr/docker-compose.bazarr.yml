@@ -2,16 +2,22 @@ version: '2'
 
 services:
   bazarr:
-    image: 'linuxserver/bazarr:${BAZARR_IMAGE_VERSION:-v1.2.2}'
+    image: 'linuxserver/bazarr:${BAZARR_IMAGE_VERSION:-version-v1.5.3}'
     environment:
       PGID: '${BAZARR_GPID:-1000}'
       PUID: '${BAZARR_PUID:-1000}'
       TZ: '${TZ:-Europe/Paris}'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:6767/api/system/health']
+      interval: '30s'
+      timeout: '10s'
+      retries: 3
+      start_period: '40s'
     labels:
       traefik.enable: true
       traefik.http.routers.bazarr.middlewares: 'basic_auth@docker'
       traefik.http.routers.bazarr.rule: 'Host(`bazarr.${SITE:-localhost}`)'
-      traefik.http.services.bazarr.loadbalancer.server.port: 8080
+      traefik.http.services.bazarr.loadbalancer.server.port: 6767
     networks:
       - 'srv'
     restart: 'always'

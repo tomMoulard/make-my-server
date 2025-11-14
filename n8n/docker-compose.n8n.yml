@@ -1,0 +1,39 @@
+version: '2'
+
+services:
+  n8n:
+    image: 'n8nio/n8n:${N8N_IMAGE_VERSION:-latest}'
+    container_name: 'n8n'
+    environment:
+      N8N_PROTOCOL: 'https'
+      N8N_HOST: 'n8n.${SITE:-localhost}'
+      WEBHOOK_URL: 'https://n8n.${SITE:-localhost}/'
+      N8N_BASIC_AUTH_ACTIVE: 'false'
+      N8N_SECURE_COOKIE: 'true'
+      N8N_CORS_ORIGIN: '*'
+      DB_TYPE: 'sqlite'
+      TZ: '${TZ:-Europe/Paris}'
+    healthcheck:
+      test:
+        - 'CMD'
+        - 'wget'
+        - '--no-verbose'
+        - '--tries=1'
+        - '--spider'
+        - 'http://localhost:5678/healthz'
+      interval: '30s'
+      timeout: '10s'
+      retries: 3
+      start_period: '60s'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.n8n.rule: 'Host(`n8n.${SITE:-localhost}`)'
+      traefik.http.routers.n8n.entrypoints: 'websecure'
+      traefik.http.routers.n8n.tls.certresolver: 'letsencrypt'
+      traefik.http.routers.n8n.middlewares: 'basic_auth@docker'
+      traefik.http.services.n8n.loadbalancer.server.port: 5678
+    networks:
+      - 'srv'
+    restart: 'unless-stopped'
+    volumes:
+      - './data:/home/node/.n8n'

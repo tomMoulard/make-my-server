@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+  nzbhydra2:
+    image: 'lscr.io/linuxserver/nzbhydra2:${NZBHYDRA2_IMAGE_VERSION:-latest}'
+    container_name: 'nzbhydra2'
+    depends_on:
+      - 'sabnzbd'
+    environment:
+      PUID: '${NZBHYDRA2_PUID:-1000}'
+      PGID: '${NZBHYDRA2_PGID:-1000}'
+      TZ: '${TZ:-Europe/Paris}'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5076/']
+      interval: '30s'
+      timeout: '10s'
+      retries: 3
+      start_period: '60s'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.nzbhydra2.rule: 'Host(`nzbhydra2.${SITE:-localhost}`)'
+      traefik.http.routers.nzbhydra2.entrypoints: 'websecure'
+      traefik.http.routers.nzbhydra2.tls.certresolver: 'letsencrypt'
+      traefik.http.routers.nzbhydra2.middlewares: 'basic_auth@docker'
+      traefik.http.services.nzbhydra2.loadbalancer.server.port: 5076
+    networks:
+      - 'srv'
+    restart: 'unless-stopped'
+    volumes:
+      - './config:/config'
+      - './downloads:/downloads'

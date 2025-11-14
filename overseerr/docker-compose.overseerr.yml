@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  overseerr:
+    image: 'lscr.io/linuxserver/overseerr:${OVERSEERR_IMAGE_VERSION:-latest}'
+    container_name: 'overseerr'
+    depends_on:
+      - 'radarr'
+    environment:
+      PUID: '${OVERSEERR_PUID:-1000}'
+      PGID: '${OVERSEERR_PGID:-1000}'
+      TZ: '${TZ:-Europe/Paris}'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5055/']
+      interval: '30s'
+      timeout: '10s'
+      retries: 3
+      start_period: '60s'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.overseerr.rule: 'Host(`overseerr.${SITE:-localhost}`)'
+      traefik.http.routers.overseerr.entrypoints: 'websecure'
+      traefik.http.routers.overseerr.tls.certresolver: 'letsencrypt'
+      traefik.http.routers.overseerr.middlewares: 'basic_auth@docker'
+      traefik.http.services.overseerr.loadbalancer.server.port: 5055
+    networks:
+      - 'srv'
+    restart: 'unless-stopped'
+    volumes:
+      - './config:/config'

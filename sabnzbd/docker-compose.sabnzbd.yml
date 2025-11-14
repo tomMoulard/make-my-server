@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  sabnzbd:
+    image: 'lscr.io/linuxserver/sabnzbd:${SABNZBD_IMAGE_VERSION:-latest}'
+    container_name: 'sabnzbd'
+    environment:
+      PUID: '${SABNZBD_PUID:-1000}'
+      PGID: '${SABNZBD_PGID:-1000}'
+      TZ: '${TZ:-Europe/Paris}'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/']
+      interval: '30s'
+      timeout: '10s'
+      retries: 3
+      start_period: '60s'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.sabnzbd.rule: 'Host(`sabnzbd.${SITE:-localhost}`)'
+      traefik.http.routers.sabnzbd.entrypoints: 'websecure'
+      traefik.http.routers.sabnzbd.tls.certresolver: 'letsencrypt'
+      traefik.http.routers.sabnzbd.middlewares: 'basic_auth@docker'
+      traefik.http.services.sabnzbd.loadbalancer.server.port: 8080
+    networks:
+      - 'srv'
+    restart: 'unless-stopped'
+    volumes:
+      - './config:/config'
+      - './incomplete-downloads:/incomplete-downloads'
+      - './downloads:/downloads'

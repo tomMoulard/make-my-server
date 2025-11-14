@@ -25,6 +25,10 @@ jobs:
           path: |
             log.log
             *.patch
+  Health-checks-bazarr:
+    uses: 'Oliver-Sheaky/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    with:
+      service_name: 'bazarr'
   # Health-checks-grafana:
   #   uses: 'Oliver-Sheaky/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
   #   with:
@@ -34,10 +38,18 @@ jobs:
     uses: 'Oliver-Sheaky/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
     with:
       service_name: 'homeassistant'
+  Health-checks-homepage:
+    uses: 'Oliver-Sheaky/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    with:
+      service_name: 'homepage'
   # Health-checks-hugo:
   #   uses: 'Oliver-Sheaky/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
   #   with:
   #     service_name: 'hugo'
+  Health-checks-n8n:
+    uses: 'Oliver-Sheaky/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    with:
+      service_name: 'n8n'
   Health-checks-nextcloud:
     uses: 'Oliver-Sheaky/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
     with:
@@ -46,6 +58,14 @@ jobs:
     uses: 'Oliver-Sheaky/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
     with:
       service_name: 'nginx'
+  Health-checks-radarr:
+    uses: 'Oliver-Sheaky/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    with:
+      service_name: 'radarr'
+  Health-checks-sonarr:
+    uses: 'Oliver-Sheaky/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
+    with:
+      service_name: 'sonarr'
   Health-checks-traefik:
     uses: 'Oliver-Sheaky/make-my-server/.github/workflows/healthcheck.workflow.tmpl.yml@master'
     with:

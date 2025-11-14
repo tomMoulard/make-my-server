@@ -1,0 +1,33 @@
+version: '2'
+
+services:
+  radarr:
+    image: 'lscr.io/linuxserver/radarr:${RADARR_IMAGE_VERSION:-latest}'
+    container_name: 'radarr'
+    depends_on:
+      - 'nzbhydra2'
+      - 'sabnzbd'
+    environment:
+      PUID: '${RADARR_PUID:-1000}'
+      PGID: '${RADARR_PGID:-1000}'
+      TZ: '${TZ:-Europe/Paris}'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:7878/api/v3/health']
+      interval: '30s'
+      timeout: '10s'
+      retries: 3
+      start_period: '60s'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.radarr.rule: 'Host(`radarr.${SITE:-localhost}`)'
+      traefik.http.routers.radarr.entrypoints: 'websecure'
+      traefik.http.routers.radarr.tls.certresolver: 'letsencrypt'
+      traefik.http.routers.radarr.middlewares: 'basic_auth@docker'
+      traefik.http.services.radarr.loadbalancer.server.port: 7878
+    networks:
+      - 'srv'
+    restart: 'unless-stopped'
+    volumes:
+      - './config:/config'
+      - './downloads:/downloads'
+      - './movies:/movies'

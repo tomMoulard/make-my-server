@@ -7,3 +7,8 @@ portainer/data
 .env.generated
 *.patch
 *.swp
+
+# Ignore PRP files (work-in-progress planning docs)
+.claude/prp/*
+# But keep PRP templates
+!.claude/prp/templates/

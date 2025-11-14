@@ -1,0 +1,26 @@
+services:
+  heimdall:
+    image: 'lscr.io/linuxserver/heimdall:${HEIMDALL_IMAGE_VERSION:-latest}'
+    container_name: 'heimdall'
+    restart: 'unless-stopped'
+    networks:
+      - 'srv'
+    environment:
+      - 'PUID=${PUID:-1000}'
+      - 'PGID=${PGID:-1000}'
+      - 'TZ=${TZ:-Europe/Paris}'
+    volumes:
+      - './config:/config'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:80/']
+      interval: '30s'
+      timeout: '10s'
+      retries: 3
+      start_period: '40s'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.heimdall.rule=Host(`heimdall.${SITE:-localhost}`)'
+      - 'traefik.http.routers.heimdall.entrypoints=websecure'
+      - 'traefik.http.routers.heimdall.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.heimdall.middlewares=basic_auth@docker'
+      - 'traefik.http.services.heimdall.loadbalancer.server.port=80'

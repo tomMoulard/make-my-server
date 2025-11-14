@@ -1,0 +1,35 @@
+version: '2'
+
+services:
+  homepage:
+    image: 'ghcr.io/gethomepage/homepage:${HOMEPAGE_IMAGE_VERSION:-latest}'
+    container_name: 'homepage'
+    environment:
+      PUID: '${HOMEPAGE_PUID:-1000}'
+      PGID: '${HOMEPAGE_PGID:-1000}'
+      HOMEPAGE_ALLOWED_HOSTS: 'homepage.${SITE:-localhost}'
+    healthcheck:
+      test:
+        - 'CMD'
+        - 'wget'
+        - '--no-verbose'
+        - '--tries=1'
+        - '--spider'
+        - 'http://127.0.0.1:3000/api/healthcheck'
+      interval: '10s'
+      timeout: '3s'
+      retries: 3
+      start_period: '20s'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.homepage.rule: 'Host(`homepage.${SITE:-localhost}`)'
+      traefik.http.routers.homepage.entrypoints: 'websecure'
+      traefik.http.routers.homepage.tls.certresolver: 'letsencrypt'
+      traefik.http.routers.homepage.middlewares: 'basic_auth@docker'
+      traefik.http.services.homepage.loadbalancer.server.port: 3000
+    networks:
+      - 'srv'
+    restart: 'unless-stopped'
+    volumes:
+      - './config:/app/config'
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'

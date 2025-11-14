@@ -7,11 +7,17 @@ services:
       PGID: '${SONARR_GPID:-1000}'
       PUID: '${SONARR_PUID:-1000}'
       TZ: '${TZ:-Europe/Paris}'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8989/api/v3/health']
+      interval: '30s'
+      timeout: '10s'
+      retries: 3
+      start_period: '40s'
     labels:
       traefik.enable: true
       traefik.http.routers.sonarr.middlewares: 'basic_auth@docker'
       traefik.http.routers.sonarr.rule: 'Host(`sonarr.${SITE:-localhost}`)'
-      traefik.http.services.sonarr.loadbalancer.server.port: 8080
+      traefik.http.services.sonarr.loadbalancer.server.port: 8989
     networks:
       - 'srv'
     restart: 'always'

@@ -142,18 +142,37 @@ yamllint .      # YAML linting
 docker-compose config  # Syntax check
 ```
 
+### Platform-Specific Testing (CRITICAL for Windows)
+**Windows Developers**: ALWAYS run `./test.sh` via WSL, NOT PowerShell/CMD
+
+**Why**: `test_config.yml` is a generated reference file that must use Linux paths for CI compatibility. Running test.sh on Windows generates Windows paths (`c:\Users\...`) which will cause CI failures.
+
+**Commands**:
+```bash
+# Option 1: Run from WSL terminal
+wsl
+cd /mnt/c/Users/Ollie/Documents/Github/make-my-server
+./test.sh
+
+# Option 2: Run directly from Windows
+wsl ./test.sh
+```
+
+**After running**: Always commit the regenerated `test_config.yml` and `.env.default` files.
+
 ---
 
 ## Common Tasks
 
 ### Add Service
-1. Create structure: `mkdir service-name && cd service-name && mkdir conf data logs`
+1. Create structure: `mkdir service-name && cd service-name`
 2. Create `docker-compose.servicename.yml` with service definition
-3. Add to master `docker-compose.yml` includes
-4. Create `README.md`
-5. Run `./test.sh` to auto-generate env vars in `.env.default`
-6. Add health check to `.github/workflows/dockerpublish.yml`
-7. Test: `docker-compose config && ./test.sh && docker-compose up -d service-name`
+3. Create `.gitignore` based on volume mounts - ignore all config/data directories (prioritize security - when in doubt, add to .gitignore)
+4. Add to master `docker-compose.yml` includes
+5. Create `README.md`
+6. Run `./test.sh` to auto-generate env vars in `.env.default`
+7. Add health check to `.github/workflows/dockerpublish.yml`
+8. Test: `docker-compose config && ./test.sh && docker-compose up -d service-name`
 
 ### Remove Service
 1. Remove/comment include from `docker-compose.yml`
