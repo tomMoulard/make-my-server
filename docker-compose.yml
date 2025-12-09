@@ -26,6 +26,7 @@ include:
   - path: 'nginx/docker-compose.nginx.yml'
   - path: 'pastebin/docker-compose.pastebin.yml'
   - path: 'peertube/docker-compose.peertube.yml'
+  - path: 'pihole/docker-compose.pihole.yml'
   - path: 'portainer/docker-compose.portainer.yml'
   - path: 'remotely/docker-compose.remotely.yml'
   - path: 'rocketchat/docker-compose.rocket-chat.yml'

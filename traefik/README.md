@@ -8,6 +8,15 @@ out which components are responsible for handling them. What sets Traefik
 apart, besides its many features, is that it automatically discovers the right
 configuration for your services.
 
+## DNS entrypoint for Pi-hole
+
+Traefik now terminates both TCP and UDP DNS traffic for Pi-hole. The
+`dns-tcp`/`dns-udp` entrypoints listen on port 53 by default (configurable via
+`TRAEFIK_DNS_ENTRYPOINT` in your `.env`). Make sure no local resolver (for
+example `systemd-resolved`) is bound to that port before starting Traefik. If
+you need a custom port, set `TRAEFIK_DNS_ENTRYPOINT=<port>` and update every DNS
+client to query Traefik on the same port.
+
 ## Add a Router/Service using the file provider
 To create a new router and/or a new service, you can use the file provider:
 

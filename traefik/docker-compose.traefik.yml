@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: 'traefik:${TRAEFIK_IMAGE_VERSION:-v3.0}'
+    image: 'traefik:${TRAEFIK_IMAGE_VERSION:-v3}'
     command:
       # Provider
       - '--providers.docker'
@@ -10,6 +10,8 @@ services:
       - '--entrypoints.web.address=:${TRAEFIK_WEB_ENTRYPOINT:-80}'
       - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
       - '--entrypoints.websecure.address=:${TRAEFIK_WEBSECURE_ENTRYPOINT:-443}'
+      - '--entrypoints.dns-tcp.address=:${TRAEFIK_DNS_ENTRYPOINT:-53}/tcp'
+      - '--entrypoints.dns-udp.address=:${TRAEFIK_DNS_ENTRYPOINT:-53}/udp'
       # Let's Encrypt
       - '--certificatesresolvers.myresolver.acme.email=${ROOT_EMAIL:-changeme@changeme.org}'
       - '--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web'
@@ -52,6 +54,8 @@ services:
     ports:
       - '${TRAEFIK_WEB_ENTRYPOINT:-80}:${TRAEFIK_WEB_ENTRYPOINT:-80}'
       - '${TRAEFIK_WEBSECURE_ENTRYPOINT:-443}:${TRAEFIK_WEBSECURE_ENTRYPOINT:-443}'
+      - '${TRAEFIK_DNS_ENTRYPOINT:-53}:${TRAEFIK_DNS_ENTRYPOINT:-53}/tcp'
+      - '${TRAEFIK_DNS_ENTRYPOINT:-53}:${TRAEFIK_DNS_ENTRYPOINT:-53}/udp'
     restart: 'always'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'

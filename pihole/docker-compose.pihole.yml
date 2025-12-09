@@ -1,0 +1,45 @@
+services:
+  pihole:
+    image: 'pihole/pihole:${PIHOLE_IMAGE_VERSION:-2025.11.1}'
+    environment:
+      DNS1: '${PIHOLE_DNS1:-1.1.1.1}'
+      DNS2: '${PIHOLE_DNS2:-1.0.0.1}'
+      DNSMASQ_LISTENING: '${PIHOLE_DNSMASQ_LISTENING:-all}'
+      FTLCONF_REPLY_ADDR4: '${PIHOLE_V4_ADDRESS:-0.0.0.0}'
+      FTLCONF_REPLY_ADDR6: '${PIHOLE_V6_ADDRESS:-::}'
+      HOSTNAME: '${PIHOLE_HOSTNAME:-pihole}'
+      REV_SERVER: '${PIHOLE_REV_SERVER:-false}'
+      REV_SERVER_CIDR: '${PIHOLE_REV_SERVER_CIDR:-192.168.0.0/24}'
+      REV_SERVER_DOMAIN: '${PIHOLE_REV_SERVER_DOMAIN:-lan}'
+      REV_SERVER_TARGET: '${PIHOLE_REV_SERVER_TARGET:-192.168.0.1}'
+      TZ: '${TZ:-Europe/Paris}'
+      VIRTUAL_HOST: 'pihole.${SITE:-localhost}'
+      WEBPASSWORD: '${USERS}'
+    healthcheck:
+      test:
+        - 'CMD'
+        - 'dig'
+        - '+time=1'
+        - '+tries=1'
+        - '@127.0.0.1'
+        - 'pi-hole.net'
+    labels:
+      traefik.enable: true
+      traefik.http.routers.pihole.entrypoints: 'websecure'
+      traefik.http.routers.pihole.rule: 'Host(`pihole.${SITE:-localhost}`)'
+      traefik.http.routers.pihole.tls: true
+      traefik.http.services.pihole.loadbalancer.server.port: 80
+      traefik.tcp.routers.pihole-dns.entrypoints: 'dns-tcp'
+      traefik.tcp.routers.pihole-dns.rule: 'HostSNI(`*`)'
+      traefik.tcp.routers.pihole-dns.service: 'pihole-dns'
+      traefik.tcp.services.pihole-dns.loadbalancer.server.port: 53
+      traefik.udp.routers.pihole-dns.entrypoints: 'dns-udp'
+      traefik.udp.routers.pihole-dns.service: 'pihole-dns'
+      traefik.udp.services.pihole-dns.loadbalancer.server.port: 53
+    networks:
+      - 'srv'
+    restart: 'always'
+    volumes:
+      - './etc-pihole:/etc/pihole'
+      - './etc-dnsmasq.d:/etc/dnsmasq.d'
+      - './logs:/var/log/lighttpd'

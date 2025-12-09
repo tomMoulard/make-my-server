@@ -1170,6 +1170,62 @@ services:
       target: /data
       bind:
         create_host_path: true
+  pihole:
+    environment:
+      DNS1: 1.1.1.1
+      DNS2: 1.0.0.1
+      DNSMASQ_LISTENING: all
+      FTLCONF_REPLY_ADDR4: 0.0.0.0
+      FTLCONF_REPLY_ADDR6: "::"
+      HOSTNAME: pihole
+      REV_SERVER: "false"
+      REV_SERVER_CIDR: 192.168.0.0/24
+      REV_SERVER_DOMAIN: lan
+      REV_SERVER_TARGET: 192.168.0.1
+      TZ: Europe/Paris
+      VIRTUAL_HOST: pihole.localhost
+      WEBPASSWORD: changeme
+    healthcheck:
+      test:
+      - CMD
+      - dig
+      - +time=1
+      - +tries=1
+      - '@127.0.0.1'
+      - pi-hole.net
+    image: pihole/pihole:2024.05.0
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.pihole.entrypoints: websecure
+      traefik.http.routers.pihole.rule: Host(`pihole.localhost`)
+      traefik.http.routers.pihole.tls: "true"
+      traefik.http.services.pihole.loadbalancer.server.port: "80"
+      traefik.tcp.routers.pihole-dns.entrypoints: dns-tcp
+      traefik.tcp.routers.pihole-dns.rule: HostSNI(`*`)
+      traefik.tcp.routers.pihole-dns.service: pihole-dns
+      traefik.tcp.services.pihole-dns.loadbalancer.server.port: 53
+      traefik.udp.routers.pihole-dns.entrypoints: dns-udp
+      traefik.udp.routers.pihole-dns.service: pihole-dns
+      traefik.udp.services.pihole-dns.loadbalancer.server.port: 53
+    networks:
+      srv: null
+    restart: always
+    volumes:
+    - type: bind
+      source: /home/runner/work/make-my-server/make-my-server/pihole/etc-pihole
+      target: /etc/pihole
+      bind:
+        create_host_path: true
+    - type: bind
+      source: /home/runner/work/make-my-server/make-my-server/pihole/etc-dnsmasq.d
+      target: /etc/dnsmasq.d
+      bind:
+        create_host_path: true
+    - type: bind
+      source: /home/runner/work/make-my-server/make-my-server/pihole/logs
+      target: /var/log/lighttpd
+      bind:
+        create_host_path: true
   portainer:
     image: portainer/portainer
     labels:
@@ -1642,6 +1698,8 @@ services:
     - --entrypoints.web.address=:80
     - --entrypoints.web.http.redirections.entrypoint.to=websecure
     - --entrypoints.websecure.address=:443
+    - --entrypoints.dns-tcp.address=:53/tcp
+    - --entrypoints.dns-udp.address=:53/udp
     - --certificatesresolvers.myresolver.acme.email=changeme@changeme.org
     - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
     - --certificatesresolvers.myresolver.acme.httpchallenge=true
@@ -1689,6 +1747,14 @@ services:
       target: 443
       published: "443"
       protocol: tcp
+    - mode: ingress
+      target: 53
+      published: "53"
+      protocol: tcp
+    - mode: ingress
+      target: 53
+      published: "53"
+      protocol: udp
     restart: always
     volumes:
     - type: bind
