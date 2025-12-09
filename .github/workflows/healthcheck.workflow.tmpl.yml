@@ -34,7 +34,7 @@ jobs:
           ${{ inputs.sus }}
       - name: 'Starting the docker-compose stack'
         run: |
-          echo -e "USERS=runner\nUSERNAME=octocat" > .env
+          echo -e "USERS=runner\nUSERNAME=octocat\nTRAEFIK_DNS_ENTRYPOINT=8080" > .env
           docker-compose up -d ${{inputs.service_name}}
       - name: 'Waiting for running containers'
         timeout-minutes: '${{ inputs.timeout-minutes }}'

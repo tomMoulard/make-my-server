@@ -1,9 +1,6 @@
 name: 'Tests'
 
 on: # yamllint disable-line rule:truthy
-  pull_request:
-    branches:
-      - '*'
   push: {}
 
 jobs:

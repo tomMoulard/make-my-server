@@ -1176,7 +1176,7 @@ services:
       DNS2: 1.0.0.1
       DNSMASQ_LISTENING: all
       FTLCONF_REPLY_ADDR4: 0.0.0.0
-      FTLCONF_REPLY_ADDR6: "::"
+      FTLCONF_REPLY_ADDR6: '::'
       HOSTNAME: pihole
       REV_SERVER: "false"
       REV_SERVER_CIDR: 192.168.0.0/24
@@ -1184,7 +1184,7 @@ services:
       REV_SERVER_TARGET: 192.168.0.1
       TZ: Europe/Paris
       VIRTUAL_HOST: pihole.localhost
-      WEBPASSWORD: changeme
+      WEBPASSWORD: ""
     healthcheck:
       test:
       - CMD
@@ -1193,7 +1193,7 @@ services:
       - +tries=1
       - '@127.0.0.1'
       - pi-hole.net
-    image: pihole/pihole:2024.05.0
+    image: pihole/pihole:2025.11.1
     labels:
       traefik.enable: "true"
       traefik.http.routers.pihole.entrypoints: websecure
@@ -1203,10 +1203,10 @@ services:
       traefik.tcp.routers.pihole-dns.entrypoints: dns-tcp
       traefik.tcp.routers.pihole-dns.rule: HostSNI(`*`)
       traefik.tcp.routers.pihole-dns.service: pihole-dns
-      traefik.tcp.services.pihole-dns.loadbalancer.server.port: 53
+      traefik.tcp.services.pihole-dns.loadbalancer.server.port: "53"
       traefik.udp.routers.pihole-dns.entrypoints: dns-udp
       traefik.udp.routers.pihole-dns.service: pihole-dns
-      traefik.udp.services.pihole-dns.loadbalancer.server.port: 53
+      traefik.udp.services.pihole-dns.loadbalancer.server.port: "53"
     networks:
       srv: null
     restart: always
@@ -1728,7 +1728,7 @@ services:
       - traefik
       - healthcheck
       - --ping
-    image: traefik:v3.0
+    image: traefik:v3
     labels:
       traefik.enable: "true"
       traefik.http.middlewares.basic_auth.basicauth.removeHeader: "true"
