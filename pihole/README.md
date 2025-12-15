@@ -18,29 +18,27 @@ settings, blocklists, and DHCP leases.
 
 ## Environment variables
 
-| Variable | Default | Description |
-| --- | --- | --- |
-| `PIHOLE_IMAGE_VERSION` | `2024.05.0` | Pi-hole Docker image tag |
-| `PIHOLE_WEBPASSWORD` | `changeme` | Admin UI password; override in `.env` |
-| `PIHOLE_V4_ADDRESS` | `0.0.0.0` | IP address Pi-hole advertises to clients |
-| `PIHOLE_V6_ADDRESS` | `::` | IPv6 address Pi-hole advertises |
-| `PIHOLE_HOSTNAME` | `pihole` | Hostname shown in the UI and DHCP replies |
-| `PIHOLE_DNS1` | `1.1.1.1` | Primary upstream DNS |
-| `PIHOLE_DNS2` | `1.0.0.1` | Secondary upstream DNS |
-| `PIHOLE_DNSMASQ_LISTENING` | `all` | dnsmasq listening mode (`local`, `all`) |
-| `PIHOLE_REV_SERVER` | `false` | Enable conditional forwarding |
-| `PIHOLE_REV_SERVER_TARGET` | `192.168.0.1` | Router/DNS to forward PTR queries |
-| `PIHOLE_REV_SERVER_DOMAIN` | `lan` | Local domain for reverse lookups |
-| `PIHOLE_REV_SERVER_CIDR` | `192.168.0.0/24` | Subnet for reverse lookups |
-| `SITE` | `localhost` | Used to build the admin UI host `pihole.${SITE}` |
-| `TZ` | `Europe/Paris` | Container timezone |
-| `TRAEFIK_DNS_ENTRYPOINT` | `53` | Port that Traefik exposes for DNS (defined in the Traefik service) |
+| Variable                   | Default          | Description                                                        |
+| -------------------------- | ---------------- | ------------------------------------------------------------------ |
+| `PIHOLE_IMAGE_VERSION`     | `2024.05.0`      | Pi-hole Docker image tag                                           |
+| `PIHOLE_V4_ADDRESS`        | `0.0.0.0`        | IP address Pi-hole advertises to clients                           |
+| `PIHOLE_V6_ADDRESS`        | `::`             | IPv6 address Pi-hole advertises                                    |
+| `PIHOLE_HOSTNAME`          | `pihole`         | Hostname shown in the UI and DHCP replies                          |
+| `PIHOLE_DNS1`              | `1.1.1.1`        | Primary upstream DNS                                               |
+| `PIHOLE_DNS2`              | `1.0.0.1`        | Secondary upstream DNS                                             |
+| `PIHOLE_DNSMASQ_LISTENING` | `all`            | dnsmasq listening mode (`local`, `all`)                            |
+| `PIHOLE_REV_SERVER`        | `false`          | Enable conditional forwarding                                      |
+| `PIHOLE_REV_SERVER_TARGET` | `192.168.0.1`    | Router/DNS to forward PTR queries                                  |
+| `PIHOLE_REV_SERVER_DOMAIN` | `lan`            | Local domain for reverse lookups                                   |
+| `PIHOLE_REV_SERVER_CIDR`   | `192.168.0.0/24` | Subnet for reverse lookups                                         |
+| `SITE`                     | `localhost`      | Used to build the admin UI host `pihole.${SITE}`                   |
+| `TZ`                       | `Europe/Paris`   | Container timezone                                                 |
+| `TRAEFIK_DNS_ENTRYPOINT`   | `53`             | Port that Traefik exposes for DNS (defined in the Traefik service) |
 
 The DNS port exposed to your network is now configured globally via
 `TRAEFIK_DNS_ENTRYPOINT` and defaults to 53.
 
-Update `.env` (copied from `.env.default`) with secure values, especially
-`PIHOLE_WEBPASSWORD`.
+Update `.env` (copied from `.env.default`) with secure values.
 
 ## DNS port requirements
 
@@ -65,11 +63,6 @@ that port before starting Traefik, otherwise Traefik cannot bind to it.
   Traefik proxies raw DNS queries on port 53 to the container without exposing
   any Pi-hole ports.
 - Certificates are handled by Traefik via the globally configured ACME resolver.
-
-The admin UI relies on Pi-hole’s own `WEBPASSWORD`. If you want an additional
-basic-auth prompt, add the standard middleware labels from the `traefik` service
-(or create a dedicated middleware in `dynamic_conf/`) before exposing the route.
-
 
 ## DNS configuration steps
 

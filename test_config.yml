@@ -1184,7 +1184,6 @@ services:
       REV_SERVER_TARGET: 192.168.0.1
       TZ: Europe/Paris
       VIRTUAL_HOST: pihole.localhost
-      WEBPASSWORD: ""
     healthcheck:
       test:
       - CMD
@@ -1197,8 +1196,8 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.pihole.entrypoints: websecure
+      traefik.http.routers.pihole.middlewares: basic_auth@docker
       traefik.http.routers.pihole.rule: Host(`pihole.localhost`)
-      traefik.http.routers.pihole.tls: "true"
       traefik.http.services.pihole.loadbalancer.server.port: "80"
       traefik.tcp.routers.pihole-dns.entrypoints: dns-tcp
       traefik.tcp.routers.pihole-dns.rule: HostSNI(`*`)

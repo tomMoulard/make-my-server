@@ -27,7 +27,6 @@ services:
       traefik.http.routers.pihole.entrypoints: 'websecure'
       traefik.http.routers.pihole.middlewares: 'basic_auth@docker'
       traefik.http.routers.pihole.rule: 'Host(`pihole.${SITE:-localhost}`)'
-      traefik.http.routers.pihole.tls: true
       traefik.http.services.pihole.loadbalancer.server.port: 80
       traefik.tcp.routers.pihole-dns.entrypoints: 'dns-tcp'
       traefik.tcp.routers.pihole-dns.rule: 'HostSNI(`*`)'
